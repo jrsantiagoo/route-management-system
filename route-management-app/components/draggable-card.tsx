@@ -7,16 +7,12 @@ interface DraggableCardProps {
     route: string;
 }
 
-export default function DraggableRoute({ route }: DraggableCardProps) {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+export default function DraggableCard({ route }: DraggableCardProps) {
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: route,
     });
 
-    const style = {
-        transform: transform
-            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-            : undefined,
-    };
+    const style = { opacity: isDragging ? 0 : 1 };
 
     return (
         <div ref={setNodeRef} style={style} {...listeners} {...attributes}>

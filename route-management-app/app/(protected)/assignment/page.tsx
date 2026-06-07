@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import DraggableRoute from "@/components/draggable-card";
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverlay,
+    DragStartEvent,
+} from "@dnd-kit/core";
+
+import DraggableCard from "@/components/draggable-card";
 import AssignmentCell from "@/components/assignment-cell";
+import RouteCard from "@/components/route-card";
 
 // Placeholder data for drivers
 const drivers = [
@@ -57,16 +64,23 @@ export default function Assignment() {
         {},
     );
 
+    const [activeRoute, setActiveRoute] = useState<string | null>(null);
+
+    function handleDragStart(event: DragStartEvent) {
+        setActiveRoute(String(event.active.id));
+    }
+
     function handleDragEnd(event: DragEndEvent) {
         const route = String(event.active.id);
         const cellId = event.over?.id?.toString();
 
         if (!cellId) return;
-
         setAssignments((prev) => ({
             ...prev,
             [cellId]: [...(prev[cellId] || []), route],
         }));
+
+        setActiveRoute(null);
     }
 
     function deleteCard(cellId: string, cardIndex: number) {
@@ -85,7 +99,7 @@ export default function Assignment() {
     }
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <main className="flex font-bold min-h-screen gap-5.5">
                 {/* Displays the list of routes */}
                 <div className="flex flex-col text-left rounded-md w-67 max-h-118 bg-white shadow-lg shadow-gray-400">
@@ -102,7 +116,7 @@ export default function Assignment() {
                     {/* Auto-adds Placeholder routes as draggable cards*/}
                     <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {routes.map((route) => (
-                            <DraggableRoute key={route} route={route} />
+                            <DraggableCard key={route} route={route} />
                         ))}
                     </div>
                 </div>
@@ -150,6 +164,10 @@ export default function Assignment() {
                     </div>
                 </div>
             </main>
+
+            <DragOverlay>
+                {activeRoute ? <RouteCard route={activeRoute} /> : null}
+            </DragOverlay>
         </DndContext>
     );
 }
