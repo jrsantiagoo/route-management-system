@@ -1,3 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import DraggableRoute from "@/components/draggable-card";
+import AssignmentCell from "@/components/assignment-cell";
+
 // Placeholder data for drivers
 const drivers = [
     "Driver 1",
@@ -46,70 +53,103 @@ const routes = [
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function Assignment() {
+    const [assignments, setAssignments] = useState<Record<string, string[]>>(
+        {},
+    );
+
+    function handleDragEnd(event: DragEndEvent) {
+        const route = String(event.active.id);
+        const cellId = event.over?.id?.toString();
+
+        if (!cellId) return;
+
+        setAssignments((prev) => ({
+            ...prev,
+            [cellId]: [...(prev[cellId] || []), route],
+        }));
+    }
+
+    function deleteCard(cellId: string, cardIndex: number) {
+        setAssignments((prev) => {
+            const copy = { ...prev };
+            copy[cellId] = copy[cellId].filter(
+                (_, index) => index !== cardIndex,
+            );
+
+            if (copy[cellId].length === 0) {
+                delete copy[cellId];
+            }
+
+            return copy;
+        });
+    }
+
     return (
-        <main className="flex font-bold min-h-screen gap-5.5">
-            {/* Displays the list of routes */}
-            <div className="flex flex-col text-left rounded-md w-67 max-h-118 bg-white shadow-lg shadow-gray-400">
-                {/* Displays header and search bar */}
-                <div className="p-2 rounded-t border-b border-gray-200">
-                    <h2>Saved Routes</h2>
-                    <input
-                        type="text"
-                        placeholder="Search routes..."
-                        className="font-normal border border-gray-200 rounded p-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+        <DndContext onDragEnd={handleDragEnd}>
+            <main className="flex font-bold min-h-screen gap-5.5">
+                {/* Displays the list of routes */}
+                <div className="flex flex-col text-left rounded-md w-67 max-h-118 bg-white shadow-lg shadow-gray-400">
+                    {/* Displays header and search bar */}
+                    <div className="p-2 rounded-t border-b border-gray-200">
+                        <h2>Saved Routes</h2>
+                        <input
+                            type="text"
+                            placeholder="Search routes..."
+                            className="font-normal border border-gray-200 rounded p-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    {/* Auto-adds Placeholder routes as draggable cards*/}
+                    <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+                        {routes.map((route) => (
+                            <DraggableRoute key={route} route={route} />
+                        ))}
+                    </div>
                 </div>
 
-                {/* Auto-adds Placeholder routes as draggable cards*/}
-                <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
-                    {routes.map((route) => (
-                        <div
-                            key={route}
-                            className="p-1 pl-3 rounded bg-gray-200 hover:bg-gray-300"
-                        >
-                            {route}
+                {/* Displays the assignment table */}
+                <div className="p-4 w-250 h-184 rounded-md bg-white shadow-lg shadow-gray-400">
+                    <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+                        {/* Displays header */}
+                        <div className="sticky top-0 z-10 grid grid-cols-[172px_repeat(7,1fr)] rounded-t-md text-center border-b-2 bg-gray-200 border-gray-300">
+                            <div className="p-2">Drivers</div>
+
+                            {/* Auto-adds day columns*/}
+                            {daysOfWeek.map((day) => (
+                                <div key={day} className="w-28 h-12 p-2">
+                                    {day}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            </div>
 
-            {/* Displays the assignment table */}
-            <div className="p-4 w-250 h-184 rounded-md bg-white shadow-lg shadow-gray-400">
-                <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
-                    {/* Displays header */}
-                    <div className="sticky top-0 z-10 grid grid-cols-[172px_repeat(7,1fr)] rounded-t-md text-center border-b-2 bg-gray-200 border-gray-300">
-                        <div className="p-2">Drivers</div>
+                        {/* Auto-adds placeholder driver values as rows*/}
+                        <div>
+                            {drivers.map((driver) => (
+                                <div
+                                    key={driver}
+                                    className="grid grid-cols-[172px_repeat(7,1fr)] "
+                                >
+                                    <div className="p-2">{driver}</div>
 
-                        {/* Auto-adds day columns*/}
-                        {daysOfWeek.map((day) => (
-                            <div key={day} className="w-28 h-12 p-2">
-                                {day}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Auto-adds placeholder driver values as rows*/}
-                    <div>
-                        {drivers.map((driver) => (
-                            <div
-                                key={driver}
-                                className="grid grid-cols-[172px_repeat(7,1fr)] "
-                            >
-                                <div className="p-2">{driver}</div>
-
-                                {daysOfWeek.map((day) => (
-                                    <div
-                                        key={`${driver}-${day}`}
-                                        className="border border-gray-200 p-2 hover:bg-gray-100"
-                                    >
-                                        {/* Placeholder for route assignment cards */}
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
+                                    {daysOfWeek.map((day) => {
+                                        const cellId = `${driver}-${day}`;
+                                        return (
+                                            <AssignmentCell
+                                                key={cellId}
+                                                id={cellId}
+                                                routes={
+                                                    assignments[cellId] || []
+                                                }
+                                                onDelete={deleteCard}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </DndContext>
     );
 }
