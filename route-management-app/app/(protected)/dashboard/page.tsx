@@ -3,8 +3,8 @@
 import { useCallback, useState } from "react";
 import jsPDF from "jspdf";
 import {
-    BarChart,
-    Bar,
+    LineChart,
+    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -295,7 +295,11 @@ function drawLineChart(
 }
 
 // Helper Function: Generates a PDF summary of the route management statistics and orders
-function generatePDF() {
+function generatePDF(
+    totalTrips: number,
+    efficiency: number,
+    delivered: number
+) {
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-US", {
         month: "long",
@@ -316,21 +320,6 @@ function generatePDF() {
     doc.text(titleStr, 14, 20);
 
     // Performance Summary
-    const totalTrips = orders.length;
-    const onTimeThreshold = 5;
-    const onTime = orders.filter((o) => {
-        const [oy, om, od] = o.orderedOn.split("-").map(Number);
-        const [dy, dm, dd] = o.deliverBy.split("-").map(Number);
-        const orderDate = new Date(oy, om - 1, od);
-        const deliverDate = new Date(dy, dm - 1, dd);
-        const diffDays =
-            (deliverDate.getTime() - orderDate.getTime()) /
-            (1000 * 60 * 60 * 24);
-        return diffDays <= onTimeThreshold;
-    }).length;
-    const efficiency = Math.round((onTime / totalTrips) * 100);
-    const delivered = orders.length;
-
     doc.setFontSize(14);
     doc.text("Performance Summary", 14, 34);
 
@@ -595,8 +584,24 @@ function OrdersTable() {
 
 // Dashboard Page Component
 export default function Dashboard() {
+    // Derive stats from orders data
+    const totalTrips = orders.length;
+    const onTimeThreshold = 5;
+    const onTime = orders.filter((o) => {
+        const [oy, om, od] = o.orderedOn.split("-").map(Number);
+        const [dy, dm, dd] = o.deliverBy.split("-").map(Number);
+        const orderDate = new Date(oy, om - 1, od);
+        const deliverDate = new Date(dy, dm - 1, dd);
+        const diffDays =
+            (deliverDate.getTime() - orderDate.getTime()) /
+            (1000 * 60 * 60 * 24);
+        return diffDays <= onTimeThreshold;
+    }).length;
+    const efficiency = Math.round((onTime / totalTrips) * 100);
+    const delivered = orders.length;
+
     const handleDownload = useCallback(() => {
-        generatePDF();
+        generatePDF(totalTrips, efficiency, delivered);
     }, []);
 
     return (
@@ -614,46 +619,57 @@ export default function Dashboard() {
 
             {/* Key Statistics */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <StatCard title="Total Successful Trips" value="1,234" />
-                <StatCard title="Efficiency" value="87" unit="%" />
-                <StatCard title="Delivered Orders" value="956" />
+                <StatCard
+                    title="Total Successful Trips"
+                    value={String(totalTrips)}
+                />
+                <StatCard
+                    title="Efficiency"
+                    value={String(efficiency)}
+                    unit="%"
+                />
+                <StatCard title="Delivered Orders" value={String(delivered)} />
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <ChartCard title="Average Distance per Order (km)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={dailyDistanceData}>
+                        <LineChart data={dailyDistanceData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar
+                            <Line
+                                type="monotone"
                                 dataKey="distance"
-                                fill="#3b82f6"
+                                stroke="#3b82f6"
+                                strokeWidth={2}
+                                dot={{ fill: "#3b82f6", r: 4 }}
                                 name="Distance (km)"
-                                radius={[4, 4, 0, 0]}
                             />
-                        </BarChart>
+                        </LineChart>
                     </ResponsiveContainer>
                 </ChartCard>
 
                 <ChartCard title="Average Fuel Usage per Order (L)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={dailyFuelData}>
+                        <LineChart data={dailyFuelData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar
+                            <Line
+                                type="monotone"
                                 dataKey="fuel"
-                                fill="#f59e0b"
+                                stroke="#f59e0b"
+                                strokeWidth={2}
+                                dot={{ fill: "#f59e0b", r: 4 }}
                                 name="Fuel (L)"
-                                radius={[4, 4, 0, 0]}
                             />
-                        </BarChart>
+                        </LineChart>
                     </ResponsiveContainer>
                 </ChartCard>
             </div>
