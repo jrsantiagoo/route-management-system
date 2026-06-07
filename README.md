@@ -6,7 +6,7 @@ Welcome to the **Route Management Tool**, a web application designed to help log
 
 ## Getting Started
 
-### Prerequisites
+### Server Prerequisites
 
 - Node.js
 - npm
@@ -15,14 +15,20 @@ Welcome to the **Route Management Tool**, a web application designed to help log
 1. Install Dependencies
 
 ```bash
-npm install
+npm run install-server
+npm run install-client
 ```
 
 2. Run Development Server
 
 ```bash
-cd server
-npm run dev
+npm run server
+```
+
+3. Run Development Client Server
+
+```bash
+npm run client
 ```
 
 ---
