@@ -49,7 +49,7 @@ export default function Assignment() {
     return (
         <main className="flex font-bold min-h-screen gap-5.5">
             {/* Displays the list of routes */}
-            <div className="flex flex-col text-left rounded w-67 max-h-118 shadow-lg shadow-gray-400">
+            <div className="flex flex-col text-left rounded-md w-67 max-h-118 bg-white shadow-lg shadow-gray-400">
                 {/* Displays header and search bar */}
                 <div className="p-2 rounded-t border-b border-gray-200">
                     <h2>Saved Routes</h2>
@@ -61,7 +61,7 @@ export default function Assignment() {
                 </div>
 
                 {/* Auto-adds Placeholder routes as draggable cards*/}
-                <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                     {routes.map((route) => (
                         <div
                             key={route}
@@ -74,43 +74,40 @@ export default function Assignment() {
             </div>
 
             {/* Displays the assignment table */}
-            <div className="p-4 w-250 h-184 rounded bg-gray-200 shadow-lg shadow-gray-300">
-                <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-200">
-                    <table className="w-full rounded">
-                        <thead className="sticky top-0 bg-gray-200 z-10 text-center border-b-2 border-gray-300">
-                            <tr>
-                                <th className="p-2">Drivers</th>
+            <div className="p-4 w-250 h-184 rounded-md bg-white shadow-lg shadow-gray-400">
+                <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+                    {/* Displays header */}
+                    <div className="sticky top-0 z-10 grid grid-cols-[172px_repeat(7,1fr)] rounded-t-md text-center border-b-2 bg-gray-200 border-gray-300">
+                        <div className="p-2">Drivers</div>
 
-                                {/* Auto-adds day columns*/}
+                        {/* Auto-adds day columns*/}
+                        {daysOfWeek.map((day) => (
+                            <div key={day} className="w-28 h-12 p-2">
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Auto-adds placeholder driver values as rows*/}
+                    <div>
+                        {drivers.map((driver) => (
+                            <div
+                                key={driver}
+                                className="grid grid-cols-[172px_repeat(7,1fr)] "
+                            >
+                                <div className="p-2">{driver}</div>
+
                                 {daysOfWeek.map((day) => (
-                                    <th key={day} className="w-28 h-12 p-2">
-                                        {day}
-                                    </th>
+                                    <div
+                                        key={`${driver}-${day}`}
+                                        className="border border-gray-200 p-2 hover:bg-gray-100"
+                                    >
+                                        {/* Placeholder for route assignment cards */}
+                                    </div>
                                 ))}
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {/* Auto-adds placeholder driver values as rows*/}
-                            {drivers.map((driver) => (
-                                <tr
-                                    key={driver}
-                                    className="border-t border-gray-200 hover:bg-gray-300"
-                                >
-                                    <td className="p-2">{driver}</td>
-
-                                    {daysOfWeek.map((day) => (
-                                        <td
-                                            key={`${driver}-${day}`}
-                                            className="border border-gray-300 pt-2 pb-2"
-                                        >
-                                            {/* Placeholder for route assignment cards */}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </main>
