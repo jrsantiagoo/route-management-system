@@ -4,8 +4,9 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 
-const app = express();
+import managerRoutes from "./routes/manager-routes.js";
 
+const app = express();
 const PORT = process.env.PORT || 8080;
 
 // --- MIDDLEWARE ---
@@ -15,6 +16,8 @@ app.use(
         origin: process.env.ORIGIN_URI,
     }),
 );
+
+app.use("/api/managers", managerRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
