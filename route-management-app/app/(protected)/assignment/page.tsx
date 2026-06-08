@@ -131,7 +131,7 @@ export default function Assignment() {
                     </div>
                 </div>
 
-                {/* Displays the rooute assignment table */}
+                {/* Displays the route assignment table */}
                 <div className="p-4 w-250 h-184 rounded-md bg-white shadow-lg shadow-gray-400">
                     <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {/* Displays header */}
