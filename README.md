@@ -31,6 +31,11 @@ npm run server
 npm run client
 ```
 
+4. Access the App
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+
 ---
 
 ## Backend Tech Stack
