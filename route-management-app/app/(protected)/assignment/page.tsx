@@ -13,7 +13,7 @@ import AssignmentCell from "@/components/assignment-cell";
 import RouteCard from "@/components/route-card";
 
 // Placeholder data for drivers
-const drivers = [
+const DRIVERS = [
     "Driver 1",
     "Driver 2",
     "Driver 3",
@@ -41,7 +41,7 @@ const drivers = [
 ];
 
 // Placeholder data for routes
-const routes = [
+const ROUTES = [
     "Route A",
     "Route B",
     "Route C",
@@ -57,24 +57,30 @@ const routes = [
     "Route M",
 ];
 
-const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function Assignment() {
+    // Stores route assignments so that UI can track which card is placed in each cell
     const [assignments, setAssignments] = useState<Record<string, string[]>>(
         {},
     );
 
+    // Stores the dragged route card so drag overlay can render even while original element is being moved
     const [activeRoute, setActiveRoute] = useState<string | null>(null);
 
+    // Records which route card is being dragged so that drag overlay is shown
     function handleDragStart(event: DragStartEvent) {
         setActiveRoute(String(event.active.id));
     }
 
+    // Creates route card-to-cell assignment when drag operation is done
     function handleDragEnd(event: DragEndEvent) {
         const route = String(event.active.id);
         const cellId = event.over?.id?.toString();
 
+        // Ignores invalid drops to prevent creating assignments for non-existing cells
         if (!cellId) return;
+        // Adds route card to target cell, while preserving existing elements
         setAssignments((prev) => ({
             ...prev,
             [cellId]: [...(prev[cellId] || []), route],
@@ -83,13 +89,16 @@ export default function Assignment() {
         setActiveRoute(null);
     }
 
+    // Allows user to delete existing route assignments
     function deleteCard(cellId: string, cardIndex: number) {
         setAssignments((prev) => {
             const copy = { ...prev };
+
+            // Removes the selected card, while preserving the order of any remaining assignments
             copy[cellId] = copy[cellId].filter(
                 (_, index) => index !== cardIndex,
             );
-
+            // Remove empty cells entirely
             if (copy[cellId].length === 0) {
                 delete copy[cellId];
             }
@@ -99,6 +108,7 @@ export default function Assignment() {
     }
 
     return (
+        // Allows drag and drop operation
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <main className="flex font-bold min-h-screen gap-5.5">
                 {/* Displays the list of routes */}
@@ -113,39 +123,39 @@ export default function Assignment() {
                         />
                     </div>
 
-                    {/* Auto-adds Placeholder routes as draggable cards*/}
+                    {/* Automatically adds placeholder ROUTES as draggable cards */}
                     <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
-                        {routes.map((route) => (
+                        {ROUTES.map((route) => (
                             <DraggableCard key={route} route={route} />
                         ))}
                     </div>
                 </div>
 
-                {/* Displays the assignment table */}
+                {/* Displays the rooute assignment table */}
                 <div className="p-4 w-250 h-184 rounded-md bg-white shadow-lg shadow-gray-400">
                     <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {/* Displays header */}
                         <div className="sticky top-0 z-10 grid grid-cols-[172px_repeat(7,1fr)] rounded-t-md text-center border-b-2 bg-gray-200 border-gray-300">
                             <div className="p-2">Drivers</div>
 
-                            {/* Auto-adds day columns*/}
-                            {daysOfWeek.map((day) => (
+                            {/* Automatically adds DAY_OF_WEEK columns*/}
+                            {DAYS_OF_WEEK.map((day) => (
                                 <div key={day} className="w-28 h-12 p-2">
                                     {day}
                                 </div>
                             ))}
                         </div>
 
-                        {/* Auto-adds placeholder driver values as rows*/}
+                        {/* Automatically adds placeholder DRIVERS values as rows*/}
                         <div>
-                            {drivers.map((driver) => (
+                            {DRIVERS.map((driver) => (
                                 <div
                                     key={driver}
                                     className="grid grid-cols-[172px_repeat(7,1fr)] "
                                 >
                                     <div className="p-2">{driver}</div>
-
-                                    {daysOfWeek.map((day) => {
+                                    {/* Allows the creation of assignment cells */}
+                                    {DAYS_OF_WEEK.map((day) => {
                                         const cellId = `${driver}-${day}`;
                                         return (
                                             <AssignmentCell
@@ -164,7 +174,7 @@ export default function Assignment() {
                     </div>
                 </div>
             </main>
-
+            {/* Displays drag overlay of route cards */}
             <DragOverlay>
                 {activeRoute ? <RouteCard route={activeRoute} /> : null}
             </DragOverlay>

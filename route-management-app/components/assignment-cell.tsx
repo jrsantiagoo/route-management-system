@@ -9,6 +9,7 @@ interface CellProps {
     onDelete: (cellId: string, index: number) => void;
 }
 
+// Acts as target cell for card drops
 export default function AssignmentCell({ id, routes, onDelete }: CellProps) {
     const { setNodeRef, isOver } = useDroppable({
         id,
