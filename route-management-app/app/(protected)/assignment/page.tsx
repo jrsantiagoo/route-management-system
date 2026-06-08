@@ -116,11 +116,11 @@ export default function Assignment() {
                     {/* Displays header and search bar */}
                     <div className="p-2 rounded-t border-b border-gray-200">
                         <h2>Saved Routes</h2>
-                        <input
+                        {/* <input
                             type="text"
                             placeholder="Search routes..."
                             className="font-normal border border-gray-200 rounded p-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
+                        /> */}
                     </div>
 
                     {/* Automatically adds placeholder ROUTES as draggable cards */}
