@@ -16,11 +16,124 @@ datasource db {
 }
 
 model manager {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  lastname   		String
-	firstname  		String
-	middleInitial String
-	email 				String
-	passwordHash  String
-  createdAt  		DateTime   @default(now())
+  id_            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lastname       String
+  firstname      String
+  middleInitial  String?
+	email 				 String     @unique
+	passwordHash   String
+  createdAt  		 DateTime   @default(now())
+}
+
+model route {
+  id_          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+  routeId      String      @unique @default(uuid())
+  name         String
+  createdAt    DateTime   @default(now())
+  
+  stops        stop[]
+  trips        trip[]
+}
+
+model stop {
+  id_          String    @id @default(uuid())
+  route_id_   String     @unique @db.Uuid
+  
+  name        String
+  address     String
+  latitude    Float
+  longitude   Float
+  order       Int                             // sequence in the route
+
+  route       route     @relation(fields: [route_id_], references: [id_])
+
+  @@index([route_id_]) 
+}
+
+// driver
+model agent_profile {
+  // Internal PK
+  id_            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+  // External, from CORE user ID
+  agent_id_      String  @unique @db.Uuid 
+  contact_number String? @db.VarChar(100)
+  license_number String? @db.VarChar(100)
+  //avatar_url     String? @db.Text
+  //tenant_id_     String  @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  //vehicles vehicle[]
+  //fuel_log fuel_log[]
+  trips     trip[]
+
+  //@@index([agent_id_, tenant_id_])
+  @@map("agent_profile")
+  //@@schema("agents")
+}
+
+model trip {
+  id_            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status         TripStatus @default(PENDING)
+  tag_type       TagTypes   @default(OPEN)
+  // destination    String     @db.Text
+  scheduled_date DateTime?  @db.Timestamptz(6)
+  notes          String?    @db.Text
+  image_url      String?    @db.Text
+  proof_url      String?    @db.Text
+  accepted_at    DateTime?  @db.Timestamptz(6)
+  departed_at    DateTime?  @db.Timestamptz(6)
+  completed_at   DateTime?  @db.Timestamptz(6)
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @updatedAt @db.Timestamptz(6)
+  deleted_at DateTime? @db.Timestamptz(6)
+
+  // Foreign Keys
+  driver_id_       String? @db.Uuid // FK to agent_profile
+  route_id_        String   @db.Uuid
+  //vehicle_id_      String? @db.Uuid
+  //assigned_by      String? @db.Uuid // FK to current user
+  //task_purpose_id_ String? @db.Uuid
+  //tenant_id_       String  @db.Uuid
+
+  // Relations
+  agent_profile agent_profile? @relation(fields: [driver_id_], references: [id_])
+  route          route           @relation(fields: [route_id_], references: [id_])
+  // vehicle       vehicle?       @relation(fields: [vehicle_id_], references: [id_])
+
+  //trip_tasks trip_task[]
+  //checkins   checkin[]
+
+  // Indexes
+  //@@unique([id_ , tenant_id_])
+  // @@unique([id_])
+  // @@index([created_at, updated_at, tenant_id_])
+  // @@index([vehicle_id_, driver_id_, status, tag_type, tenant_id_])
+  // @@map("trip")
+  // @@schema("trips")
+
+  @@index([driver_id_])
+  @@index([route_id_])
+  @@index([status])
+  @@map("trip")
+  //@@schema("trips")
+}
+
+enum TripStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+
+  //@@schema("trips")
+}
+
+enum TagTypes {
+  OPEN
+  ASSIGNED
+
+  //@@schema("trips")
 }
