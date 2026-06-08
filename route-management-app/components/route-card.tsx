@@ -3,7 +3,7 @@ interface RouteCardProps {
     onDelete?: () => void;
 }
 
-// Provides a visual card of a route so it can be displayed consistently in the
+// Provides a visual route card so it can be displayed consistently in the
 // list and assignment cells.
 export default function RouteCard({ route, onDelete }: RouteCardProps) {
     return (

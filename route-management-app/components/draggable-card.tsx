@@ -7,7 +7,7 @@ interface DraggableCardProps {
     route: string;
 }
 
-// Makes draggable route cards for drag and drop assignment
+// Creates draggable route cards for drag and drop assignment
 export default function DraggableCard({ route }: DraggableCardProps) {
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: route,
