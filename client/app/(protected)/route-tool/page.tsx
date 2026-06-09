@@ -16,6 +16,7 @@ import RouteToolbar from "@/components/routing/RouteToolbar";
 import RouteOrderingPanel from "@/components/routing/RouteOrderingPanel";
 import SuggestRoutesModal from "@/components/routing/SuggestRoutesModal";
 import Toast from "@/components/routing/Toast";
+import { createRoute, getRoutes } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -95,15 +96,40 @@ export default function RoutingTool() {
         setIsEditMode(false);
     }
 
-    function handleSave() {
+    async function generateRouteName(): Promise<string> {
+        const datePart = `Route – ${new Date().toLocaleDateString("en-PH", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        })}`;
+
+        // Fetch existing routes
+        const existing = (await getRoutes()).data as RoutePlan[];
+
+        // Filter routes created today and extract their sequence numbers
+        const todayRouteNumbers = existing
+            .filter((r) => r.name.startsWith(datePart))
+            .map((r) => {
+                // Extract the last 4 digits from the route name
+                const matches = r.name.match(/- (\d{4})$/);
+                return matches ? parseInt(matches[1], 10) : 0;
+            });
+
+        // Next sequence number (start at 1 if none exist)
+        const nextSequence =
+            todayRouteNumbers.length > 0
+                ? Math.max(...todayRouteNumbers) + 1
+                : 1;
+
+        // Pad the number to 4 digits
+        const paddedSequence = String(nextSequence).padStart(4, "0");
+        return `${datePart} - ${paddedSequence}`;
+    }
+    async function handleSave() {
         const vehicleType = recommendVehicle(stops.length);
         const plan: RoutePlan = {
             id: routeIdRef.current,
-            name: `Route – ${new Date().toLocaleDateString("en-PH", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-            })}`,
+            name: await generateRouteName(),
             stops,
             segments,
             totalDistanceKm,
@@ -112,8 +138,15 @@ export default function RoutingTool() {
             assignedWeek: "",
             createdAt: new Date().toISOString(),
         };
-        saveRoute(plan);
-        setToast("Route saved successfully.");
+        //saveRoute(plan);
+
+        const response = await createRoute(plan);
+        const data = await response;
+        if (data.success) {
+            setToast("Route saved successfully.");
+        } else {
+            setToast("Failed to save route.");
+        }
     }
 
     return (

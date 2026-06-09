@@ -26,17 +26,17 @@ router.post("/create-route", async (req, res) => {
         const { route } = req.body;
         const newRoute = await prisma.route.create({
             data: {
-                routeName: route.routeName,
+                name: route.name,
                 totalDistanceKm: route.totalDistanceKm,
                 totalDurationMinutes: route.totalDurationMinutes,
                 vehicleType: route.vehicleType,
                 stops: {
-                    create: route.stops.map((stop) => ({
+                    create: route.stops.map((stop, i) => ({
                         name: stop.name,
                         address: stop.address,
-                        latitude: stop.latitude,
-                        longitude: stop.longitude,
-                        order: stop.order,
+                        lat: stop.lat,
+                        lng: stop.lng,
+                        order: i,
                     })),
                 },
             },

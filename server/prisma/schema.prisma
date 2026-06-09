@@ -27,7 +27,7 @@ model manager {
 
 model route {
   id_                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-  routeName             String     @unique @default(uuid())
+  name                  String     @unique @default(uuid())
   totalDistanceKm       Float
   totalDurationMinutes  Int
   vehicleType           String?
@@ -43,8 +43,8 @@ model stop {
   
   name        String
   address     String?
-  latitude    Float
-  longitude   Float
+  lat         Float
+  lng         Float
   order       Int                             // sequence in the route
 
   route       route     @relation(fields: [route_id_], references: [id_])
