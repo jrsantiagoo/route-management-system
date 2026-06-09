@@ -1,11 +1,15 @@
 {
-    "name": "cssweng-project",
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-        "install-server": "cd server && npm install",
-        "install-client": "cd client && npm install",
-        "server": "cd server && npm run dev",
-        "client": "cd client && npm run dev"
-    }
+  "name": "cssweng-project",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.2"
+  }
 }
