@@ -26,14 +26,15 @@ model manager {
 }
 
 model route {
-  id_               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-  routeName         String     @unique @default(uuid())
-  totalDistanceKm   Float
-  totalDurationMin  Int
-  createdAt         DateTime   @default(now())
+  id_                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+  routeName             String     @unique @default(uuid())
+  totalDistanceKm       Float
+  totalDurationMinutes  Int
+  vehicleType           String?
+  createdAt             DateTime   @default(now())
   
-  stops             stop[]
-  trips             trip[]
+  stops                 stop[]
+  trips                 trip[]
 }
 
 model stop {

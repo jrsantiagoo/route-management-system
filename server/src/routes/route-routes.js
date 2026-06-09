@@ -23,15 +23,15 @@ router.get("/", async (req, res) => {
 
 router.post("/create-route", async (req, res) => {
     try {
-        const { routeName, totalDistanceKm, totalDurationMin, stops } =
-            req.body;
-        const route = await prisma.route.create({
+        const { route } = req.body;
+        const newRoute = await prisma.route.create({
             data: {
-                routeName,
-                totalDistanceKm,
-                totalDurationMin,
+                routeName: route.routeName,
+                totalDistanceKm: route.totalDistanceKm,
+                totalDurationMinutes: route.totalDurationMinutes,
+                vehicleType: route.vehicleType,
                 stops: {
-                    create: stops.map((stop) => ({
+                    create: route.stops.map((stop) => ({
                         name: stop.name,
                         address: stop.address,
                         latitude: stop.latitude,
@@ -40,10 +40,13 @@ router.post("/create-route", async (req, res) => {
                     })),
                 },
             },
+            include: {
+                stops: true,
+            },
         });
         res.json({
             success: true,
-            data: route,
+            data: newRoute,
         });
     } catch (error) {
         res.status(500).json({
