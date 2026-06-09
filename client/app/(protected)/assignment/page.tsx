@@ -11,6 +11,8 @@ import {
 import DraggableCard from "@/components/draggable-card";
 import AssignmentCell from "@/components/assignment-cell";
 import RouteCard from "@/components/route-card";
+import { getRoutes } from "@/lib/api/routes";
+import { RoutePlan } from "@/lib/routing/types";
 
 // Placeholder data for drivers
 const DRIVERS = [
@@ -41,6 +43,7 @@ const DRIVERS = [
 ];
 
 // Placeholder data for routes
+/*
 const ROUTES = [
     "Route A",
     "Route B",
@@ -56,6 +59,9 @@ const ROUTES = [
     "Route L",
     "Route M",
 ];
+*/
+
+const ROUTES = (await getRoutes()).data as RoutePlan[];
 
 const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -126,7 +132,10 @@ export default function Assignment() {
                     {/* Automatically adds placeholder ROUTES as draggable cards */}
                     <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {ROUTES.map((route) => (
-                            <DraggableCard key={route} route={route} />
+                            <DraggableCard
+                                key={route.name}
+                                route={route.name}
+                            />
                         ))}
                     </div>
                 </div>
