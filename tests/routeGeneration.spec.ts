@@ -49,9 +49,7 @@ test.describe('Route Generation', () => {
     await expect(page.getByText('Rizal Park')).toBeVisible();
   });
 
-  // ─────────────────────────────────────────────────────────────────────────
   // Case 1-1: Valid Route Generation
-  // ─────────────────────────────────────────────────────────────────────────
   test('generates optimised route cards when stops and fleet are available', async ({ page }) => {
     await openSuggestModal(page);
 
@@ -69,9 +67,7 @@ test.describe('Route Generation', () => {
     await expect(page.getByRole('button', { name: 'Apply' }).first()).toBeVisible();
   });
 
-  // ─────────────────────────────────────────────────────────────────────────
   // Case 1-2: Missing Stops List
-  // ─────────────────────────────────────────────────────────────────────────
   test('shows an empty-state message when there are no stops to route', async ({ page }) => {
     // Remove both default stops so the route is empty.
     await page.getByRole('button', { name: 'Edit' }).click();
@@ -92,11 +88,9 @@ test.describe('Route Generation', () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  // ─────────────────────────────────────────────────────────────────────────
   // Case 1-3: More Stops Than Drivers (10 stops, 2 drivers)
   // test.fixme — the modal suggests route options for one driver/vehicle at a
   // time; it does not distribute all stops across multiple named drivers.
-  // ─────────────────────────────────────────────────────────────────────────
   test.fixme('distributes all stops across available drivers when stops outnumber drivers', async ({ page }) => {
     // TODO: add a driver-management UI that accepts a 2-driver list.
     // TODO: add 10 stops to the route.
@@ -109,10 +103,8 @@ test.describe('Route Generation', () => {
     await expect(page.locator('[data-testid="driver-route-card"]')).toHaveCount(2);
   });
 
-  // ─────────────────────────────────────────────────────────────────────────
   // Case 1-4: More Drivers Than Stops (5 drivers, 3 stops)
   // test.fixme — no unassigned-driver display exists in the current UI.
-  // ─────────────────────────────────────────────────────────────────────────
   test.fixme('marks excess drivers as unassigned when drivers outnumber stops', async ({ page }) => {
     // TODO: add a driver-management UI that accepts a 5-driver list.
     // TODO: set the stop list to exactly 3 stops.
