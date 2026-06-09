@@ -2,6 +2,13 @@ import { Stop, WeeklyVehicleAvailability } from "./types";
 
 export const MANILA_LOCATIONS: Stop[] = [
     {
+        id: "loc-000",
+        name: "De La Salle University",
+        address: "2401 Taft Ave, Malate, Manila 1004",
+        lat: 14.5643,
+        lng: 120.9938,
+    },
+    {
         id: "loc-001",
         name: "Rizal Park",
         address: "Roxas Blvd, Ermita, Manila 1000",
@@ -59,12 +66,7 @@ export const MANILA_LOCATIONS: Stop[] = [
     },
 ];
 
-export const DEFAULT_STOPS: Stop[] = [
-    MANILA_LOCATIONS[0],
-    MANILA_LOCATIONS[3],
-    MANILA_LOCATIONS[2],
-    MANILA_LOCATIONS[4],
-];
+export const DEFAULT_STOPS: Stop[] = [MANILA_LOCATIONS[0], MANILA_LOCATIONS[1]];
 
 export const MOCK_WEEKLY_AVAILABILITY: WeeklyVehicleAvailability[] = [
     { week: "2026-06-09", motorcycles: 2, cars: 3 },
