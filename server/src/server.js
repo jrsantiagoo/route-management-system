@@ -6,6 +6,7 @@ import cors from "cors";
 
 import managerRoutes from "./routes/manager-routes.js";
 import routeRoutes from "./routes/route-routes.js";
+import tripRoutes from "./routes/trip-routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,6 +21,7 @@ app.use(
 
 app.use("/api/managers", managerRoutes);
 app.use("/api/routes", routeRoutes);
+app.use("/api/trips", tripRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
