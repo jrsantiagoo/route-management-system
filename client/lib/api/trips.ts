@@ -1,6 +1,10 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function createTrip(routeId: string, driverId: string, scheduledDate?: string) {
+export async function createTrip(
+    routeId: string,
+    driverId: string,
+    scheduledDate?: string,
+) {
     const response = await fetch(`${API_URL}/api/trips`, {
         method: "POST",
         headers: {
@@ -25,5 +29,10 @@ export async function getAllTrips() {
 
 export async function getTripsByDriver(driverId: string) {
     const response = await fetch(`${API_URL}/api/trips/driver/${driverId}`);
+    return response.json();
+}
+
+export async function getAssignmentGrid() {
+    const response = await fetch(`${API_URL}/api/trips/assignment-grid`);
     return response.json();
 }
