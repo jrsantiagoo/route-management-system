@@ -2,6 +2,21 @@
 
 import * as tripService from "../services/trip-service.js";
 
+// --- CREATE TRIP ---
+export async function createTrip(req, res) {
+  try {
+    const { routeId, driverId, scheduledDate } = req.body;
+    if (!routeId || !driverId) {
+      return res.status(400).json({ message: "routeId and driverId are required" });
+    }
+
+    const result = await tripService.createTrip(routeId, driverId, scheduledDate);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 // --- TRIP ASSIGNMENT ---
 export async function assignTripToDriver(req, res) {
   try {
@@ -17,7 +32,7 @@ export async function assignTripToDriver(req, res) {
   }
 }
 
-// --- TRIP STATUS CHANGE --- 
+// --- TRIP STATUS CHANGE ---
 export async function changeTripStatus(req, res) {
   try {
     const { id } = req.params;
@@ -34,6 +49,16 @@ export async function changeTripStatus(req, res) {
   }
 }
 
+// --- GET ALL TRIPS ---
+export async function getAllTrips(req, res) {
+  try {
+    const trips = await tripService.getAllTrips();
+    res.json({ success: true, data: trips });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 // --- GET TRIPS BY DRIVER ---
 export async function getTripsForDriver(req, res) {
   try {
@@ -45,8 +70,18 @@ export async function getTripsForDriver(req, res) {
   }
 }
 
+// --- DELETE TRIP ---
+export async function deleteTrip(req, res) {
+  try {
+    const { id } = req.params;
+    const result = await tripService.deleteTrip(id);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
 
-// --- GET TRIP DETAILS --- 
+// --- GET TRIP DETAILS ---
 export async function getTripDetail(req, res) {
   try {
     const { id } = req.params;
