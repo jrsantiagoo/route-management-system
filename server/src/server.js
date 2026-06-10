@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "../env.js";
 
 // Import routes AFTER dotenv.config() so environment variables are loaded
 import express from "express";
