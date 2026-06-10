@@ -1,12 +1,23 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/dist/client/link";
+import * as authApi from "@/lib/api/auth";
 
 // This component renders the sidebar with navigation links.
 export default function Sidebar() {
     // This allows us to highlight the active page in sidebar.
     const pathname = usePathname();
+    const router = useRouter();
+
+    async function handleLogout() {
+        await authApi.logout();
+
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+
+        router.push("/");
+    }
 
     return (
         // The sidebar is fixed to the left of the screen
@@ -41,12 +52,12 @@ export default function Sidebar() {
                 TODO: Implement logout function 
               */}
             <div className="absolute bottom-0 text-right w-full p-4">
-                <Link
-                    href="/"
+                <button
+                    onClick={handleLogout}
                     className="rounded p-2 bg-gray-400 hover:bg-gray-500"
                 >
                     Log Out
-                </Link>
+                </button>
             </div>
         </div>
     );
