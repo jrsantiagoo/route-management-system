@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// Import routes AFTER dotenv.config() so environment variables are loaded
 import express from "express";
 import cors from "cors";
 
