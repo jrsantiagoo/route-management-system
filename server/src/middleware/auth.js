@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import supabase from "../supabaseClient.js";
-=======
 import supabase from "../lib/supabase-client.js";
->>>>>>> 0d0bac3d918586cb975db4049397b158fd09abad
 
 // --- AUTHENTICATE ---
 export const authenticate = async (req, res, next) => {

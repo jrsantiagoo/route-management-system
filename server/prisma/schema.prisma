@@ -21,7 +21,6 @@ model manager {
   firstname      String
   middleInitial  String?
 	email 				 String     @unique
-	passwordHash   String
   createdAt  		 DateTime   @default(now())
 }
 
