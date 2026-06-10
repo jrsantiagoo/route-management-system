@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiCall } from "@/lib/api/client";
 
 //login page with email and password fields, error handling, and loading state. On successful login, navigate to dashboard page
 export default function loginPage() {
@@ -34,9 +35,31 @@ export default function loginPage() {
             return;
         }
 
-        // Simulate login delay, then navigate to dashboard
-        await new Promise((r) => setTimeout(r, 800));
-        router.push("/dashboard");
+        // connect to backend and get access token and refresh token, then store them in local storage
+        try {
+            const response = await apiCall("/api/auth/login", {
+                method: "POST",
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                setError(data.error || "Login failed");
+                setLoading(false);
+                return;
+            }
+
+            const { access_token, refresh_token } = await response.json();
+
+            // Store tokens
+            localStorage.setItem("access_token", access_token);
+            localStorage.setItem("refresh_token", refresh_token);
+
+            router.push("/dashboard");
+        } catch (err) {
+            setError("Network error");
+            setLoading(false);
+        }
     };
 
     return (

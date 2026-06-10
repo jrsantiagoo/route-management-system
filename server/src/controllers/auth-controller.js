@@ -1,12 +1,8 @@
-import supabase from "./supabaseClient.js";
+// import supabase from "../supabaseClient.js";
 
 // --- REGISTER ---
 export const register = async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -20,10 +16,6 @@ export const register = async (req, res) => {
 // --- LOGIN ---
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,

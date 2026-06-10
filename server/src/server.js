@@ -6,6 +6,7 @@ import cors from "cors";
 
 import managerRoutes from "./routes/manager-routes.js";
 import routeRoutes from "./routes/route-routes.js";
+import authRoutes from "./routes/auth-routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,6 +21,7 @@ app.use(
 
 app.use("/api/managers", managerRoutes);
 app.use("/api/routes", routeRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
