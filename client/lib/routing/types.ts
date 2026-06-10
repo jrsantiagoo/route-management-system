@@ -8,6 +8,13 @@ export interface Stop {
     lng: number;
 }
 
+export interface Driver {
+    id_: string;
+    driver_id: string;
+    contact_number?: string;
+    license_number?: string;
+}
+
 export interface RouteSegment {
     fromId: string;
     toId: string;

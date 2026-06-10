@@ -11,51 +11,13 @@ import {
 import DraggableCard from "@/components/draggable-card";
 import AssignmentCell from "@/components/assignment-cell";
 import RouteCard from "@/components/route-card";
+import * as types from "@/lib/routing/types";
+import * as routesApi from "@/lib/api/routes";
+import * as driversApi from "@/lib/api/drivers";
 
-// Placeholder data for drivers
-const DRIVERS = [
-    "Driver 1",
-    "Driver 2",
-    "Driver 3",
-    "Driver 4",
-    "Driver 5",
-    "Driver 6",
-    "Driver 7",
-    "Driver 8",
-    "Driver 9",
-    "Driver 10",
-    "Driver 11",
-    "Driver 12",
-    "Driver 13",
-    "Driver 14",
-    "Driver 15",
-    "Driver 16",
-    "Driver 17",
-    "Driver 18",
-    "Driver 19",
-    "Driver 20",
-    "Driver 21",
-    "Driver 22",
-    "Driver 23",
-    "Driver 24",
-];
+const DRIVERS = (await driversApi.getDrivers()).data as types.Driver[];
 
-// Placeholder data for routes
-const ROUTES = [
-    "Route A",
-    "Route B",
-    "Route C",
-    "Route D",
-    "Route E",
-    "Route F",
-    "Route G",
-    "Route H",
-    "Route I",
-    "Route J",
-    "Route K",
-    "Route L",
-    "Route M",
-];
+const ROUTES = (await routesApi.getRoutes()).data as types.RoutePlan[];
 
 const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -126,7 +88,10 @@ export default function Assignment() {
                     {/* Automatically adds placeholder ROUTES as draggable cards */}
                     <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {ROUTES.map((route) => (
-                            <DraggableCard key={route} route={route} />
+                            <DraggableCard
+                                key={route.name}
+                                route={route.name}
+                            />
                         ))}
                     </div>
                 </div>
@@ -150,13 +115,15 @@ export default function Assignment() {
                         <div>
                             {DRIVERS.map((driver) => (
                                 <div
-                                    key={driver}
+                                    key={driver.driver_id}
                                     className="grid grid-cols-[172px_repeat(7,1fr)] "
                                 >
-                                    <div className="p-2">{driver}</div>
+                                    <div className="p-2">
+                                        {driver.driver_id}
+                                    </div>
                                     {/* Allows the creation of assignment cells */}
                                     {DAYS_OF_WEEK.map((day) => {
-                                        const cellId = `${driver}-${day}`;
+                                        const cellId = `${driver.driver_id}-${day}`;
                                         return (
                                             <AssignmentCell
                                                 key={cellId}
