@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiCall } from "@/lib/api/client";
+import * as authApi from "@/lib/api/auth";
 
 //login page with email and password fields, error handling, and loading state. On successful login, navigate to dashboard page
 export default function loginPage() {
@@ -37,6 +38,7 @@ export default function loginPage() {
 
         // connect to backend and get access token and refresh token, then store them in local storage
         try {
+            /*
             const response = await apiCall("/api/auth/login", {
                 method: "POST",
                 body: JSON.stringify({ email, password }),
@@ -54,9 +56,24 @@ export default function loginPage() {
             // Store tokens
             localStorage.setItem("access_token", access_token);
             localStorage.setItem("refresh_token", refresh_token);
+            */
+            const data = await authApi.login(email, password);
+
+            if (data.error) {
+                setError(data.error || "Login Failed");
+                setLoading(false);
+                return;
+            }
+
+            const { access_token, refresh_token } = data;
+
+            // Store tokens
+            localStorage.setItem("access_token", access_token);
+            localStorage.setItem("refresh_token", refresh_token);
 
             router.push("/dashboard");
         } catch (err) {
+            console.log("Login error:", err);
             setError("Network error");
             setLoading(false);
         }

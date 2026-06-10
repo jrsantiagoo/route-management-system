@@ -1,4 +1,5 @@
 import supabase from "../lib/supabase-client.js";
+import prisma from "../lib/prisma.js";
 
 // --- REGISTER ---
 export const register = async (req, res) => {
@@ -10,6 +11,17 @@ export const register = async (req, res) => {
     });
 
     if (error) return res.status(400).json({ error: error.message });
+
+    await prisma.manager.create({
+        data: {
+            id_: data.user.id,
+            email,
+            firstname,
+            lastname,
+            middleInitial,
+        },
+    });
+
     res.json({ user: data.user });
 };
 
@@ -27,12 +39,17 @@ export const login = async (req, res) => {
     // Session with access + refresh tokens
     const { session } = data;
 
+    const manager = await prisma.manager.findUnique({
+        where: { id_: data.user.id },
+    });
+
     // Token Handling
     res.json({
         access_token: session.access_token,
         refresh_token: session.refresh_token,
         expires_in: session.expires_in,
         user: session.user,
+        profile: manager,
     });
 };
 
