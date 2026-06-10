@@ -21,7 +21,6 @@ model manager {
   firstname      String
   middleInitial  String?
 	email 				 String     @unique
-	passwordHash   String
   createdAt  		 DateTime   @default(now())
 }
 
@@ -57,7 +56,10 @@ model agent_profile {
   // Internal PK
   id_            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
   // External, from CORE user ID
-  agent_id_      String  @unique @db.Uuid 
+  // agent_id_      String  @unique @db.Uuid 
+
+  //employee_number
+  driver_id      String  @unique @db.VarChar(100)
   contact_number String? @db.VarChar(100)
   license_number String? @db.VarChar(100)
   //avatar_url     String? @db.Text

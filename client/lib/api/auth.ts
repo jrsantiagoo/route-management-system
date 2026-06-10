@@ -1,0 +1,38 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export async function login(email: string, password: string) {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+    });
+    return response.json();
+}
+
+export async function refreshToken(refreshToken: string) {
+    const response = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+    return response.json();
+}
+
+export async function logout() {
+    // Clear tokens from local storage
+    const response = await fetch(`${API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+
+    return response.json();
+}

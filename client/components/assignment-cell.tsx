@@ -3,9 +3,14 @@
 import { useDroppable } from "@dnd-kit/core";
 import RouteCard from "@/components/route-card";
 
+type Assignment = {
+    tripId: string;
+    routeName: string;
+};
+
 interface CellProps {
     id: string;
-    routes: string[];
+    routes: Assignment[];
     onDelete: (cellId: string, index: number) => void;
 }
 
@@ -20,10 +25,10 @@ export default function AssignmentCell({ id, routes, onDelete }: CellProps) {
             ref={setNodeRef}
             className={`border border-gray-200 p-2 ${isOver ? "bg-blue-100" : ""}`}
         >
-            {routes.map((route, index) => (
+            {routes.map((assignment, index) => (
                 <RouteCard
-                    key={`${route}-${index}`}
-                    route={route}
+                    key={`${assignment.tripId}-${index}`}
+                    route={assignment.routeName}
                     onDelete={() => onDelete(id, index)}
                 />
             ))}

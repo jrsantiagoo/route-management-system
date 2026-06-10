@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     DndContext,
     DragEndEvent,
@@ -11,55 +11,32 @@ import {
 import DraggableCard from "@/components/draggable-card";
 import AssignmentCell from "@/components/assignment-cell";
 import RouteCard from "@/components/route-card";
+import * as types from "@/lib/routing/types";
+import * as routesApi from "@/lib/api/routes";
+import * as driversApi from "@/lib/api/drivers";
+import * as tripsApi from "@/lib/api/trips";
 
-// Placeholder data for drivers
-const DRIVERS = [
-    "Driver 1",
-    "Driver 2",
-    "Driver 3",
-    "Driver 4",
-    "Driver 5",
-    "Driver 6",
-    "Driver 7",
-    "Driver 8",
-    "Driver 9",
-    "Driver 10",
-    "Driver 11",
-    "Driver 12",
-    "Driver 13",
-    "Driver 14",
-    "Driver 15",
-    "Driver 16",
-    "Driver 17",
-    "Driver 18",
-    "Driver 19",
-    "Driver 20",
-    "Driver 21",
-    "Driver 22",
-    "Driver 23",
-    "Driver 24",
-];
+const DRIVERS = (await driversApi.getDrivers()).data as types.Driver[];
 
-// Placeholder data for routes
-const ROUTES = [
-    "Route A",
-    "Route B",
-    "Route C",
-    "Route D",
-    "Route E",
-    "Route F",
-    "Route G",
-    "Route H",
-    "Route I",
-    "Route J",
-    "Route K",
-    "Route L",
-    "Route M",
-];
+const ROUTES = (await routesApi.getRoutes()).data as types.RoutePlan[];
 
 const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+function getNextDateForDay(dayName: string): string {
+    const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const today = new Date();
+    const targetDay = DAYS.indexOf(dayName);
+    const diff = (targetDay - today.getDay() + 7) % 7 || 7;
+    const date = new Date(today);
+    date.setDate(today.getDate() + diff);
+    return date.toISOString();
+}
+
 export default function Assignment() {
+    const [drivers, setDrivers] = useState<types.Driver[]>([]);
+    const [routes, setRoutes] = useState<types.RoutePlan[]>([]);
+
+    /*
     // Stores route assignments so that UI can track which card is placed in each cell
     const [assignments, setAssignments] = useState<Record<string, string[]>>(
         {},
@@ -68,29 +45,95 @@ export default function Assignment() {
     // Stores the dragged route card so drag overlay can render even while original element is being moved
     const [activeRoute, setActiveRoute] = useState<string | null>(null);
 
+    */
+    // Now stores { cellId: [{ tripId, routeName }] } instead of just strings
+    const [assignments, setAssignments] = useState<
+        Record<string, { tripId: string; routeName: string }[]>
+    >({});
+    const [activeRoute, setActiveRoute] = useState<string | null>(null);
     // Records which route card is being dragged so that drag overlay is shown
+
+    useEffect(() => {
+        async function loadData() {
+            const [driversRes, routesRes, gridRes] = await Promise.all([
+                driversApi.getDrivers(),
+                routesApi.getRoutes(),
+                tripsApi.getAssignmentGrid(),
+            ]);
+            setDrivers(driversRes.data);
+            setRoutes(routesRes.data);
+            setAssignments(gridRes.data); // pre-populate from existing trips
+        }
+        loadData();
+    }, []);
+
     function handleDragStart(event: DragStartEvent) {
         setActiveRoute(String(event.active.id));
     }
 
     // Creates route card-to-cell assignment when drag operation is done
-    function handleDragEnd(event: DragEndEvent) {
-        const route = String(event.active.id);
+    async function handleDragEnd(event: DragEndEvent) {
+        const routeName = String(event.active.id);
         const cellId = event.over?.id?.toString();
 
         // Ignores invalid drops to prevent creating assignments for non-existing cells
         if (!cellId) return;
         // Adds route card to target cell, while preserving existing elements
+
+        const lastDash = cellId.lastIndexOf("-");
+        const driverPublicId = cellId.substring(0, lastDash);
+        const day = cellId.substring(lastDash + 1);
+
+        // Find internal driver id_ from driver_id
+        const driver = drivers.find((d) => d.driver_id === driverPublicId);
+        const route = routes.find((r) => r.name === routeName);
+        if (!driver || !route) return;
+
+        try {
+            // Create trip in backend
+            console.log(route, driver);
+            const res = await tripsApi.createTrip(
+                route.id_,
+                driver.id_,
+                getNextDateForDay(day),
+            );
+
+            if (!res.success || !res.data) {
+                console.error("Trip creation failed:", res);
+                return;
+            }
+            const newTrip = { tripId: res.data.id_, routeName };
+
+            setAssignments((prev) => ({
+                ...prev,
+                [cellId]: [...(prev[cellId] || []), newTrip],
+            }));
+        } catch (err) {
+            console.error("Failed to create trip:", err);
+        }
+        /*
         setAssignments((prev) => ({
             ...prev,
             [cellId]: [...(prev[cellId] || []), route],
         }));
+        */
 
         setActiveRoute(null);
     }
 
     // Allows user to delete existing route assignments
-    function deleteCard(cellId: string, cardIndex: number) {
+    async function deleteCard(cellId: string, cardIndex: number) {
+        const card = assignments[cellId]?.[cardIndex];
+        if (!card) return;
+
+        try {
+            // delete from backend
+            await tripsApi.deleteTrip(card.tripId);
+        } catch (err) {
+            console.error("Failed to delete trip:", err);
+            return;
+        }
+
         setAssignments((prev) => {
             const copy = { ...prev };
 
@@ -126,7 +169,10 @@ export default function Assignment() {
                     {/* Automatically adds placeholder ROUTES as draggable cards */}
                     <div className="flex flex-col gap-1.5 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
                         {ROUTES.map((route) => (
-                            <DraggableCard key={route} route={route} />
+                            <DraggableCard
+                                key={route.name}
+                                route={route.name}
+                            />
                         ))}
                     </div>
                 </div>
@@ -150,13 +196,15 @@ export default function Assignment() {
                         <div>
                             {DRIVERS.map((driver) => (
                                 <div
-                                    key={driver}
+                                    key={driver.driver_id}
                                     className="grid grid-cols-[172px_repeat(7,1fr)] "
                                 >
-                                    <div className="p-2">{driver}</div>
+                                    <div className="p-2">
+                                        {driver.driver_id}
+                                    </div>
                                     {/* Allows the creation of assignment cells */}
                                     {DAYS_OF_WEEK.map((day) => {
-                                        const cellId = `${driver}-${day}`;
+                                        const cellId = `${driver.driver_id}-${day}`;
                                         return (
                                             <AssignmentCell
                                                 key={cellId}
