@@ -23,8 +23,8 @@ const BASE_URL = 'http://localhost:3000';
 // Credentials for the logistics manager test account.
 // Set TEST_MANAGER_EMAIL / TEST_MANAGER_PASSWORD in the environment before running,
 // or update these fallbacks.
-const MANAGER_EMAIL    = process.env.TEST_MANAGER_EMAIL    ?? 'manager@example.com';
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? 'password';
+const MANAGER_EMAIL    = process.env.TEST_MANAGER_EMAIL    ?? 'admin@gmail.com';
+const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? 'admin';
 
 async function login(page: Page): Promise<void> {
   await page.goto(BASE_URL);

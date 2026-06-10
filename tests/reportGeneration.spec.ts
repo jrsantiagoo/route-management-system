@@ -2,8 +2,8 @@ import { test, expect, Page } from "@playwright/test";
 
 const BASE_URL = "http://localhost:3000";
 
-const MANAGER_EMAIL = process.env.TEST_MANAGER_EMAIL ?? "manager@example.com";
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? "password";
+const MANAGER_EMAIL = process.env.TEST_MANAGER_EMAIL ?? "admin@gmail.com";
+const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? "admin";
 
 async function login(page: Page): Promise<void> {
     await page.goto(BASE_URL);
