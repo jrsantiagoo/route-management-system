@@ -611,7 +611,7 @@ export default function Dashboard() {
                 <h1 className="text-2xl font-bold">Dashboard</h1>
                 <button
                     onClick={handleDownload}
-                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition hover:bg-secondary"
+                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition hover:bg-secondary hover:text-foreground"
                 >
                     Full Summary
                 </button>

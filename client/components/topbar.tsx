@@ -88,7 +88,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 <div className="relative min-w-40 rounded-lg" ref={ref}>
                     <button
                         onClick={() => setOpen((p) => !p)}
-                        className="flex min-w-40 items-center gap-2 p-1.5 rounded hover:bg-secondary transition"
+                        className="flex min-w-40 items-center gap-2 p-1.5 rounded-lg hover:bg-secondary transition"
                     >
                         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                             <User size={16} className="text-foreground" />
