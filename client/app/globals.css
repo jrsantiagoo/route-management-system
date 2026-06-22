@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
+/* Class-based dark mode: `dark:` utilities apply when <html> has the `.dark` class. */
+/* The login page initializes this from the OS preference and lets the user toggle it. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
     --background: #f6f9fc;
