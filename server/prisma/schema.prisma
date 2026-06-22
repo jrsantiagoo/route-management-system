@@ -125,6 +125,17 @@ model trip {
   //@@schema("trips")
 }
 
+model order_information {
+  id_                String
+  client             // not sure sa data type
+  destination        String?
+  order_date        DateTime
+  agent_id_            String        (foreign)
+  package_content    String
+  package_size        String?        (written as int*int*int cm in UI)
+  package_weight    Float
+}
+
 enum TripStatus {
   PENDING
   PROCESSING
