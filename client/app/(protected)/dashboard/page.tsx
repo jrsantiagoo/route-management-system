@@ -639,7 +639,16 @@ export default function Dashboard() {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                labelStyle={{
+                                    color: "var(--color-foreground)",
+                                }}
+                                contentStyle={{
+                                    backgroundColor: "var(--color-card)",
+                                    border: "1px solid var(--color-border)",
+                                    borderRadius: "8px",
+                                }}
+                            />
                             <Legend />
                             <Line
                                 type="monotone"
@@ -659,7 +668,16 @@ export default function Dashboard() {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                labelStyle={{
+                                    color: "var(--color-foreground)",
+                                }}
+                                contentStyle={{
+                                    backgroundColor: "var(--color-card)",
+                                    border: "1px solid var(--color-border)",
+                                    borderRadius: "8px",
+                                }}
+                            />
                             <Legend />
                             <Line
                                 type="monotone"
