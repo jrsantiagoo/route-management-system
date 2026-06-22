@@ -10,11 +10,7 @@ export default function protectedLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [collapsed, setCollapsed] = useState(() => {
-        if (typeof window === "undefined") return false;
-        const saved = localStorage.getItem("sidebar_collapsed");
-        return saved ? JSON.parse(saved) : false;
-    });
+    const [collapsed, setCollapsed] = useState(false);
 
     useEffect(() => {
         const saved = localStorage.getItem("sidebar_collapsed");
@@ -29,11 +25,11 @@ export default function protectedLayout({
         <div>
             <Sidebar
                 collapsed={collapsed}
-                onToggle={() => setCollapsed((c: any) => !c)}
+                onToggle={() => setCollapsed((c) => !c)}
             />
             <Topbar sidebarCollapsed={collapsed} />
             <main
-                className={`${collapsed ? "ml-16" : "ml-64"} 
+                className={`${collapsed ? "ml-16" : "ml-64"}
                     min-h-screen p-8 pt-23 bg-muted transition-[margin-left] duration-300`}
             >
                 {children}

@@ -85,15 +85,12 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 </button>
 
                 {/* User's profile */}
-                <div
-                    className="relative min-w-40 rounded-lg hover:bg-secondary"
-                    ref={ref}
-                >
+                <div className="relative min-w-40 rounded-lg" ref={ref}>
                     <button
                         onClick={() => setOpen((p) => !p)}
-                        className="flex items-center gap-2 p-1.5 rounded transition"
+                        className="flex min-w-40 items-center gap-2 p-1.5 rounded hover:bg-secondary transition"
                     >
-                        <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center">
                             <User size={16} className="text-white" />
                         </div>
                         <span className="text-sm font-medium text-foreground max-w-28 truncate">
