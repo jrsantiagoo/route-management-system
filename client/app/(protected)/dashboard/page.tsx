@@ -184,19 +184,19 @@ const weeklyFuelData = [
     {
         week: "W2",
         fuel: +(dailyFuelData.reduce((s, d) => s + d.fuel, 0) * 1.07).toFixed(
-            1
+            1,
         ),
     },
     {
         week: "W3",
         fuel: +(dailyFuelData.reduce((s, d) => s + d.fuel, 0) * 0.91).toFixed(
-            1
+            1,
         ),
     },
     {
         week: "W4",
         fuel: +(dailyFuelData.reduce((s, d) => s + d.fuel, 0) * 1.12).toFixed(
-            1
+            1,
         ),
     },
 ];
@@ -212,7 +212,7 @@ function drawLineChart(
     x: number,
     y: number,
     w: number,
-    h: number
+    h: number,
 ) {
     const values = items.map((d) => Number(d[yKey]));
     const maxVal = Math.max(...values);
@@ -249,7 +249,7 @@ function drawLineChart(
             String(Math.round(maxVal * t * 10) / 10),
             plotL - 2,
             yPos + 1.5,
-            { align: "right" }
+            { align: "right" },
         );
         doc.line(plotL - 2, yPos, plotL, yPos);
     });
@@ -298,7 +298,7 @@ function drawLineChart(
 function generatePDF(
     totalTrips: number,
     efficiency: number,
-    delivered: number
+    delivered: number,
 ) {
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-US", {
@@ -381,7 +381,7 @@ function generatePDF(
         14,
         chartY + 2,
         chartW,
-        chartH
+        chartH,
     );
     drawLineChart(
         doc,
@@ -393,7 +393,7 @@ function generatePDF(
         14 + chartW + colGap,
         chartY + 2,
         chartW,
-        chartH
+        chartH,
     );
 
     // Weekly Statistics Charts
@@ -412,7 +412,7 @@ function generatePDF(
         14,
         weeklyY + 2,
         chartW,
-        chartH
+        chartH,
     );
     drawLineChart(
         doc,
@@ -424,7 +424,7 @@ function generatePDF(
         14 + chartW + colGap,
         weeklyY + 2,
         chartW,
-        chartH
+        chartH,
     );
 
     const filename = `${titleStr}.pdf`;
@@ -442,9 +442,9 @@ function StatCard({
     unit?: string;
 }) {
     return (
-        <div className="rounded-xl bg-white p-6 shadow">
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="mt-2 text-3xl font-bold text-foreground">
                 {value}
                 {unit && (
                     <span className="ml-1 text-lg font-normal text-gray-400">
@@ -465,8 +465,8 @@ function ChartCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-xl bg-white p-6 shadow">
-            <h3 className="mb-4 text-base font-semibold text-gray-700">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+            <h3 className="mb-4 text-base font-semibold text-foreground">
                 {title}
             </h3>
             <div className="h-72">{children}</div>
@@ -483,14 +483,14 @@ function OrdersTable() {
             o.id.toLowerCase().includes(search.toLowerCase()) ||
             o.client.toLowerCase().includes(search.toLowerCase()) ||
             o.destination.toLowerCase().includes(search.toLowerCase()) ||
-            o.packageContent.toLowerCase().includes(search.toLowerCase())
+            o.packageContent.toLowerCase().includes(search.toLowerCase()),
     );
 
     return (
-        <div className="rounded-xl bg-white p-6 shadow">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Header + search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-semibold text-gray-700">
+                <h3 className="text-base font-semibold text-foreground">
                     Orders
                 </h3>
                 <input
@@ -498,37 +498,37 @@ function OrdersTable() {
                     placeholder="Search orders…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none transition focus:border-primary-foreground"
                 />
             </div>
 
             {/* Scrollable table */}
             <div className="overflow-auto max-h-96">
                 <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="sticky top-0 bg-gray-100">
+                    <thead className="sticky top-0 bg-card">
                         <tr>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Order ID
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Client
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Destination
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Ordered On
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Deliver By
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Package Content
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Package Size
                             </th>
-                            <th className="px-3 py-2 font-semibold text-gray-600">
+                            <th className="px-3 py-2 font-semibold text-foreground">
                                 Package Weight
                             </th>
                         </tr>
@@ -537,30 +537,30 @@ function OrdersTable() {
                         {filtered.map((o) => (
                             <tr
                                 key={o.id}
-                                className="border-t border-gray-200 transition hover:bg-gray-50"
+                                className="border-t border-border transition hover:bg-secondary"
                             >
-                                <td className="px-3 py-2 font-medium text-gray-900">
+                                <td className="px-3 py-2 font-medium text-foreground">
                                     {o.id}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.client}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.destination}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.orderedOn}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.deliverBy}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.packageContent}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.packageSize}
                                 </td>
-                                <td className="px-3 py-2 text-gray-700">
+                                <td className="px-3 py-2 text-foreground">
                                     {o.packageWeight}
                                 </td>
                             </tr>
@@ -569,7 +569,7 @@ function OrdersTable() {
                             <tr>
                                 <td
                                     colSpan={8}
-                                    className="px-3 py-8 text-center text-gray-400"
+                                    className="px-3 py-8 text-center text-foreground"
                                 >
                                     No orders match your search.
                                 </td>
@@ -608,10 +608,10 @@ export default function Dashboard() {
         <div className="flex flex-col gap-6">
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+                <h1 className="text-2xl font-bold">Dashboard</h1>
                 <button
                     onClick={handleDownload}
-                    className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-blue-700"
+                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition hover:bg-secondary"
                 >
                     Full Summary
                 </button>
@@ -639,7 +639,16 @@ export default function Dashboard() {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                labelStyle={{
+                                    color: "var(--color-foreground)",
+                                }}
+                                contentStyle={{
+                                    backgroundColor: "var(--color-card)",
+                                    border: "1px solid var(--color-border)",
+                                    borderRadius: "8px",
+                                }}
+                            />
                             <Legend />
                             <Line
                                 type="monotone"
@@ -659,7 +668,16 @@ export default function Dashboard() {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                labelStyle={{
+                                    color: "var(--color-foreground)",
+                                }}
+                                contentStyle={{
+                                    backgroundColor: "var(--color-card)",
+                                    border: "1px solid var(--color-border)",
+                                    borderRadius: "8px",
+                                }}
+                            />
                             <Legend />
                             <Line
                                 type="monotone"
