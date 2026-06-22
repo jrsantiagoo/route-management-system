@@ -37,7 +37,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <div className="h-14 border-b border-border"></div>
 
             {/* Formats the nav links and highlights the active page */}
-            <div className="flex flex-col gap-1 p-2 pt-4 flex-1 border-b border-border">
+            <div className="flex flex-col gap-2 p-2 pt-4 flex-1 border-b border-border">
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
