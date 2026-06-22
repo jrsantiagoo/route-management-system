@@ -6,7 +6,7 @@ import {
     LayoutDashboard,
     Map,
     ClipboardList,
-    LogOut,
+    Gauge,
     ChevronsLeft,
     ChevronsRight,
 } from "lucide-react";
@@ -33,7 +33,24 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 font-semibold transition-all duration-300`}
         >
             {/*  */}
-            <div className="h-16 border-b border-border"></div>
+            <div
+                className={`flex items-center gap-3 h-16 border-b border-border ${collapsed ? "justify-center" : "gap-3"}`}
+            >
+                <div className="flex items-center justify-center rounded-xl w-10 h-10 m-4 bg-gradient-to-l from-cyan-400 to-teal-300">
+                    <Gauge size={21} className="text-background" />
+                </div>
+
+                {!collapsed && (
+                    <div className="-ml-4">
+                        <p className="text-sm font-bold text-foreground">
+                            Route Tool
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                            Version 1.0
+                        </p>
+                    </div>
+                )}
+            </div>
 
             {/* Creates Navigation Links */}
             <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
