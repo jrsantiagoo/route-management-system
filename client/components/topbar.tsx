@@ -108,14 +108,31 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                             className="absolute right-0 mt-2 w-44 bg-card 
                                 border border-border rounded-md shadow-lg py-1"
                         >
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
-                                    hover:bg-secondary"
-                            >
-                                <LogOutIcon size={16} />
-                                Sign Out
-                            </button>
+                            <div className="items-center gap-2 w-full px-4 py-2 font-[550] text-sm text-foreground border-b border-border">
+                                My Account
+                            </div>
+
+                            <div className="flex m-1">
+                                <p
+                                    // onClick={handleLogout}
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
+                                        hover:bg-card rounded-lg"
+                                >
+                                    <User size={16} />
+                                    Profile
+                                </p>
+                            </div>
+
+                            <div className="flex ml-1 mr-1">
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
+                                        hover:bg-secondary rounded-lg"
+                                >
+                                    <LogOutIcon size={16} />
+                                    Sign Out
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
