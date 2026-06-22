@@ -45,7 +45,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                             key={href}
                             href={href}
                             className={`flex items-center gap-3 rounded-md p-3 text-sm
-                                ${active ? "bg-gray-400" : "hover:bg-gray-200"}
+                                ${active ? "bg-gray-400" : "hover:bg-secondary"}
                                 ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? label : undefined}
                         >
@@ -62,7 +62,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     onClick={onToggle}
                     className="absolute -right-3 top-57 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
-                        hover:bg-gray-200 "
+                        hover:bg-secondary"
                 >
                     {collapsed ? (
                         <ChevronsRight size={20} />

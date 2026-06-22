@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/lib/theme-context";
 import {
     Sun,
     Moon,
@@ -9,7 +10,6 @@ import {
     LogOut as LogOutIcon,
     ChevronDown,
 } from "lucide-react";
-// import { useTheme } from "@/lib/theme-context";
 import * as authApi from "@/lib/api/auth";
 import * as managerApi from "@/lib/api/manager";
 
@@ -18,7 +18,7 @@ interface TopbarProps {
 }
 
 export default function Topar({ sidebarCollapsed }: TopbarProps) {
-    // const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
     const router = useRouter();
     const [name, setName] = useState("");
     const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
 
     return (
         <header
-            className={`fixed top-0 right-0 h-14 w-screen
+            className={`fixed top-0 right-0 h-14
                 ${sidebarCollapsed ? "left-16" : "left-64"} 
                 flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
         >
@@ -77,18 +77,21 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
             <div className="flex items-center gap-3">
                 {/* Allows user to toggle themes */}
                 <button
-                    // onClick={toggleTheme}
+                    onClick={toggleTheme}
                     className="p-2 rounded hover:bg-secondary transition"
-                    // title={theme === "light" ? "Dark mode" : "Light mode"}
+                    title={theme === "light" ? "Dark mode" : "Light mode"}
                 >
-                    {/* {theme === "light" ? <Moon size={17} /> : <Sun size={17} />} */}
+                    {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
                 </button>
 
-                {/* User Dropdown */}
-                <div className="relative" ref={ref}>
+                {/* User's profile */}
+                <div
+                    className="relative min-w-40 rounded-lg hover:bg-secondary"
+                    ref={ref}
+                >
                     <button
                         onClick={() => setOpen((p) => !p)}
-                        className="flex items-center gap-2 p-1.5 rounded hover:bg-secondary transition"
+                        className="flex items-center gap-2 p-1.5 rounded transition"
                     >
                         <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">
                             <User size={16} className="text-white" />
@@ -102,11 +105,16 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                         />
                     </button>
 
+                    {/* Toggles dropdown */}
                     {open && (
-                        <div className="absolute right-0 mt-2 w-44 bg-card border border-border rounded-md shadow-lg py-1">
+                        <div
+                            className="absolute right-0 mt-2 w-44 bg-card 
+                                border border-border rounded-md shadow-lg py-1"
+                        >
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
+                                    hover:bg-secondary"
                             >
                                 <LogOutIcon size={16} />
                                 Sign Out
