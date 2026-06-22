@@ -113,14 +113,17 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                             </div>
 
                             <div className="flex m-1">
-                                <p
-                                    // onClick={handleLogout}
+                                <button
+                                    onClick={() => {
+                                        router.push("/profile");
+                                        setOpen(false);
+                                    }}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
                                         hover:bg-card rounded-lg"
                                 >
                                     <User size={16} />
                                     Profile
-                                </p>
+                                </button>
                             </div>
 
                             <div className="flex ml-1 mr-1">
