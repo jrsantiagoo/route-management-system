@@ -22,22 +22,21 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
 ];
 
-// This component renders the sidebar with navigation links.
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
-    // This allows us to highlight the active page in sidebar.
     const pathname = usePathname();
 
     return (
-        // The sidebar is fixed to the left of the screen
         <div
-            className={`fixed top-0 left-0 h-screen 
-                ${collapsed ? "w-16" : "w-64"} 
-                font-semibold border-r border-border`}
+            className={`fixed top-0 left-0 h-screen
+                ${collapsed ? "w-20" : "w-64"} 
+                bg-background border-r border-border
+                font-semibold transition-all duration-300`}
         >
+            {/*  */}
             <div className="h-16 border-b border-border"></div>
 
-            {/* Formats the nav links and highlights the active page */}
-            <div className="flex flex-col gap-2 p-2 pt-4 flex-1 border-b border-border">
+            {/* Creates Navigation Links */}
+            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
@@ -45,7 +44,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                             key={href}
                             href={href}
                             className={`flex items-center gap-3 rounded-md p-3 text-sm
-                                ${active ? "bg-gray-400" : "hover:bg-secondary"}
+                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}
                                 ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? label : undefined}
                         >
@@ -56,11 +55,11 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 })}
             </div>
 
-            {/* Allows user to collapse sidebar (v.1)*/}
+            {/* Allows user to collapse sidebar */}
             <div className="flex justify-center">
                 <button
                     onClick={onToggle}
-                    className="absolute -right-3 top-57 flex items-center justify-center 
+                    className="absolute -right-3 top-58 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
                         hover:bg-secondary"
                 >

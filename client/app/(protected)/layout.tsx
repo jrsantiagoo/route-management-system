@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
 import Topbar from "@/components/topbar";
 
+let cachedCollapsed: boolean | null = null;
+
 // This layout wraps all protected pages (Dashboard, Route Tool, Assignment).
 export default function protectedLayout({
     children,
@@ -11,9 +13,8 @@ export default function protectedLayout({
     children: React.ReactNode;
 }) {
     const [collapsed, setCollapsed] = useState(() => {
-        if (typeof window === "undefined") return false;
-        const saved = localStorage.getItem("sidebar_collapsed");
-        return saved ? JSON.parse(saved) : false;
+        if (cachedCollapsed !== null) return cachedCollapsed;
+        return false;
     });
 
     useEffect(() => {
@@ -22,6 +23,7 @@ export default function protectedLayout({
     }, []);
 
     useEffect(() => {
+        cachedCollapsed = collapsed;
         localStorage.setItem("sidebar_collapsed", JSON.stringify(collapsed));
     }, [collapsed]);
 
@@ -29,12 +31,13 @@ export default function protectedLayout({
         <div>
             <Sidebar
                 collapsed={collapsed}
-                onToggle={() => setCollapsed((c: any) => !c)}
+                onToggle={() => setCollapsed((c) => !c)}
             />
             <Topbar sidebarCollapsed={collapsed} />
             <main
-                className={`${collapsed ? "ml-16" : "ml-64"} 
-                    min-h-screen p-8 pt-23 bg-muted transition-[margin-left] duration-300`}
+                className={`${collapsed ? "ml-16" : "ml-64"}
+                    min-h-screen p-8 pt-23 bg-background text-foreground 
+                    transition-[margin-left] duration-300`}
             >
                 {children}
             </main>

@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type theme = "light" | "dark";
+type Theme = "light" | "dark";
 
 interface ThemeContextValue {
-    theme: theme;
+    theme: Theme;
     toggleTheme: () => void;
 }
 
@@ -15,11 +15,11 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<theme>("light");
+    const [theme, setTheme] = useState<Theme>("light");
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem("theme") as theme | null;
+        const saved = localStorage.getItem("theme") as Theme | null;
         if (saved) setTheme(saved);
         setMounted(true);
     }, []);

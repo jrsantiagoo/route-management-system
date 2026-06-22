@@ -67,12 +67,12 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
     return (
         <header
             className={`fixed top-0 right-0 h-16
-                ${sidebarCollapsed ? "left-16" : "left-64"} 
+                ${sidebarCollapsed ? "left-20" : "left-64"} 
                 flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
         >
-            <h1 className="text-lg font-bold text-foreground text-left">
-                Route Management Tool
-            </h1>
+            <div className="text-foreground text-left">
+                <h1 className="text-lg font-bold">Route Management Tool</h1>
+            </div>
 
             <div className="flex items-center gap-3">
                 {/* Allows user to toggle themes */}
@@ -85,16 +85,13 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 </button>
 
                 {/* User's profile */}
-                <div
-                    className="relative min-w-40 rounded-lg hover:bg-secondary"
-                    ref={ref}
-                >
+                <div className="relative min-w-40 rounded-lg" ref={ref}>
                     <button
                         onClick={() => setOpen((p) => !p)}
-                        className="flex items-center gap-2 p-1.5 rounded transition"
+                        className="flex min-w-40 items-center gap-2 p-1.5 rounded hover:bg-secondary transition"
                     >
-                        <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">
-                            <User size={16} className="text-white" />
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                            <User size={16} className="text-foreground" />
                         </div>
                         <span className="text-sm font-medium text-foreground max-w-28 truncate">
                             {name || "User"}
