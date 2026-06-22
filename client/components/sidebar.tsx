@@ -28,13 +28,15 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     return (
         <div
             className={`fixed top-0 left-0 h-screen
-                ${collapsed ? "w-16" : "w-64"} 
+                ${collapsed ? "w-20" : "w-64"} 
                 bg-background border-r border-border
                 font-semibold transition-all duration-300`}
         >
+            {/*  */}
             <div className="h-16 border-b border-border"></div>
 
-            <div className="flex flex-col gap-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
+            {/* Creates Navigation Links */}
+            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
@@ -42,7 +44,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                             key={href}
                             href={href}
                             className={`flex items-center gap-3 rounded-md p-3 text-sm
-                                ${active ? "bg-gray-400" : "hover:bg-secondary"}
+                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}
                                 ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? label : undefined}
                         >
@@ -53,6 +55,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 })}
             </div>
 
+            {/* Allows user to collapse sidebar */}
             <div className="flex justify-center">
                 <button
                     onClick={onToggle}

@@ -3,30 +3,33 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-    --background: #ffffff;
+    --background: #f6f9fc;
     --foreground: #171717;
-    --secondary: #e5e7eb;
-    --muted: #f3f4f6;
+    --primary: #d4e9fe; /* Selected */
+    --primary-foreground: #0056a4;
+    --secondary: #c1dff8; /* Hover */
     --muted-foreground: #6b7280;
-    --border: #e5e7eb;
-    --card: #ffffff;
+    --border: #d9dfe5;
+    --card: #f6f9fc;
 }
 
 .dark {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --secondary: #374151;
-    --muted: #1f2937;
+    --background: #04070f;
+    --foreground: #eaeff5;
+    --primary: #0d263b;
+    --primary-foreground: #008efb;
+    --secondary: #53697b;
     --muted-foreground: #9ca3af;
-    --border: #374151;
-    --card: #1f2937;
+    --border: #1f232b;
+    --card: #0c121b;
 }
 
 @theme {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
-    --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --color-border: var(--border);
     --color-card: var(--card);
