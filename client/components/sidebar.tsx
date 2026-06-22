@@ -30,13 +30,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     return (
         // The sidebar is fixed to the left of the screen
         <div
-            className={`fixed top-0 left-0 h-screen ${collapsed ? "w-16" : "w-64"} 
-                p-2 font-bold rounded-r-md shadow-lg shadow-gray-600 bg-gray-300`}
+            className={`fixed top-0 left-0 h-screen 
+                ${collapsed ? "w-16" : "w-64"} 
+                font-bold border-r border-border`}
         >
-            <div>Route Tool</div>
+            <div className="h-14 border-b border-border"></div>
 
             {/* Formats the nav links and highlights the active page */}
-            <div className="flex flex-col gap-1 pt-3 flex-1">
+            <div className="flex flex-col gap-1 p-2 pt-3 flex-1 border-b border-border">
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
@@ -56,16 +57,18 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             </div>
 
             {/* Allows user to collapse sidebar (v.1)*/}
-            <button
-                onClick={onToggle}
-                className="flex items-center justify-center w-full p-2 hover:bg-gray-200 rounded"
-            >
-                {collapsed ? (
-                    <ChevronsRight size={20} />
-                ) : (
-                    <ChevronsLeft size={20} />
-                )}
-            </button>
+            <div className="flex justify-center">
+                <button
+                    onClick={onToggle}
+                    className="flex items-center justify-center p-2 hover:bg-gray-200 rounded-full"
+                >
+                    {collapsed ? (
+                        <ChevronsRight size={20} />
+                    ) : (
+                        <ChevronsLeft size={20} />
+                    )}
+                </button>
+            </div>
         </div>
     );
 }

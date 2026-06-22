@@ -21,7 +21,7 @@ export default function protectedLayout({
             <Topbar sidebarCollapsed={collapsed} />
             <main
                 className={`${collapsed ? "ml-16" : "ml-64"} 
-                    min-h-screen p-8 bg-gray-100 bg-muted transition-all duration-300`}
+                    min-h-screen p-8 bg-gray-100 bg-muted transition-[margin-left] duration-300`}
             >
                 {children}
             </main>

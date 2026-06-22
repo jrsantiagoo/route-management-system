@@ -66,9 +66,9 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
 
     return (
         <header
-            className={`fixed top-0 right-0 h-14
+            className={`fixed top-0 right-0 h-14 w-screen
                 ${sidebarCollapsed ? "left-16" : "left-64"} 
-                 flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
+                flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
         >
             <h1 className="text-lg font-bold text-foreground text-left">
                 Route Management Tool
@@ -109,7 +109,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                 className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-secondary"
                             >
                                 <LogOutIcon size={16} />
-                                Log Out
+                                Sign Out
                             </button>
                         </div>
                     )}
