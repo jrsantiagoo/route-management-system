@@ -34,7 +34,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 ${collapsed ? "w-16" : "w-64"} 
                 font-semibold border-r border-border`}
         >
-            <div className="h-14 border-b border-border"></div>
+            <div className="h-16 border-b border-border"></div>
 
             {/* Formats the nav links and highlights the active page */}
             <div className="flex flex-col gap-2 p-2 pt-4 flex-1 border-b border-border">

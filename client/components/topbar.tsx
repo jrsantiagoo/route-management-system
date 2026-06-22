@@ -66,7 +66,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
 
     return (
         <header
-            className={`fixed top-0 right-0 h-14
+            className={`fixed top-0 right-0 h-16
                 ${sidebarCollapsed ? "left-16" : "left-64"} 
                 flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
         >
