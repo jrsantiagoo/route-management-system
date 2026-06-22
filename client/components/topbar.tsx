@@ -119,7 +119,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                         setOpen(false);
                                     }}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
-                                        hover:bg-card rounded-lg"
+                                        hover:bg-secondary rounded-lg"
                                 >
                                     <User size={16} />
                                     Profile
@@ -130,7 +130,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
-                                        hover:bg-secondary rounded-lg"
+                                        hover:bg-secondary dark:hover:text-primary rounded-lg"
                                 >
                                     <LogOutIcon size={16} />
                                     Sign Out

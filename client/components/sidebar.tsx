@@ -61,7 +61,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                             key={href}
                             href={href}
                             className={`flex items-center gap-3 rounded-md p-3 text-sm
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}
+                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
                                 ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? label : undefined}
                         >
