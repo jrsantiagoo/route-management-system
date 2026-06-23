@@ -626,16 +626,43 @@ export default function Dashboard() {
         preset: Preset;
     }>({ start: firstOfMonth, end: today, preset: "thisMonth" });
 
-    // Derived Stat Card subtitles
+    // Maps selected preset to a comparison period.
+    // Returns undefined for "allTime" & "custom" to hide subtitle.
+    const presetComparison: Record<Preset, string | undefined> = {
+        today: "yesterday",
+        thisWeek: "last week",
+        thisMonth: "last month",
+        thisYear: "last year",
+        allTime: undefined,
+        custom: undefined,
+    };
+
+    // Placeholder Value
+    const efficiencyChange = 30;
+
+    // Checks if efficiency is going up or down
+    const isEfficiencyPositive = efficiencyChange >= 0;
+
+    // Grab the comparison label for the active preset.
+    const comparisonLabel = presetComparison[range.preset];
+
+    // Creates subtitle for each stat card
     const tripsSubtitle = `out of ${orders.length} total trips`;
     const deliveredSubtitle = `out of ${orders.length} total orders`;
     const efficiencySubtitle: React.ReactNode =
-        range.preset === "allTime" || range.preset === "custom" ? undefined : (
+        comparisonLabel === undefined ? undefined : (
             <>
-                <TrendingUp size={14} /> +30%
+                {isEfficiencyPositive ? (
+                    <TrendingUp size={14} className="text-green-500" />
+                ) : (
+                    <TrendingDown size={14} className="text-red-500" />
+                )}
+                {isEfficiencyPositive ? "+" : ""}
+                {efficiencyChange}% compared to {comparisonLabel}
             </>
         );
 
+    // Enables PDF Download of summary
     const handleDownload = useCallback(() => {
         generatePDF(totalTrips, efficiency, delivered);
     }, []);
