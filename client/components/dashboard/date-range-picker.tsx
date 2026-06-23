@@ -1,0 +1,156 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { CalendarDays, ChevronDown } from "lucide-react";
+
+type Preset = "today" | "thisWeek" | "thisMonth" | "allTime" | "custom";
+
+interface DateRange {
+    start: string;
+    end: string;
+}
+
+function getPresetRange(preset: Preset): DateRange {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+
+    switch (preset) {
+        case "today":
+            return { start: today, end: today };
+        case "thisWeek": {
+            const dayOfWeek = now.getDay();
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+            return {
+                start: monday.toISOString().slice(0, 10),
+                end: today,
+            };
+        }
+        case "thisMonth": {
+            const first = new Date(now.getFullYear(), now.getMonth(), 1);
+            return {
+                start: first.toISOString().slice(0, 10),
+                end: today,
+            };
+        }
+        case "allTime":
+            return { start: "2024-01-01", end: today };
+        case "custom":
+            return { start: today, end: today };
+    }
+}
+
+const presetLabels: Record<Preset, string> = {
+    today: "Today",
+    thisWeek: "This Week",
+    thisMonth: "This Month",
+    allTime: "All Time",
+    custom: "Custom",
+};
+
+export default function DateRangePicker() {
+    const [open, setOpen] = useState(false);
+    const [activePreset, setActivePreset] = useState<Preset>("thisMonth");
+    const [customStart, setCustomStart] = useState("");
+    const [customEnd, setCustomEnd] = useState("");
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node))
+                setOpen(false);
+        }
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    const range = getPresetRange(activePreset);
+    const label =
+        activePreset === "custom"
+            ? `${customStart || "…"} – ${customEnd || "…"}`
+            : presetLabels[activePreset];
+
+    return (
+        <div className="relative" ref={ref}>
+            <button
+                onClick={() => setOpen((p) => !p)}
+                className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-medium 
+                    border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+            >
+                <CalendarDays size={16} />
+                {label}
+                <ChevronDown size={16} className="text-muted-foreground" />
+            </button>
+
+            {open && (
+                <div className="absolute right-0 mt-2 w-72 bg-card border border-border rounded-md shadow-lg p-4 z-30">
+                    <h4 className="text-sm font-semibold text-foreground mb-3">
+                        Date Range
+                    </h4>
+
+                    {/* Presets */}
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                        {(
+                            [
+                                "today",
+                                "thisWeek",
+                                "thisMonth",
+                                "allTime",
+                            ] as Preset[]
+                        ).map((preset) => (
+                            <button
+                                key={preset}
+                                onClick={() => setActivePreset(preset)}
+                                className={`px-2 py-1 text-sm rounded-md transition ${
+                                    activePreset === preset
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-background text-foreground hover:bg-secondary dark:hover:text-primary"
+                                }`}
+                            >
+                                {presetLabels[preset]}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Custom Range */}
+                    <div className="border-t border-border pt-3">
+                        <p className="text-xs font-semibold text-muted-foreground mb-2">
+                            Custom Range
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="date"
+                                value={customStart}
+                                onChange={(e) => {
+                                    setCustomStart(e.target.value);
+                                    setActivePreset("custom");
+                                }}
+                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground w-full 
+                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+                            />
+                            <input
+                                type="date"
+                                value={customEnd}
+                                onChange={(e) => {
+                                    setCustomEnd(e.target.value);
+                                    setActivePreset("custom");
+                                }}
+                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground w-full 
+                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+                            />
+                        </div>
+                        <div className="flex justify-end mt-3">
+                            <button
+                                onClick={() => setOpen(false)}
+                                className="px-3.5 py-1 text-sm font-medium text-primary-foreground bg-primary rounded-md 
+                                    hover:bg-secondary transition"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

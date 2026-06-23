@@ -12,6 +12,7 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
+import DateRangePicker from "@/components/dashboard/date-range-picker";
 
 // Hardcoded Data for visualization purposes
 const dailyDistanceData = [
@@ -616,13 +617,16 @@ export default function Dashboard() {
                     </p>
                 </div>
 
-                <button
-                    onClick={handleDownload}
-                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition 
+                <div className="flex items-center gap-3">
+                    <DateRangePicker />
+                    <button
+                        onClick={handleDownload}
+                        className="rounded-lg bg-primary px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
                         hover:bg-secondary hover:text-foreground dark:hover:text-primary"
-                >
-                    Full Summary
-                </button>
+                    >
+                        Full Summary
+                    </button>
+                </div>
             </div>
 
             {/* Key Statistics */}
