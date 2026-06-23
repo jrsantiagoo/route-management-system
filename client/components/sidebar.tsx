@@ -36,7 +36,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <div
                 className={`flex items-center gap-3 h-16 border-b border-border ${collapsed ? "justify-center" : "gap-3"}`}
             >
-                <div className="flex items-center justify-center rounded-xl w-10 h-10 m-4 bg-gradient-to-l from-cyan-400 to-teal-300">
+                <div className="flex items-center justify-center rounded-xl w-10 h-10 m-4 bg-linear-to-l from-cyan-400 to-teal-300">
                     <Gauge size={21} className="text-background" />
                 </div>
 

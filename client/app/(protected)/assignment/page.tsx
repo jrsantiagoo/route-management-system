@@ -8,9 +8,9 @@ import {
     DragStartEvent,
 } from "@dnd-kit/core";
 
-import DraggableCard from "@/components/draggable-card";
-import AssignmentCell from "@/components/assignment-cell";
-import RouteCard from "@/components/route-card";
+import DraggableCard from "@/components/assignment/draggable-card";
+import AssignmentCell from "@/components/assignment/assignment-cell";
+import RouteCard from "@/components/assignment/route-card";
 import * as types from "@/lib/routing/types";
 import * as routesApi from "@/lib/api/routes";
 import * as driversApi from "@/lib/api/drivers";
