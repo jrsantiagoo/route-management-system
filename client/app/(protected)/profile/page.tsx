@@ -1,8 +1,8 @@
 "use client";
 
-import PasswordUpdateCard from "@/components/password-update-card";
-import PersonalInfoCard from "@/components/personal-info-card";
-import ProfileCard from "@/components/profile-card";
+import PasswordUpdateCard from "@/components/profile/password-update-card";
+import PersonalInfoCard from "@/components/profile/personal-info-card";
+import ProfileCard from "@/components/profile/profile-card";
 
 const placeholderAcc = { username: "Admin", email: "admin@gmail.com" };
 
