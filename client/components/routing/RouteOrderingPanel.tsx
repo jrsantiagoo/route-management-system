@@ -20,6 +20,7 @@ import { useTheme } from "@/lib/theme-context";
 import SortableStopItem from "./SortableStopItem";
 import AddStopPopover from "./LocationSearchBar";
 import { DARK } from "./routeTheme";
+import { PANEL_TOP, PANEL_LEFT, PANEL_WIDTH } from "./layout";
 
 interface RouteOrderingPanelProps {
     stops: Stop[];
@@ -80,10 +81,10 @@ export default function RouteOrderingPanel({
         <div
             style={{
                 position: "absolute",
-                top: "16px",
-                left: "16px",
+                top: `${PANEL_TOP}px`,
+                left: `${PANEL_LEFT}px`,
                 zIndex: 9999,
-                width: "288px",
+                width: `${PANEL_WIDTH}px`,
                 background: dark ? DARK.panelBg : "#fff",
                 border: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                 borderRadius: "6px",

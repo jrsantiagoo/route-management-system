@@ -86,22 +86,10 @@ body {
     background: #103a5f;
 }
 
-/* Place the zoom control immediately to the RIGHT of the Route Plan panel,
-   aligned near the panel's top — not below it and not on the far-right of the map.
-   The panel is at left:16px, width:288px → right edge at 304px; +12px gap = 316px.
-   Because the control sits fully beyond the panel's right edge it never overlaps
-   the panel, so it stays visible no matter how tall the panel grows or when the
-   "Add a stop" dropdown opens. Scoped to `.route-map` so only the routing map shifts.
-
-   The high-specificity selector + !important are deliberate: Leaflet's own
-   `.leaflet-top .leaflet-control` margins have equal specificity and (since
-   leaflet.css is bundled after globals.css) would otherwise win on source order.
-   Tweak `margin-left` if the panel width (288px) changes. */
-.route-map .leaflet-control-container .leaflet-top.leaflet-left .leaflet-control-zoom {
-    margin-top: 16px !important; /* align with the panel's top (panel top:16px) */
-    margin-left: 316px !important; /* panel right edge (304px) + 12px gap */
-    z-index: 10000 !important; /* sit above the panel's z-index (9999) */
-}
+/* The zoom control is positioned beside the Route Plan panel by a custom
+   in-map control (see PanelZoomControl in RouteMapInner.tsx + layout.ts), not by
+   offsetting Leaflet's default control — so no `.leaflet-control-zoom` offset
+   rule is needed here. Its `.leaflet-bar a` styling (incl. dark mode) is above. */
 
 /* ── Dark-mode scrollbars ──────────────────────────────────────────────────
    Applied to the Route Plan list and the "Add a stop" dropdown lists via the

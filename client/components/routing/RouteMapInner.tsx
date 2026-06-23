@@ -14,6 +14,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Stop } from "@/lib/routing/types";
 import { useTheme } from "@/lib/theme-context";
+import { ZOOM_CONTROL_LEFT, PANEL_TOP } from "./layout";
 
 // Fix broken default marker icons when bundled by webpack / Next.js
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
@@ -101,6 +102,67 @@ function FitBoundsController({
     return null;
 }
 
+/**
+ * Custom zoom control rendered inside the map but positioned to sit immediately
+ * to the right of the Route Plan panel (geometry from layout.ts). This replaces
+ * Leaflet's default top-left control, which was painted behind the panel: the
+ * panel is an absolutely-positioned sibling of the map with z-index 9999, while
+ * Leaflet's control layer caps at z-index 1000, so any overlap hid the control.
+ * Placing it beside the panel removes the overlap entirely. Uses Leaflet's own
+ * `.leaflet-bar` / zoom-button classes so existing (incl. dark-mode) styles apply.
+ */
+function PanelZoomControl() {
+    const map = useMap();
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+        // Keep button clicks/scroll from reaching the map underneath.
+        L.DomEvent.disableClickPropagation(ref.current);
+        L.DomEvent.disableScrollPropagation(ref.current);
+    }, []);
+
+    return (
+        <div
+            ref={ref}
+            className="leaflet-bar"
+            style={{
+                position: "absolute",
+                top: `${PANEL_TOP}px`,
+                left: `${ZOOM_CONTROL_LEFT}px`,
+                zIndex: 1000,
+            }}
+        >
+            <a
+                className="leaflet-control-zoom-in"
+                href="#"
+                role="button"
+                aria-label="Zoom in"
+                title="Zoom in"
+                onClick={(e) => {
+                    e.preventDefault();
+                    map.zoomIn();
+                }}
+            >
+                +
+            </a>
+            <a
+                className="leaflet-control-zoom-out"
+                href="#"
+                role="button"
+                aria-label="Zoom out"
+                title="Zoom out"
+                onClick={(e) => {
+                    e.preventDefault();
+                    map.zoomOut();
+                }}
+            >
+                −
+            </a>
+        </div>
+    );
+}
+
 interface RouteMapInnerProps {
     stops: Stop[];
     polyline: [number, number][];
@@ -116,11 +178,10 @@ export default function RouteMapInner({
 
     return (
         <MapContainer
-            className="route-map"
             center={[14.5832, 120.9794]} // Metro Manila default
             zoom={13}
             style={{ height: "100%", width: "100%" }}
-            zoomControl={true}
+            zoomControl={false}
         >
             <TileLayer
                 // key forces a clean remount when the theme toggles so the
@@ -200,6 +261,7 @@ export default function RouteMapInner({
             )}
 
             <FitBoundsController stops={stops} polyline={polyline} />
+            <PanelZoomControl />
         </MapContainer>
     );
 }
