@@ -503,7 +503,7 @@ function OrdersTable() {
             </div>
 
             {/* Scrollable table */}
-            <div className="overflow-auto max-h-96">
+            <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
