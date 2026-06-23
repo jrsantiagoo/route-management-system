@@ -121,7 +121,7 @@ export default function DateRangePicker({
                 {label}
                 <ChevronDown
                     size={16}
-                    className="text-muted-foreground dark:text-primary-foreground"
+                    className={`text-muted-foreground dark:text-primary-foreground transition ${open ? "rotate-180" : ""}`}
                 />
             </button>
 
