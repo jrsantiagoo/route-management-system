@@ -2,9 +2,10 @@ import {
     VehicleType,
     SuggestedRoute,
     WeeklyVehicleAvailability,
+    HistoricalRoutePerformance,
     Stop,
 } from "./types";
-import { MOCK_WEEKLY_AVAILABILITY } from "./mockData";
+import { MOCK_WEEKLY_AVAILABILITY, MOCK_HISTORICAL_ROUTES } from "./mockData";
 import { fetchRoute } from "./routingService";
 
 export function recommendVehicle(totalStopCount: number): VehicleType {
@@ -47,6 +48,65 @@ function nearestNeighborOrder(stops: Stop[]): Stop[] {
         ordered.push(remaining.splice(nearestIdx, 1)[0]);
     }
     return [start, ...ordered, end];
+}
+
+// Order-independent signature of a stop set, used to match historical records.
+function stopSetKey(stops: Stop[]): string {
+    return stops
+        .map((s) => s.id)
+        .sort()
+        .join("|");
+}
+
+/**
+ * Finds the most relevant historical record for a generated suggestion.
+ * Prefers an exact stop-set match; otherwise falls back to a generic record for
+ * the same vehicle + optimization kind. Returns undefined when nothing matches.
+ */
+function findHistoricalRecord(
+    stops: Stop[],
+    vehicleType: VehicleType,
+    optimizationType: "fastest" | "shortest",
+): HistoricalRoutePerformance | undefined {
+    const key = stopSetKey(stops);
+    const specific = MOCK_HISTORICAL_ROUTES.find(
+        (r) => r.stopIds && [...r.stopIds].sort().join("|") === key,
+    );
+    if (specific) return specific;
+    return MOCK_HISTORICAL_ROUTES.find(
+        (r) =>
+            !r.stopIds &&
+            r.vehicleType === vehicleType &&
+            r.optimizationType === optimizationType,
+    );
+}
+
+/**
+ * Turns a historical record into a short, human-readable insight. Uses the live
+ * OSRM duration to tailor the phrasing (e.g. when the current plan beats the
+ * historical average), but the insight is supporting context only.
+ */
+function buildHistoricalInsight(
+    record: HistoricalRoutePerformance,
+    optimizationType: "fastest" | "shortest",
+    currentDurationMinutes: number,
+): string {
+    const { historicalPeriod: period, successfulTripCount: trips } = record;
+
+    // Specific previously-run combinations lean on the trip track record.
+    if (record.stopIds) {
+        return `Recommended based on ${trips} previous successful trip${trips === 1 ? "" : "s"}.`;
+    }
+
+    if (optimizationType === "shortest") {
+        return `This route had the shortest total distance ${period}.`;
+    }
+
+    // Fastest: highlight travel-time performance, more strongly if we beat it.
+    if (currentDurationMinutes <= record.averageDurationMinutes) {
+        return `This route had the best average travel time for similar deliveries (${period}).`;
+    }
+    return `This was the fastest route ${period}.`;
 }
 
 export async function generateSuggestedRoutes(
@@ -116,17 +176,41 @@ export async function generateSuggestedRoutes(
 
     return results.flatMap((result, i) => {
         if (result.status !== "fulfilled") return [];
+        const variant = variants[i];
+
+        // Enrich with mocked historical context (supporting hint only — the
+        // displayed distance/duration still come from the live OSRM result).
+        const record = findHistoricalRecord(
+            variant.stops,
+            variant.vehicleType,
+            variant.optimizationType,
+        );
+        const historical: Partial<SuggestedRoute> = record
+            ? {
+                  historicalInsight: buildHistoricalInsight(
+                      record,
+                      variant.optimizationType,
+                      result.value.totalDurationMinutes,
+                  ),
+                  previousAverageDuration: record.averageDurationMinutes,
+                  previousAverageDistance: record.averageDistanceKm,
+                  successfulTripCount: record.successfulTripCount,
+                  historicalPeriod: record.historicalPeriod,
+              }
+            : {};
+
         return [
             {
                 id: `sr-dyn-${i}-${Date.now()}`,
-                name: variants[i].name,
-                stops: variants[i].stops,
+                name: variant.name,
+                stops: variant.stops,
                 totalDistanceKm: result.value.totalDistanceKm,
                 totalDurationMinutes: result.value.totalDurationMinutes,
-                vehicleType: variants[i].vehicleType,
-                optimizationType: variants[i].optimizationType,
+                vehicleType: variant.vehicleType,
+                optimizationType: variant.optimizationType,
                 trafficAware: false,
-                description: variants[i].description,
+                description: variant.description,
+                ...historical,
             },
         ] satisfies SuggestedRoute[];
     });

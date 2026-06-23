@@ -16,8 +16,10 @@ import {
 } from "@dnd-kit/sortable";
 import { Stop, RouteSegment } from "@/lib/routing/types";
 import { formatDistance, formatDuration } from "@/lib/routing/formatters";
+import { useTheme } from "@/lib/theme-context";
 import SortableStopItem from "./SortableStopItem";
 import AddStopPopover from "./LocationSearchBar";
+import { DARK } from "./routeTheme";
 
 interface RouteOrderingPanelProps {
     stops: Stop[];
@@ -46,6 +48,8 @@ export default function RouteOrderingPanel({
     onAddStop,
     onPreview,
 }: RouteOrderingPanelProps) {
+    const { theme } = useTheme();
+    const dark = theme === "dark";
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
         useSensor(KeyboardSensor, {
@@ -80,10 +84,12 @@ export default function RouteOrderingPanel({
                 left: "16px",
                 zIndex: 9999,
                 width: "288px",
-                background: "#fff",
-                border: "1px solid #e5e7eb",
+                background: dark ? DARK.panelBg : "#fff",
+                border: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                 borderRadius: "6px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+                boxShadow: dark
+                    ? "0 4px 20px rgba(0,0,0,0.5)"
+                    : "0 4px 20px rgba(0,0,0,0.12)",
                 fontFamily: "inherit",
                 display: "flex",
                 flexDirection: "column",
@@ -93,7 +99,7 @@ export default function RouteOrderingPanel({
             <div
                 style={{
                     padding: "10px 14px",
-                    borderBottom: "1px solid #e5e7eb",
+                    borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -103,7 +109,7 @@ export default function RouteOrderingPanel({
                     style={{
                         fontSize: "13px",
                         fontWeight: 700,
-                        color: "#111827",
+                        color: dark ? DARK.text : "#111827",
                     }}
                 >
                     Route Plan
@@ -111,10 +117,10 @@ export default function RouteOrderingPanel({
                 <span
                     style={{
                         fontSize: "11px",
-                        color: isLoading
-                            ? "#6b7280"
-                            : routeError
-                              ? "#ef4444"
+                        color: routeError
+                            ? "#ef4444"
+                            : dark
+                              ? DARK.textMuted
                               : "#6b7280",
                     }}
                 >
@@ -130,6 +136,7 @@ export default function RouteOrderingPanel({
 
             {/* Scrollable stops list */}
             <div
+                className="route-scrollbar"
                 style={{
                     maxHeight: "430px",
                     overflowY: "auto",
@@ -189,10 +196,10 @@ export default function RouteOrderingPanel({
                 <div
                     style={{
                         padding: "7px 14px",
-                        borderTop: "1px solid #fee2e2",
-                        background: "#fff7f7",
+                        borderTop: `1px solid ${dark ? "rgba(239,68,68,0.4)" : "#fee2e2"}`,
+                        background: dark ? "rgba(239,68,68,0.12)" : "#fff7f7",
                         fontSize: "11px",
-                        color: "#dc2626",
+                        color: dark ? "#fca5a5" : "#dc2626",
                         borderRadius: "0 0 6px 6px",
                     }}
                 >

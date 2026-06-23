@@ -1,5 +1,8 @@
 "use client";
 
+import { useTheme } from "@/lib/theme-context";
+import { DARK } from "./routeTheme";
+
 interface RouteToolbarProps {
     isEditMode: boolean;
     onToggleEdit: () => void;
@@ -13,15 +16,33 @@ export default function RouteToolbar({
     onSuggestRoutes,
     onSave,
 }: RouteToolbarProps) {
+    const { theme } = useTheme();
+    const dark = theme === "dark";
+
     const baseBtn: React.CSSProperties = {
         padding: "6px 16px",
-        border: "1px solid #d1d5db",
+        border: `1px solid ${dark ? DARK.btnBorder : "#d1d5db"}`,
         borderRadius: "4px",
         fontSize: "13px",
         fontWeight: 500,
         cursor: "pointer",
-        background: "#fff",
-        color: "#374151",
+        background: dark ? DARK.btnBg : "#fff",
+        color: dark ? DARK.btnText : "#374151",
+        transition: "background 0.15s",
+    };
+
+    // Hover handlers only adjust background; light mode keeps its (none) behavior.
+    const hoverIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (dark) e.currentTarget.style.background = DARK.btnHover;
+    };
+    const hoverOut = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        active = false,
+    ) => {
+        if (dark)
+            e.currentTarget.style.background = active
+                ? DARK.btnActiveBg
+                : DARK.btnBg;
     };
 
     return (
@@ -31,31 +52,53 @@ export default function RouteToolbar({
                 alignItems: "center",
                 gap: "8px",
                 padding: "8px 16px",
-                background: "#fff",
-                borderBottom: "1px solid #e5e7eb",
+                background: dark ? DARK.toolbarBg : "#fff",
+                borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                 minHeight: "48px",
                 flexShrink: 0,
             }}
         >
             <button
                 onClick={onToggleEdit}
+                onMouseEnter={hoverIn}
+                onMouseLeave={(e) => hoverOut(e, isEditMode)}
                 style={{
                     ...baseBtn,
-                    background: isEditMode ? "#374151" : "#fff",
-                    color: isEditMode ? "#fff" : "#374151",
-                    border: `1px solid ${isEditMode ? "#374151" : "#d1d5db"}`,
+                    // Active (editing) state stays clearly identifiable in both themes.
+                    background: dark
+                        ? isEditMode
+                            ? DARK.btnActiveBg
+                            : DARK.btnBg
+                        : isEditMode
+                          ? "#374151"
+                          : "#fff",
+                    color: dark
+                        ? DARK.btnText
+                        : isEditMode
+                          ? "#fff"
+                          : "#374151",
+                    border: dark
+                        ? `1px solid ${isEditMode ? DARK.btnText : DARK.btnBorder}`
+                        : `1px solid ${isEditMode ? "#374151" : "#d1d5db"}`,
                 }}
             >
                 {isEditMode ? "Done Editing" : "Edit"}
             </button>
 
-            <button onClick={onSuggestRoutes} style={baseBtn}>
+            <button
+                onClick={onSuggestRoutes}
+                onMouseEnter={hoverIn}
+                onMouseLeave={(e) => hoverOut(e)}
+                style={baseBtn}
+            >
                 Suggest Routes
             </button>
 
             <button
                 onClick={onSave}
                 title="Save route"
+                onMouseEnter={hoverIn}
+                onMouseLeave={(e) => hoverOut(e)}
                 style={{
                     ...baseBtn,
                     padding: "6px 10px",

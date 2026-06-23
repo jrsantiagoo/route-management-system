@@ -45,3 +45,104 @@ body {
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Routing map: dark mode ────────────────────────────────────────────────
+   The dark basemap (CARTO Dark Matter) is near-black. We give it a midnight-blue
+   tint by filtering ONLY the tile layer, so the route polyline (overlay pane),
+   markers, popups and controls stay un-tinted and the blue/white route line
+   remains crisp. Tweak the single `filter` declaration below to taste. */
+.dark .leaflet-tile-pane {
+    filter: brightness(0.9) saturate(1.7) sepia(0.35) hue-rotate(178deg)
+        contrast(1.05);
+}
+
+/* Fill map gutters/gaps with navy instead of Leaflet's default light grey. */
+.dark .leaflet-container {
+    background: #0a1626;
+}
+
+/* Marker popups → midnight-blue card to match the route panel. */
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+    background: #0d1b2e;
+    color: #e5edf5;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.dark .leaflet-popup-content small {
+    color: #94a3b8 !important;
+}
+.dark .leaflet-popup-close-button {
+    color: #94a3b8 !important;
+}
+
+/* Zoom control → navy buttons with light glyphs. */
+.dark .leaflet-bar a,
+.dark .leaflet-bar a:hover {
+    background: #0d1b2e;
+    color: #e5edf5;
+    border-bottom-color: #1e3a5f;
+}
+.dark .leaflet-bar a:hover {
+    background: #103a5f;
+}
+
+/* Place the zoom control immediately to the RIGHT of the Route Plan panel,
+   aligned near the panel's top — not below it and not on the far-right of the map.
+   The panel is at left:16px, width:288px → right edge at 304px; +12px gap = 316px.
+   Because the control sits fully beyond the panel's right edge it never overlaps
+   the panel, so it stays visible no matter how tall the panel grows or when the
+   "Add a stop" dropdown opens. Scoped to `.route-map` so only the routing map shifts.
+
+   The high-specificity selector + !important are deliberate: Leaflet's own
+   `.leaflet-top .leaflet-control` margins have equal specificity and (since
+   leaflet.css is bundled after globals.css) would otherwise win on source order.
+   Tweak `margin-left` if the panel width (288px) changes. */
+.route-map .leaflet-control-container .leaflet-top.leaflet-left .leaflet-control-zoom {
+    margin-top: 16px !important; /* align with the panel's top (panel top:16px) */
+    margin-left: 316px !important; /* panel right edge (304px) + 12px gap */
+    z-index: 10000 !important; /* sit above the panel's z-index (9999) */
+}
+
+/* ── Dark-mode scrollbars ──────────────────────────────────────────────────
+   Applied to the Route Plan list and the "Add a stop" dropdown lists via the
+   `route-scrollbar` class. Scoped under `.dark` so light mode keeps the default
+   browser scrollbar. Dark navy track, light rounded inset thumb, chevron arrow
+   buttons — matching the reference. */
+.dark .route-scrollbar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #cbd5e1 #0b1f35;
+}
+.dark .route-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+.dark .route-scrollbar::-webkit-scrollbar-track {
+    background: #0b1f35;
+    border-radius: 999px;
+}
+.dark .route-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+    /* transparent border over a padding-box clip insets the thumb, leaving the
+       track visible on either side for the pill look in the reference. */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+.dark .route-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #f1f5f9;
+    background-clip: padding-box;
+}
+/* Up/down arrow buttons (WebKit only; Firefox shows its native thin scrollbar). */
+.dark .route-scrollbar::-webkit-scrollbar-button:single-button {
+    background: #0b1f35;
+    height: 12px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.dark
+    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 6.25L5 3.75l2.5 2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+.dark
+    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 3.75L5 6.25l2.5-2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
