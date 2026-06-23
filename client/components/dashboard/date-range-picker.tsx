@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import { CalendarDays, ChevronDown } from "lucide-react";
 
-type Preset = "today" | "thisWeek" | "thisMonth" | "allTime" | "custom";
+type Preset =
+    | "today"
+    | "thisWeek"
+    | "thisMonth"
+    | "thisYear"
+    | "allTime"
+    | "custom";
 
 interface DateRange {
     start: string;
@@ -33,6 +39,13 @@ function getPresetRange(preset: Preset): DateRange {
                 end: today,
             };
         }
+        case "thisYear": {
+            const first = new Date(now.getFullYear(), 0, 1);
+            return {
+                start: first.toISOString().slice(0, 10),
+                end: today,
+            };
+        }
         case "allTime":
             return { start: "2024-01-01", end: today };
         case "custom":
@@ -44,6 +57,7 @@ const presetLabels: Record<Preset, string> = {
     today: "Today",
     thisWeek: "This Week",
     thisMonth: "This Month",
+    thisYear: "This Year",
     allTime: "All Time",
     custom: "Custom",
 };
@@ -72,6 +86,7 @@ export default function DateRangePicker() {
 
     return (
         <div className="relative" ref={ref}>
+            {/* Date Range Picker Widget */}
             <button
                 onClick={() => setOpen((p) => !p)}
                 className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-medium 
@@ -95,6 +110,7 @@ export default function DateRangePicker() {
                                 "today",
                                 "thisWeek",
                                 "thisMonth",
+                                "thisYear",
                                 "allTime",
                             ] as Preset[]
                         ).map((preset) => (
