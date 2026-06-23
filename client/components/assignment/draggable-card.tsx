@@ -1,7 +1,7 @@
 "use client";
 
 import { useDraggable } from "@dnd-kit/core";
-import RouteCard from "@/components/route-card";
+import RouteCard from "@/components/assignment/route-card";
 
 interface DraggableCardProps {
     route: string;

@@ -103,7 +103,7 @@ export default function loginPage() {
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 transition-colors dark:bg-slate-950">
             <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-gray-400/40 transition-colors dark:bg-slate-900 dark:shadow-black/40 md:grid-cols-2">
                 {/* Brand panel */}
-                <div className="relative hidden flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-10 text-white md:flex">
+                <div className="relative hidden flex-col justify-between bg-linear-to-br from-slate-900 via-slate-900 to-slate-800 p-10 text-white md:flex">
                     <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
                             <svg
@@ -124,7 +124,7 @@ export default function loginPage() {
 
                     <div>
                         <h2 className="text-5xl font-bold leading-tight">
-                            <span className="bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">
+                            <span className="bg-linear-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">
                                 Simplify
                             </span>{" "}
                             Every Route.

@@ -6,7 +6,7 @@ import {
     LayoutDashboard,
     Map,
     ClipboardList,
-    LogOut,
+    Gauge,
     ChevronsLeft,
     ChevronsRight,
 } from "lucide-react";
@@ -32,8 +32,25 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 bg-background border-r border-border
                 font-semibold transition-all duration-300`}
         >
-            {/*  */}
-            <div className="h-16 border-b border-border"></div>
+            {/* App Version Text */}
+            <div
+                className={`flex items-center gap-3 h-16 border-b border-border ${collapsed ? "justify-center" : "gap-3"}`}
+            >
+                <div className="flex items-center justify-center rounded-xl w-10 h-10 m-4 bg-linear-to-l from-cyan-400 to-teal-300">
+                    <Gauge size={21} className="text-background" />
+                </div>
+
+                {!collapsed && (
+                    <div className="-ml-4">
+                        <p className="text-sm font-bold text-foreground">
+                            Route Tool
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                            Version 1.0
+                        </p>
+                    </div>
+                )}
+            </div>
 
             {/* Creates Navigation Links */}
             <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
@@ -43,8 +60,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         <Link
                             key={href}
                             href={href}
-                            className={`flex items-center gap-3 rounded-md p-3 text-sm
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}
+                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
+                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
                                 ${collapsed ? "justify-center" : ""}`}
                             title={collapsed ? label : undefined}
                         >
@@ -61,7 +78,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     onClick={onToggle}
                     className="absolute -right-3 top-58 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
-                        hover:bg-secondary"
+                        hover:bg-secondary transition duration-300"
                 >
                     {collapsed ? (
                         <ChevronsRight size={20} />

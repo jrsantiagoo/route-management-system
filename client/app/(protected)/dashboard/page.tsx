@@ -503,7 +503,7 @@ function OrdersTable() {
             </div>
 
             {/* Scrollable table */}
-            <div className="overflow-auto max-h-96">
+            <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
@@ -611,7 +611,8 @@ export default function Dashboard() {
                 <h1 className="text-2xl font-bold">Dashboard</h1>
                 <button
                     onClick={handleDownload}
-                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition hover:bg-secondary hover:text-foreground"
+                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition 
+                        hover:bg-secondary hover:text-foreground dark:hover:text-primary"
                 >
                     Full Summary
                 </button>

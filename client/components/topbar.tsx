@@ -78,7 +78,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 {/* Allows user to toggle themes */}
                 <button
                     onClick={toggleTheme}
-                    className="p-2 rounded hover:bg-secondary transition"
+                    className="p-2 rounded-md hover:bg-secondary dark:hover:text-primary transition duration-300"
                     title={theme === "light" ? "Dark mode" : "Light mode"}
                 >
                     {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
@@ -113,21 +113,24 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                             </div>
 
                             <div className="flex m-1">
-                                <p
-                                    // onClick={handleLogout}
+                                <button
+                                    onClick={() => {
+                                        router.push("/profile");
+                                        setOpen(false);
+                                    }}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
-                                        hover:bg-card rounded-lg"
+                                        hover:bg-secondary rounded-lg"
                                 >
                                     <User size={16} />
                                     Profile
-                                </p>
+                                </button>
                             </div>
 
                             <div className="flex ml-1 mr-1">
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
-                                        hover:bg-secondary rounded-lg"
+                                        hover:bg-secondary dark:hover:text-primary rounded-lg"
                                 >
                                     <LogOutIcon size={16} />
                                     Sign Out
