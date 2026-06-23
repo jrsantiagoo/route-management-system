@@ -119,7 +119,10 @@ export default function DateRangePicker({
             >
                 <CalendarDays size={16} />
                 {label}
-                <ChevronDown size={16} className="text-muted-foreground" />
+                <ChevronDown
+                    size={16}
+                    className="text-muted-foreground dark:text-primary-foreground"
+                />
             </button>
 
             {/* Collapsable date range picker widget */}
@@ -167,7 +170,7 @@ export default function DateRangePicker({
                                     setCustomStart(e.target.value);
                                 }}
                                 className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground w-full 
-                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                             />
                             <input
                                 type="date"
@@ -176,7 +179,7 @@ export default function DateRangePicker({
                                     setCustomEnd(e.target.value);
                                 }}
                                 className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground w-full 
-                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                             />
                         </div>
                         <div className="flex justify-end mt-3">

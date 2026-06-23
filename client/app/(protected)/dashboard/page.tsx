@@ -206,7 +206,7 @@ const weeklyFuelData = [
     },
 ];
 
-// Helper Function: Computes Trend Line
+// Helper Function: Computes Trend Line (avg per 3 days)
 function computeTrend<T extends Record<string, unknown>>(
     data: T[],
     key: keyof T,
