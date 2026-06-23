@@ -38,7 +38,7 @@ export default function ChangePasswordCard() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         className="bg-background border border-border rounded-lg p-2 text-sm text-foreground w-full 
-                            focus:outline-none focus:ring-2 focus:ring-primary"
+                            focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                     />
                 </div>
 
@@ -57,7 +57,7 @@ export default function ChangePasswordCard() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         className="bg-background border border-border rounded-lg p-2 text-sm text-foreground w-full 
-                            focus:outline-none focus:ring-2 focus:ring-primary"
+                            focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                     />
                 </div>
 
@@ -76,7 +76,7 @@ export default function ChangePasswordCard() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         className="bg-background border border-border rounded-lg p-2 text-sm text-foreground w-full 
-                            focus:outline-none focus:ring-2 focus:ring-primary"
+                            focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                     />
                 </div>
 
