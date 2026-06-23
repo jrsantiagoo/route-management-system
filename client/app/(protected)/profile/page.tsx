@@ -1,5 +1,9 @@
 "use client";
 
+import ProfileCard from "@/components/profile-card";
+
+const placeholderAcc = { username: "Admin", email: "admin@gmail.com" };
+
 export default function ProfilePage() {
     return (
         <div className="flex flex-col gap-6">
@@ -10,9 +14,11 @@ export default function ProfilePage() {
                 </p>
             </div>
 
-            <div className="flex justify-between rounded-xl bg-card border border-border">
-                Profile Picture
-            </div>
+            <ProfileCard
+                username={placeholderAcc.username}
+                email={placeholderAcc.email}
+                avatarUrl=""
+            />
 
             <div className="flex justify-between rounded-xl bg-card border border-border">
                 Personal Information
