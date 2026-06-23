@@ -35,7 +35,7 @@ function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
                     outline-none hover:bg-secondary dark:hover:text-primary transition
                     ${
                         isActive
-                            ? "border-primary bg-primary-foreground/40 text-foreground"
+                            ? "border-primary-foreground bg-primary dark:bg-primary-foreground/40 text-foreground"
                             : "border-gray-300 text-foreground dark:bg-card"
                     }
                 `}
@@ -72,7 +72,7 @@ function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
                             className={`
                                 px-3 py-1.5 text-left text-xs transition hover:bg-secondary dark:hover:text-primary
                                 last:rounded-b-lg
-                                ${value === opt ? "bg-primary-foreground/35 text-foreground" : ""}
+                                ${value === opt ? "bg-primary dark:bg-primary-foreground/35 text-foreground" : ""}
                             `}
                         >
                             {opt}
