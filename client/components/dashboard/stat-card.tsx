@@ -17,19 +17,21 @@ export default function StatCard({
             <p className="text-sm font-semibold text-muted-foreground">
                 {title}
             </p>
-            <p className="mt-2 text-3xl font-bold text-foreground">
-                {value}
-                {unit && (
-                    <span className="ml-1 text-lg font-normal text-gray-400">
-                        {unit}
-                    </span>
-                )}
-            </p>
-            {subtitle && (
-                <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1">
-                    {subtitle}
+            <div className="flex gap-4">
+                <p className="mt-2 text-3xl font-bold text-foreground">
+                    {value}
+                    {unit && (
+                        <span className="ml-1 text-lg font-normal text-gray-400">
+                            {unit}
+                        </span>
+                    )}
                 </p>
-            )}
+                {subtitle && (
+                    <p className="mt-1.5 text-sm text-muted-foreground flex items-end gap-1">
+                        {subtitle}
+                    </p>
+                )}
+            </div>
         </div>
     );
 }
