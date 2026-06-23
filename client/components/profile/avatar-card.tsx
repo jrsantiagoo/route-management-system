@@ -14,7 +14,7 @@ export default function ProfileCard({
     const initials = `${username.charAt(0)}`.toUpperCase();
 
     return (
-        <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border">
+        <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border shadow-lg shadow-primary">
             <div className="flex items-center gap-2 pt-7 pl-7 text-lg font-semibold">
                 <User size={21} className="text-primary-foreground" />
                 Profile Picture

@@ -32,7 +32,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 bg-background border-r border-border
                 font-semibold transition-all duration-300`}
         >
-            {/*  */}
+            {/* App Version Text */}
             <div
                 className={`flex items-center gap-3 h-16 border-b border-border ${collapsed ? "justify-center" : "gap-3"}`}
             >

@@ -78,7 +78,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 {/* Allows user to toggle themes */}
                 <button
                     onClick={toggleTheme}
-                    className="p-2 rounded-md hover:bg-secondary transition duration-300"
+                    className="p-2 rounded-md hover:bg-secondary dark:hover:text-primary transition duration-300"
                     title={theme === "light" ? "Dark mode" : "Light mode"}
                 >
                     {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}

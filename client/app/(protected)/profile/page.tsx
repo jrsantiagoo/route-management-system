@@ -1,6 +1,6 @@
 "use client";
 
-import PasswordUpdateCard from "@/components/profile/change-password-card";
+import ChangePasswordCard from "@/components/profile/change-password-card";
 import PersonalInfoCard from "@/components/profile/personal-info";
 import ProfileCard from "@/components/profile/avatar-card";
 
@@ -24,7 +24,7 @@ export default function ProfilePage() {
 
             <PersonalInfoCard />
 
-            <PasswordUpdateCard />
+            <ChangePasswordCard />
         </div>
     );
 }
