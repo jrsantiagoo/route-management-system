@@ -12,7 +12,10 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
-import DateRangePicker from "@/components/dashboard/date-range-picker";
+import DateRangePicker, {
+    type Preset,
+} from "@/components/dashboard/date-range-picker";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 // Hardcoded Data for visualization purposes
 const dailyDistanceData = [
@@ -437,14 +440,18 @@ function StatCard({
     title,
     value,
     unit,
+    subtitle,
 }: {
     title: string;
     value: string;
     unit?: string;
+    subtitle?: React.ReactNode;
 }) {
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-sm font-semibold text-muted-foreground">
+                {title}
+            </p>
             <p className="mt-2 text-3xl font-bold text-foreground">
                 {value}
                 {unit && (
@@ -453,6 +460,11 @@ function StatCard({
                     </span>
                 )}
             </p>
+            {subtitle && (
+                <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1">
+                    {subtitle}
+                </p>
+            )}
         </div>
     );
 }
@@ -602,6 +614,28 @@ export default function Dashboard() {
     const efficiency = Math.round((onTime / totalTrips) * 100);
     const delivered = orders.length;
 
+    // Lifted date range state
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        .toISOString()
+        .slice(0, 10);
+    const [range, setRange] = useState<{
+        start: string;
+        end: string;
+        preset: Preset;
+    }>({ start: firstOfMonth, end: today, preset: "thisMonth" });
+
+    // Derived Stat Card subtitles
+    const tripsSubtitle = `out of ${orders.length} total trips`;
+    const deliveredSubtitle = `out of ${orders.length} total orders`;
+    const efficiencySubtitle: React.ReactNode =
+        range.preset === "allTime" || range.preset === "custom" ? undefined : (
+            <>
+                <TrendingUp size={14} /> +30%
+            </>
+        );
+
     const handleDownload = useCallback(() => {
         generatePDF(totalTrips, efficiency, delivered);
     }, []);
@@ -617,8 +651,14 @@ export default function Dashboard() {
                     </p>
                 </div>
 
+                {/* Allows user to select specific dates */}
                 <div className="flex items-center gap-3">
-                    <DateRangePicker />
+                    <DateRangePicker
+                        startDate={range.start}
+                        endDate={range.end}
+                        preset={range.preset}
+                        onChange={setRange}
+                    />
                     <button
                         onClick={handleDownload}
                         className="rounded-lg bg-primary px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
@@ -634,13 +674,19 @@ export default function Dashboard() {
                 <StatCard
                     title="Total Successful Trips"
                     value={String(totalTrips)}
+                    subtitle={tripsSubtitle}
                 />
                 <StatCard
                     title="Efficiency"
                     value={String(efficiency)}
                     unit="%"
+                    subtitle={efficiencySubtitle}
                 />
-                <StatCard title="Delivered Orders" value={String(delivered)} />
+                <StatCard
+                    title="Delivered Orders"
+                    value={String(delivered)}
+                    subtitle={deliveredSubtitle}
+                />
             </div>
 
             {/* Charts */}
