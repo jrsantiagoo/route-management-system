@@ -14,7 +14,7 @@ export default function StatCard({
 }: StatCardProps) {
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
-            <p className="text-sm font-semibold text-muted-foreground">
+            <p className="text-[17px] font-semibold text-muted-foreground">
                 {title}
             </p>
             <div className="flex gap-4">
@@ -27,7 +27,7 @@ export default function StatCard({
                     )}
                 </p>
                 {subtitle && (
-                    <p className="mt-1.5 text-sm text-muted-foreground flex items-end gap-1">
+                    <p className="mt-1.5 text-[15px] text-muted-foreground flex items-end gap-1 ml-auto">
                         {subtitle}
                     </p>
                 )}

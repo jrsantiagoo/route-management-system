@@ -83,9 +83,9 @@ export default function Dashboard() {
         comparisonLabel === undefined ? undefined : (
             <>
                 {isEfficiencyPositive ? (
-                    <TrendingUp size={23} className="text-green-500" />
+                    <TrendingUp size={24} className="text-green-500" />
                 ) : (
-                    <TrendingDown size={23} className="text-red-500" />
+                    <TrendingDown size={24} className="text-red-500" />
                 )}
                 {isEfficiencyPositive ? "+" : ""}
                 {efficiencyChange}% compared to {comparisonLabel}

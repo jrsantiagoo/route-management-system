@@ -26,7 +26,7 @@ export default function OrdersTable() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm text-foreground 
-                        outline-none transition focus:border-primary-foreground"
+                        outline-none transition focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                 />
             </div>
 
@@ -65,7 +65,7 @@ export default function OrdersTable() {
                         {filtered.map((o) => (
                             <tr
                                 key={o.id}
-                                className="border-t border-border transition hover:bg-secondary"
+                                className="border-t border-border transition hover:bg-secondary dark:hover:text-primary"
                             >
                                 <td className="px-3 py-2 font-medium text-foreground">
                                     {o.id}
