@@ -238,7 +238,7 @@ export default function loginPage() {
                                 </label>
                                 <a
                                     href="#"
-                                    className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                                    className="text-sm font-medium text-[#223765] underline dark:text-white"
                                 >
                                     Forgot password?
                                 </a>
@@ -311,7 +311,7 @@ export default function loginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="mt-2 w-full rounded-lg bg-blue-700 py-3 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="mt-2 w-full rounded-lg bg-[#223765] py-3 font-semibold text-white transition hover:bg-[#192B50] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
