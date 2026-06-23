@@ -46,7 +46,7 @@ export default function ProfileCard({
                     </h2>
                     <p className="text-sm text-muted-foreground">{email}</p>
                     <button
-                        className="flex items-center mt-1.5 px-4 py-1 text-sm font-medium text-primary-foreground 
+                        className="flex items-center mt-1.5 px-4 py-1 text-sm font-semibold text-primary-foreground 
                         bg-primary rounded-lg hover:bg-secondary transition w-fit
                         border border-border"
                     >

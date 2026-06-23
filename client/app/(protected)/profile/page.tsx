@@ -1,5 +1,7 @@
 "use client";
 
+import PasswordUpdateCard from "@/components/password-update-card";
+import PersonalInfoCard from "@/components/personal-info-card";
 import ProfileCard from "@/components/profile-card";
 
 const placeholderAcc = { username: "Admin", email: "admin@gmail.com" };
@@ -20,13 +22,9 @@ export default function ProfilePage() {
                 avatarUrl=""
             />
 
-            <div className="flex justify-between rounded-xl bg-card border border-border">
-                Personal Information
-            </div>
+            <PersonalInfoCard />
 
-            <div className="flex justify-between rounded-xl bg-card border border-border">
-                Change Password
-            </div>
+            <PasswordUpdateCard />
         </div>
     );
 }
