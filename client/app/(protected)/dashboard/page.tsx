@@ -498,7 +498,8 @@ function OrdersTable() {
                     placeholder="Search orders…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none transition focus:border-primary-foreground"
+                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm text-foreground 
+                        outline-none transition focus:border-primary-foreground"
                 />
             </div>
 
@@ -608,7 +609,13 @@ export default function Dashboard() {
         <div className="flex flex-col gap-6">
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Dashboard</h1>
+                <div className="flex flex-col justify-center">
+                    <h1 className="text-2xl font-bold">Dashboard</h1>
+                    <p className="text-md text-muted-foreground">
+                        Performance metrics and Analytics
+                    </p>
+                </div>
+
                 <button
                     onClick={handleDownload}
                     className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow transition 
