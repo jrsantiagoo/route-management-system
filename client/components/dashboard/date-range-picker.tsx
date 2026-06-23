@@ -111,6 +111,7 @@ export default function DateRangePicker({
 
     return (
         <div className="relative" ref={ref}>
+            {/* Date Range Picker button */}
             <button
                 onClick={() => setOpen((p) => !p)}
                 className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-medium 
@@ -121,12 +122,14 @@ export default function DateRangePicker({
                 <ChevronDown size={16} className="text-muted-foreground" />
             </button>
 
+            {/* Collapsable date range picker widget */}
             {open && (
                 <div className="absolute right-0 mt-2 w-72 bg-card border border-border rounded-md shadow-lg p-4 z-30">
                     <h4 className="text-sm font-semibold text-foreground mb-3">
                         Date Range
                     </h4>
 
+                    {/* Maps preset buttons for date ranges */}
                     <div className="grid grid-cols-2 gap-2 mb-4">
                         {(
                             [
@@ -151,6 +154,7 @@ export default function DateRangePicker({
                         ))}
                     </div>
 
+                    {/* Custom Range Picker */}
                     <div className="border-t border-border pt-3">
                         <p className="text-xs font-semibold text-muted-foreground mb-2">
                             Custom Range
