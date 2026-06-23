@@ -1,3 +1,4 @@
+import { orders } from "@/lib/dashboard/mockData";
 import { useState } from "react";
 
 // Orders Table Component with search functionality
