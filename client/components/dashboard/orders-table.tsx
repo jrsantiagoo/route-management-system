@@ -65,30 +65,20 @@ export default function OrdersTable() {
                         {filtered.map((o) => (
                             <tr
                                 key={o.id}
-                                className="border-t border-border transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
                             >
-                                <td className="px-3 py-2 font-medium text-foreground">
+                                <td className="px-3 py-2 font-medium ">
                                     {o.id}
                                 </td>
-                                <td className="px-3 py-2 text-foreground">
-                                    {o.client}
-                                </td>
-                                <td className="px-3 py-2 text-foreground">
-                                    {o.destination}
-                                </td>
-                                <td className="px-3 py-2 text-foreground">
-                                    {o.orderedOn}
-                                </td>
-                                <td className="px-3 py-2 text-foreground">
-                                    {o.deliverBy}
-                                </td>
-                                <td className="px-3 py-2 text-foreground">
+                                <td className="px-3 py-2 ">{o.client}</td>
+                                <td className="px-3 py-2 ">{o.destination}</td>
+                                <td className="px-3 py-2 ">{o.orderedOn}</td>
+                                <td className="px-3 py-2 ">{o.deliverBy}</td>
+                                <td className="px-3 py-2 ">
                                     {o.packageContent}
                                 </td>
-                                <td className="px-3 py-2 text-foreground">
-                                    {o.packageSize}
-                                </td>
-                                <td className="px-3 py-2 text-foreground">
+                                <td className="px-3 py-2 ">{o.packageSize}</td>
+                                <td className="px-3 py-2 ">
                                     {o.packageWeight}
                                 </td>
                             </tr>
