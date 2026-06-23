@@ -3,7 +3,8 @@
 import { useCallback, useState } from "react";
 import jsPDF from "jspdf";
 import {
-    LineChart,
+    ComposedChart,
+    Bar,
     Line,
     XAxis,
     YAxis,
@@ -204,6 +205,26 @@ const weeklyFuelData = [
         ),
     },
 ];
+
+// Helper Function: Computes Trend Line
+function computeTrend<T extends Record<string, unknown>>(
+    data: T[],
+    key: keyof T,
+    window: number = 3,
+): (T & { trend: number })[] {
+    const half = Math.floor(window / 2);
+    return data.map((_d, i, arr) => {
+        const start = Math.max(0, i - half);
+        const end = Math.min(arr.length, i + half + 1);
+        const slice = arr.slice(start, end);
+        const avg =
+            slice.reduce((s, v) => s + Number(v[key]), 0) / slice.length;
+        return { ...arr[i], trend: +avg.toFixed(1) };
+    });
+}
+
+const dailyDistanceWithTrend = computeTrend(dailyDistanceData, "distance");
+const dailyFuelWithTrend = computeTrend(dailyFuelData, "fuel");
 
 // Line Chart Drawing Helper (for PDF generation)
 function drawLineChart(
@@ -646,7 +667,7 @@ export default function Dashboard() {
     // Grab the comparison label for the active preset.
     const comparisonLabel = presetComparison[range.preset];
 
-    // Creates subtitle for each stat card
+    // Derive subtitle for each stat card
     const tripsSubtitle = `out of ${orders.length} total trips`;
     const deliveredSubtitle = `out of ${orders.length} total orders`;
     const efficiencySubtitle: React.ReactNode =
@@ -720,7 +741,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <ChartCard title="Average Distance per Order (km)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={dailyDistanceData}>
+                        <ComposedChart data={dailyDistanceWithTrend}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
@@ -735,21 +756,27 @@ export default function Dashboard() {
                                 }}
                             />
                             <Legend />
-                            <Line
-                                type="monotone"
+                            <Bar
                                 dataKey="distance"
-                                stroke="#3b82f6"
-                                strokeWidth={2}
-                                dot={{ fill: "#3b82f6", r: 4 }}
+                                fill="#3b82f6"
+                                radius={[4, 4, 0, 0]}
                                 name="Distance (km)"
                             />
-                        </LineChart>
+                            <Line
+                                type="monotone"
+                                dataKey="trend"
+                                stroke="#F59E0B"
+                                strokeWidth={2}
+                                dot={false}
+                                name="Trend (3-day avg)"
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 </ChartCard>
 
                 <ChartCard title="Average Fuel Usage per Order (L)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={dailyFuelData}>
+                        <ComposedChart data={dailyFuelWithTrend}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
@@ -764,15 +791,21 @@ export default function Dashboard() {
                                 }}
                             />
                             <Legend />
-                            <Line
-                                type="monotone"
+                            <Bar
                                 dataKey="fuel"
-                                stroke="#f59e0b"
-                                strokeWidth={2}
-                                dot={{ fill: "#f59e0b", r: 4 }}
+                                fill="#F59E0B"
+                                radius={[4, 4, 0, 0]}
                                 name="Fuel (L)"
                             />
-                        </LineChart>
+                            <Line
+                                type="monotone"
+                                dataKey="trend"
+                                stroke="#3b82f6"
+                                strokeWidth={2}
+                                dot={false}
+                                name="Trend (3-day avg)"
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 </ChartCard>
             </div>
