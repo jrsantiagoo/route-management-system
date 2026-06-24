@@ -40,6 +40,7 @@ async function generateOrderId() {
     return `${prefix}${sequenceStr}`;
 }
 
+// --- ALL ORDERS ---
 export async function getAllOrders() {
     return prisma.order.findMany({
         orderBy: {
@@ -48,6 +49,17 @@ export async function getAllOrders() {
     });
 }
 
+export async function getOrderById(orderId) {
+    const order = await prisma.order.findUnique({
+        where: { order_id: orderId },
+    });
+
+    if (!order) throw new Error("Order not found");
+
+    return order;
+}
+
+// --- CREATE AN ORDER ---
 export async function createOrder(
     client,
     destination,
@@ -65,9 +77,29 @@ export async function createOrder(
     });
 }
 
+// --- UPDATE ORDER INFO ---
 export async function updateOrder(orderId, updatedFields) {
+    const order = await prisma.order.findUnique({
+        where: { order_id: orderId },
+    });
+
+    if (!order) throw new Error("Order not found");
+
     return prisma.order.update({
         where: { order_id: orderId },
         data: updatedFields,
+    });
+}
+
+// --- DELETE AN ORDER ---
+export async function deleteOrder(orderId) {
+    const order = await prisma.order.findUnique({
+        where: { order_id: orderId },
+    });
+
+    if (!order) throw new Error("Order not found");
+
+    return prisma.order.delete({
+        where: { order_id: orderId },
     });
 }
