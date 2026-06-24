@@ -1,5 +1,13 @@
 import { orders } from "@/lib/dashboard/mockData";
-import { ChevronDown, Search } from "lucide-react";
+import {
+    CalendarClock,
+    ChevronDown,
+    MapPinned,
+    Package,
+    PackageSearch,
+    Search,
+    User,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface FilterSelectProps {
@@ -169,21 +177,45 @@ export default function OrdersTable() {
                     <thead className="sticky top-0 bg-card">
                         <tr>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <Package
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Order ID
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <User
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Client
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <MapPinned
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Destination
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <CalendarClock
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Ordered On
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <CalendarClock
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Deliver By
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
+                                <PackageSearch
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Package Content
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground">
