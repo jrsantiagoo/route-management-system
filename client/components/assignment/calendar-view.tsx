@@ -162,7 +162,7 @@ export default function CalendarView({
                 </div>
             </div>
 
-            <div className="overflow-auto max-h-96 rounded-lg border border-border scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-card">
                         <tr>

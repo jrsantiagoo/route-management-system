@@ -65,7 +65,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
             </div>
 
             {/* Route Assignment Table View */}
-            <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
