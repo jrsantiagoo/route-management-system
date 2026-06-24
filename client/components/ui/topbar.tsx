@@ -88,12 +88,12 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 <div className="relative min-w-40 rounded-lg" ref={ref}>
                     <button
                         onClick={() => setOpen((p) => !p)}
-                        className="flex min-w-40 items-center gap-2 p-1.5 rounded-lg hover:bg-secondary transition"
+                        className="flex min-w-40 items-center gap-2 p-1.5 rounded-lg hover:bg-secondary transition group"
                     >
                         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                             <User size={16} className="text-foreground" />
                         </div>
-                        <span className="text-sm font-medium text-foreground max-w-28 truncate">
+                        <span className="max-w-28 text-sm font-medium text-foreground dark:group-hover:text-primary truncate">
                             {name || "User"}
                         </span>
                         <ChevronDown
@@ -119,7 +119,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                         setOpen(false);
                                     }}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
-                                        hover:bg-secondary rounded-lg"
+                                        hover:bg-secondary dark:hover:text-primary rounded-lg"
                                 >
                                     <User size={16} />
                                     Profile

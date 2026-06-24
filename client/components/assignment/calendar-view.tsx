@@ -270,8 +270,8 @@ export default function CalendarView({
                                                                         a.tripId,
                                                                     )
                                                                 }
-                                                                className="text-red-500 hover:text-red-700 font-semibold opacity-0 group-hover:opacity-100 transition-opacity 
-                                                                    shrink-0 leading-none"
+                                                                className="rounded-full w-3 h-3 text-center text-red-500 hover:text-red-700 font-semibold 
+                                                                    dark:hover:bg-muted-foreground transition shrink-0 leading-none"
                                                                 title="Remove assignment"
                                                             >
                                                                 x
