@@ -105,8 +105,8 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                     {/* Toggles dropdown */}
                     {open && (
                         <div
-                            className="absolute right-0 mt-2 w-44 bg-card 
-                                border border-border rounded-md shadow-lg py-1"
+                            className="absolute right-0 mt-2 py-1 w-44 bg-card 
+                                border border-border rounded-md shadow shadow-muted-foreground"
                         >
                             <div className="items-center gap-2 w-full px-4 py-2 font-[550] text-sm text-foreground border-b border-border">
                                 My Account

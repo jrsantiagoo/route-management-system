@@ -13,6 +13,7 @@ import {
 import type { MockTrip } from "@/lib/assignment/mockData";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
+import FilterSelect from "../ui/filter-select";
 
 interface TableViewProps {
     trips: MockTrip[];
@@ -30,15 +31,44 @@ function formatDate(iso: string) {
 
 export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [search, setSearch] = useState("");
+    const [routeFilter, setRouteFilter] = useState("All");
+    const [driverFilter, setDriverFilter] = useState("All");
+    const [scheduledFilter, setScheduledFilter] = useState("All");
+
+    const routeOptions = [
+        ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
+    ] as string[];
+    const driverOptions = [
+        ...new Set(
+            trips.map((t) => t.agent_profile?.driver_id).filter(Boolean),
+        ),
+    ] as string[];
+    const scheduledOptions = [
+        ...new Set(
+            trips
+                .map((t) => t.scheduled_date)
+                .filter(Boolean)
+                .map((d) => formatDate(d)),
+        ),
+    ] as string[];
 
     // Filter trips by route name or driver ID
     const filtered = trips.filter((t) => {
-        if (!search) return true;
         const q = search.toLowerCase();
-        return (
+        const matchesSearch =
             t.route?.name?.toLowerCase().includes(q) ||
             t.agent_profile?.driver_id?.toLowerCase().includes(q) ||
-            false
+            false;
+        const matchesRoute =
+            routeFilter === "All" || t.route?.name === routeFilter;
+        const matchesDriver =
+            driverFilter === "All" ||
+            t.agent_profile?.driver_id === driverFilter;
+        const matchesScheduled =
+            scheduledFilter === "All" ||
+            formatDate(t.scheduled_date) === scheduledFilter;
+        return (
+            matchesSearch && matchesRoute && matchesDriver && matchesScheduled
         );
     });
 
@@ -89,6 +119,28 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                             focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                     />
                 </div>
+            </div>
+
+            {/* Filter Options */}
+            <div className="-mt-4 mb-3 flex flex-wrap gap-2">
+                <FilterSelect
+                    label="All Routes"
+                    value={routeFilter}
+                    options={routeOptions}
+                    onChange={setRouteFilter}
+                />
+                <FilterSelect
+                    label="All Drivers"
+                    value={driverFilter}
+                    options={driverOptions}
+                    onChange={setDriverFilter}
+                />
+                <FilterSelect
+                    label="All Scheduled Dates"
+                    value={scheduledFilter}
+                    options={scheduledOptions}
+                    onChange={setScheduledFilter}
+                />
             </div>
 
             {/* Route Assignment Table View */}

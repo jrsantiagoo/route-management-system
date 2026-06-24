@@ -11,6 +11,7 @@ import {
 import type { MockTrip } from "@/lib/assignment/mockData";
 import type { RoutePlan } from "@/lib/routing/types";
 import type { Driver } from "@/lib/routing/types";
+import FilterSelect from "../ui/filter-select";
 
 interface AssignmentFormProps {
     onCreated: (trip: MockTrip) => void;
@@ -20,8 +21,8 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
     const [open, setOpen] = useState(false);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
-    const [routeId, setRouteId] = useState("");
-    const [driverId, setDriverId] = useState("");
+    const [selectedRoute, setSelectedRoute] = useState("All");
+    const [selectedDriver, setSelectedDriver] = useState("All");
     const [date, setDate] = useState(() =>
         new Date().toISOString().slice(0, 10),
     );
@@ -44,12 +45,11 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
     }, []);
 
     // Build a MockTrip from the selected form values and pass it up
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!routeId || !driverId) return;
+    function handleSubmit(e: React.SubmitEvent) {
+        if (selectedRoute === "All" || selectedDriver === "All") return;
 
-        const route = getRouteById(routeId);
-        const driver = getDriverById(driverId);
+        const route = mockRoutes.find((r) => r.name === selectedRoute);
+        const driver = mockDrivers.find((d) => d.driver_id === selectedDriver);
         if (!route || !driver) return;
 
         const now = new Date();
@@ -88,47 +88,36 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
             </button>
 
             {open && (
-                <div className="absolute left-0 top-full mt-2 p-4 z-30 bg-card border border-border rounded-md shadow-lg">
+                <div className="absolute left-0 top-full mt-2 p-4 w-60 z-30 bg-card border border-border rounded-md shadow shadow-muted-foreground">
                     <h4 className="text-sm font-semibold text-foreground mb-3">
                         Create Assignment
                     </h4>
-                    <form onSubmit={handleSubmit} className="flex gap-3">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="flex flex-col gap-3"
+                    >
                         <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-muted-foreground">
                                 Route
                             </label>
-                            <select
-                                value={routeId}
-                                onChange={(e) => setRouteId(e.target.value)}
-                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground"
-                                required
-                            >
-                                <option value="">Select a route</option>
-                                {routes.map((r) => (
-                                    <option key={r.id_} value={r.id_}>
-                                        {r.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <FilterSelect
+                                label="Select Route"
+                                value={selectedRoute}
+                                options={routes.map((r) => r.name)}
+                                onChange={setSelectedRoute}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-muted-foreground">
                                 Driver
                             </label>
-                            <select
-                                value={driverId}
-                                onChange={(e) => setDriverId(e.target.value)}
-                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground"
-                                required
-                            >
-                                <option value="">Select a driver</option>
-                                {drivers.map((d) => (
-                                    <option key={d.id_} value={d.id_}>
-                                        {d.driver_id}
-                                    </option>
-                                ))}
-                            </select>
+                            <FilterSelect
+                                label="Select Driver"
+                                value={selectedDriver}
+                                options={drivers.map((r) => r.driver_id)}
+                                onChange={setSelectedDriver}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">

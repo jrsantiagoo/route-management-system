@@ -36,6 +36,7 @@ export default function FilterSelect({
         <div ref={ref} className="relative">
             {/* Filter Button */}
             <button
+                type="button"
                 onClick={() => setOpen(!open)}
                 className={`
                     flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs
@@ -57,10 +58,11 @@ export default function FilterSelect({
             {/* Collapsable Dropdown Options */}
             {open && (
                 <div
-                    className="absolute left-0 top-full z-10 mt-1 flex w-max min-w-full flex-col rounded-lg border border-border 
-                        bg-card shadow shadow-muted-foreground"
+                    className="overflow-auto flex flex-col absolute left-0 top-full z-10 mt-1 w-max min-w-full max-h-72 rounded-lg border border-border 
+                        bg-card shadow shadow-muted-foreground scrollbar-thumb-muted-foreground"
                 >
                     <button
+                        type="button"
                         onClick={() => {
                             onChange("All");
                             setOpen(false);
@@ -71,6 +73,7 @@ export default function FilterSelect({
                     </button>
                     {options.map((opt) => (
                         <button
+                            type="button"
                             key={opt}
                             onClick={() => {
                                 onChange(opt);
