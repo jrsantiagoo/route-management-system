@@ -2,14 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import { CirclePlus, CircleMinus } from "lucide-react";
-import { getRoutes } from "@/lib/api/routes";
-import { getDrivers } from "@/lib/api/drivers";
-import { createTrip } from "@/lib/api/trips";
+import {
+    mockRoutes,
+    mockDrivers,
+    getRouteById,
+    getDriverById,
+} from "@/lib/assignment/mockData";
+import type { MockTrip } from "@/lib/assignment/mockData";
 import type { RoutePlan } from "@/lib/routing/types";
 import type { Driver } from "@/lib/routing/types";
 
 interface AssignmentFormProps {
-    onCreated: () => void;
+    onCreated: (trip: MockTrip) => void;
 }
 
 export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
@@ -21,18 +25,15 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
     const [date, setDate] = useState(() =>
         new Date().toISOString().slice(0, 10),
     );
-    const [submitting, setSubmitting] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
+    // Load mock data on mount (no database dependency)
     useEffect(() => {
-        getRoutes().then((res) => {
-            if (res.success) setRoutes(res.data);
-        });
-        getDrivers().then((res) => {
-            if (res.success) setDrivers(res.data);
-        });
+        setRoutes(mockRoutes);
+        setDrivers(mockDrivers);
     }, []);
 
+    // Close the panel when clicking outside
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node))
@@ -42,19 +43,32 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
-    async function handleSubmit(e: React.FormEvent) {
+    // Build a MockTrip from the selected form values and pass it up
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!routeId || !driverId) return;
-        setSubmitting(true);
-        try {
-            const res = await createTrip(routeId, driverId, date);
-            if (res.success) {
-                setOpen(false);
-                onCreated();
-            }
-        } finally {
-            setSubmitting(false);
-        }
+
+        const route = getRouteById(routeId);
+        const driver = getDriverById(driverId);
+        if (!route || !driver) return;
+
+        const now = new Date();
+        const newTrip: MockTrip = {
+            id_: `trip-mock-${now.getTime()}`,
+            status: "PENDING",
+            tag_type: "ASSIGNED",
+            scheduled_date: `${date}T08:00:00Z`,
+            created_at: now.toISOString(),
+            purpose: "General delivery",
+            destination: route.name,
+            driver_id_: driver.id_,
+            route_id_: route.id_,
+            route: { id_: route.id_, name: route.name },
+            agent_profile: { id_: driver.id_, driver_id: driver.driver_id },
+        };
+
+        setOpen(false);
+        onCreated(newTrip);
     }
 
     function handleCancel() {
@@ -143,10 +157,9 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                             </button>
                             <button
                                 type="submit"
-                                disabled={submitting}
-                                className="px-3 py-1 text-sm rounded-md bg-primary text-primary-foreground hover:bg-secondary disabled:opacity-50 transition"
+                                className="px-3 py-1 text-sm rounded-md bg-primary text-primary-foreground hover:bg-secondary transition"
                             >
-                                {submitting ? "Creating..." : "Create"}
+                                Create
                             </button>
                         </div>
                     </form>

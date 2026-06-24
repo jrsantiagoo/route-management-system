@@ -1,18 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { CalendarDays, List } from "lucide-react";
+import { mockTrips, mockDrivers } from "@/lib/assignment/mockData";
+import type { MockTrip } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
-    const [refreshKey, setRefreshKey] = useState(0);
+    const [trips, setTrips] = useState<MockTrip[]>(mockTrips);
 
-    function handleRefresh() {
-        setRefreshKey((k) => k + 1);
-    }
+    // Add a newly created trip to the shared trips list
+    const handleCreateTrip = useCallback((newTrip: MockTrip) => {
+        setTrips((prev) => [...prev, newTrip]);
+    }, []);
+
+    // Remove a trip by ID from the shared trips list
+    const handleDeleteTrip = useCallback((tripId: string) => {
+        setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
+    }, []);
 
     return (
         <div className="flex flex-col gap-6">
@@ -27,7 +35,7 @@ export default function Assignment() {
             </div>
 
             <div className="flex items-center justify-between">
-                <AssignmentForm onCreated={handleRefresh} />
+                <AssignmentForm onCreated={handleCreateTrip} />
 
                 {/* Enables Calendar/Table view toggle */}
                 <div className="flex items-center rounded-lg border border-border bg-card p-px">
@@ -59,9 +67,13 @@ export default function Assignment() {
             </div>
 
             {viewMode === "calendar" ? (
-                <CalendarView refreshKey={refreshKey} />
+                <CalendarView
+                    trips={trips}
+                    drivers={mockDrivers}
+                    onDeleted={handleDeleteTrip}
+                />
             ) : (
-                <TableView refreshKey={refreshKey} onDeleted={handleRefresh} />
+                <TableView trips={trips} onDeleted={handleDeleteTrip} />
             )}
         </div>
     );
