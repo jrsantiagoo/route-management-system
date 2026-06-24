@@ -1,5 +1,7 @@
 "use client";
 
+import AssignmentForm from "@/components/assignment/assignment-form";
+
 export default function Assignment() {
     return (
         <div className="flex flex-col gap-6">
@@ -13,14 +15,7 @@ export default function Assignment() {
                 </div>
             </div>
 
-            <div>
-                <button
-                    className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-medium 
-                        border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
-                >
-                    Assign Route
-                </button>
-            </div>
+            <AssignmentForm />
 
             <div></div>
         </div>

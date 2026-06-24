@@ -1,5 +1,5 @@
 import { orders } from "@/lib/dashboard/mockData";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface FilterSelectProps {
@@ -125,14 +125,20 @@ export default function OrdersTable() {
                 <h3 className="text-base font-semibold text-foreground">
                     Orders
                 </h3>
-                <input
-                    type="text"
-                    placeholder="Search orders…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm text-foreground 
+                <div className="relative">
+                    <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search orders…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground 
                         outline-none transition focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                />
+                    />
+                </div>
             </div>
 
             {/* Filter Options */}
