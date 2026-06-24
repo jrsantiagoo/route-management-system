@@ -128,7 +128,8 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                                 type="date"
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
+                                className="bg-background border border-gray-300 rounded-md px-3 py-1.5 text-sm text-foreground 
+                                    focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                                 required
                             />
                         </div>
@@ -137,13 +138,13 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                className="px-3 py-1 text-sm rounded-md border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                                className="px-3.5 py-0.5 text-sm rounded-md border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="px-3 py-1 text-sm rounded-md bg-primary text-primary-foreground hover:bg-secondary transition"
+                                className="px-3.5 py-0.5 text-sm rounded-md bg-primary text-primary-foreground hover:bg-secondary transition"
                             >
                                 Create
                             </button>

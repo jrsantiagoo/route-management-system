@@ -164,6 +164,7 @@ export default function CalendarView({
                     >
                         <ChevronRight size={18} />
                     </button>
+
                     {/* Filtered Search */}
                     <div className="ml-1.5 relative">
                         <Search
@@ -176,7 +177,7 @@ export default function CalendarView({
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
-                            focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
+                                focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                         />
                     </div>
                 </div>
