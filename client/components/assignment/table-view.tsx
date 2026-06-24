@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Trash2 } from "lucide-react";
+import {
+    CalendarClock,
+    Clock,
+    MapPinned,
+    Route,
+    Search,
+    Trash2,
+    User,
+} from "lucide-react";
 import type { MockTrip } from "@/lib/assignment/mockData";
 
 interface TableViewProps {
@@ -56,26 +64,47 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 </div>
             </div>
 
+            {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                                <Route
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Route
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                                <User
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Driver
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
                                 Purpose
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                                <MapPinned
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Destination
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                                <CalendarClock
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Scheduled Date
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                                <Clock
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Created At
                             </th>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
