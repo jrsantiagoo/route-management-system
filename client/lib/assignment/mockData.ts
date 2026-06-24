@@ -88,9 +88,12 @@ export const mockDrivers: Driver[] = [
     { id_: "driver-7", driver_id: "DRV007", contact_number: "09177890123" },
     { id_: "driver-8", driver_id: "DRV008", contact_number: "09178901234" },
     { id_: "driver-9", driver_id: "DRV009", contact_number: "09179012345" },
-    { id_: "driver-10", driver_id: "DRV0010", contact_number: "09170123456" },
-    { id_: "driver-11", driver_id: "DRV0011", contact_number: "09181234567" },
-    { id_: "driver-12", driver_id: "DRV0012", contact_number: "09182345678" },
+    { id_: "driver-10", driver_id: "DRV010", contact_number: "09170123456" },
+    { id_: "driver-11", driver_id: "DRV011", contact_number: "09181234567" },
+    { id_: "driver-12", driver_id: "DRV012", contact_number: "09182345678" },
+    { id_: "driver-13", driver_id: "DRV013", contact_number: "09183456789" },
+    { id_: "driver-14", driver_id: "DRV014", contact_number: "09184567890" },
+    { id_: "driver-15", driver_id: "DRV015", contact_number: "09185678901" },
 ];
 
 // Mock trip interface matching the shape the table and calendar expect

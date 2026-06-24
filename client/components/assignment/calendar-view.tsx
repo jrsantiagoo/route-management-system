@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
+import { useState, useCallback } from "react";
+import {
+    ChevronLeft,
+    ChevronRight,
+    ChevronUp,
+    ChevronDown,
+    Search,
+    User,
+} from "lucide-react";
+import { useSort } from "@/lib/hooks/useSort";
+import SortableHeader from "@/components/ui/sortable-header";
 import type { MockTrip } from "@/lib/assignment/mockData";
 import type { Driver } from "@/lib/routing/types";
 
@@ -76,6 +85,17 @@ export default function CalendarView({
         if (!search) return true;
         return d.driver_id.toLowerCase().includes(search.toLowerCase());
     });
+
+    // Sort drivers by the selected column (only driver_id for calendar)
+    const getDriverVal = useCallback(
+        (d: Driver, _key: string) => d.driver_id,
+        [],
+    );
+    const {
+        sorted: sortedDrivers,
+        state: sortState,
+        toggle: toggleSort,
+    } = useSort(filteredDrivers, getDriverVal);
 
     function prevWeek() {
         const d = new Date(currentWeekStart);
@@ -162,33 +182,35 @@ export default function CalendarView({
                 </div>
             </div>
 
-            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-card">
                         <tr>
-                            <th
-                                className="sticky left-0 px-2 py-2 z-30 text-left font-semibold text-foreground bg-card border-r border-b border-border 
-                                rounded-tl-lg min-w-30"
+                            <SortableHeader
+                                sortKey="driver_id"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="sticky left-0 z-30 min-w-30 bg-card border-r border-b border-border rounded-tl-lg"
                             >
                                 <User
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Driver
-                            </th>
+                            </SortableHeader>
+                            {/* Creates Days of the Week Columns */}
                             {weekDates.map((d, i) => {
                                 const dateStr = formatDate(d);
                                 const isToday = dateStr === todayStr;
                                 return (
                                     <th
                                         key={i}
-                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-border min-w-25 ${
-                                            i === 6 ? "rounded-tr-lg" : ""
-                                        } ${
-                                            isToday
-                                                ? "bg-primary/10 text-primary-foreground"
-                                                : "text-foreground"
-                                        }`}
+                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-border min-w-25 
+                                            ${i === 6 ? "rounded-tr-lg" : ""} ${
+                                                isToday
+                                                    ? "bg-primary/10 text-primary-foreground"
+                                                    : "text-foreground"
+                                            }`}
                                     >
                                         <div>{DAYS[i]}</div>
                                         <div className="text-xs font-normal">
@@ -210,7 +232,7 @@ export default function CalendarView({
                                 </td>
                             </tr>
                         )}
-                        {filteredDrivers.map((driver) => (
+                        {sortedDrivers.map((driver) => (
                             <tr key={driver.id_}>
                                 <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
                                     {driver.driver_id}

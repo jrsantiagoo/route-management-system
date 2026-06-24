@@ -27,7 +27,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
     );
     const ref = useRef<HTMLDivElement>(null);
 
-    // Load mock data on mount (no database dependency)
+    // Load mock data on mount
     useEffect(() => {
         setRoutes(mockRoutes);
         setDrivers(mockDrivers);
@@ -88,16 +88,13 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
             </button>
 
             {open && (
-                <div className="absolute left-0 top-full mt-2 w-80 bg-card border border-border rounded-md shadow-lg p-4 z-30">
+                <div className="absolute left-0 top-full mt-2 bg-card border border-border rounded-md shadow-lg p-4 z-30">
                     <h4 className="text-sm font-semibold text-foreground mb-3">
                         Create Assignment
                     </h4>
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex flex-col gap-3"
-                    >
+                    <form onSubmit={handleSubmit} className="flex gap-3">
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-muted-foreground">
+                            <label className="text-xs font-semibold text-muted-foreground">
                                 Route
                             </label>
                             <select
@@ -116,7 +113,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-muted-foreground">
+                            <label className="text-xs font-semibold text-muted-foreground">
                                 Driver
                             </label>
                             <select
@@ -135,7 +132,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-muted-foreground">
+                            <label className="text-xs font-semibold text-muted-foreground">
                                 Date
                             </label>
                             <input

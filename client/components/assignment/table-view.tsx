@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
     CalendarClock,
     Clock,
@@ -11,6 +11,8 @@ import {
     User,
 } from "lucide-react";
 import type { MockTrip } from "@/lib/assignment/mockData";
+import { useSort } from "@/lib/hooks/useSort";
+import SortableHeader from "@/components/ui/sortable-header";
 
 interface TableViewProps {
     trips: MockTrip[];
@@ -40,6 +42,31 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
         );
     });
 
+    // Sort trips by the currently active column
+    const getTripVal = useCallback((t: MockTrip, key: string) => {
+        switch (key) {
+            case "route":
+                return t.route?.name ?? "";
+            case "driver":
+                return t.agent_profile?.driver_id ?? "";
+            case "purpose":
+                return t.purpose ?? "";
+            case "destination":
+                return t.destination ?? "";
+            case "scheduled_date":
+                return t.scheduled_date ?? "";
+            case "created_at":
+                return t.created_at ?? "";
+            default:
+                return "";
+        }
+    }, []);
+    const {
+        sorted: sortedTrips,
+        state: sortState,
+        toggle: toggleSort,
+    } = useSort(filtered, getTripVal);
+
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             <div className="mb-4 flex items-center justify-between">
@@ -65,55 +92,80 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
             </div>
 
             {/* Route Assignment Table View */}
-            <div className="overflow-auto max-h-128 scrollbar-thumb-muted-foreground">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+            <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
+                <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            <SortableHeader
+                                sortKey="route"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="rounded-tl-lg"
+                            >
                                 <Route
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Route
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="driver"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
                                 <User
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Driver
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="purpose"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
                                 Purpose
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="destination"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
                                 <MapPinned
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Destination
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="scheduled_date"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
                                 <CalendarClock
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Scheduled Date
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="created_at"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
                                 <Clock
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Created At
-                            </th>
+                            </SortableHeader>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map((t) => (
+                        {sortedTrips.map((t) => (
                             <tr
                                 key={t.id_}
                                 className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"

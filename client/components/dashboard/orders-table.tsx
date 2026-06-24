@@ -1,4 +1,5 @@
 import { orders } from "@/lib/dashboard/mockData";
+import type { Order } from "@/lib/dashboard/mockData";
 import {
     CalendarClock,
     ChevronDown,
@@ -8,7 +9,9 @@ import {
     Search,
     User,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useSort } from "@/lib/hooks/useSort";
+import SortableHeader from "@/components/ui/sortable-header";
 
 interface FilterSelectProps {
     label: string;
@@ -126,6 +129,35 @@ export default function OrdersTable() {
         );
     });
 
+    // Sort orders by the currently active column
+    const getOrderVal = useCallback((o: Order, key: string) => {
+        switch (key) {
+            case "id":
+                return o.id;
+            case "client":
+                return o.client;
+            case "destination":
+                return o.destination;
+            case "orderedOn":
+                return o.orderedOn;
+            case "deliverBy":
+                return o.deliverBy;
+            case "packageContent":
+                return o.packageContent;
+            case "packageSize":
+                return o.packageSize;
+            case "packageWeight":
+                return o.packageWeight;
+            default:
+                return "";
+        }
+    }, []);
+    const {
+        sorted: sortedOrders,
+        state: sortState,
+        toggle: toggleSort,
+    } = useSort(filtered, getOrderVal);
+
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Header + search */}
@@ -172,62 +204,102 @@ export default function OrdersTable() {
             </div>
 
             {/* Scrollable table */}
-            <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+            <div className="overflow-auto max-h-96 rounded-lg scrollbar-thumb-muted-foreground">
+                <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            <SortableHeader
+                                sortKey="id"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card rounded-tl-lg"
+                            >
                                 <Package
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Order ID
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="client"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 <User
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Client
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="destination"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 <MapPinned
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Destination
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="orderedOn"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 <CalendarClock
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Ordered On
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="deliverBy"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 <CalendarClock
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Deliver By
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageContent"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 <PackageSearch
                                     size={14}
-                                    className="inline mr-1.5 -mt-0.5"
+                                    className="inline mr-0.5 -mt-0.5"
                                 />
                                 Package Content
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageSize"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 Package Size
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageWeight"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card rounded-tr-lg"
+                            >
                                 Package Weight
-                            </th>
+                            </SortableHeader>
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map((o) => (
+                        {sortedOrders.map((o) => (
                             <tr
                                 key={o.id}
                                 className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
