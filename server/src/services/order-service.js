@@ -64,3 +64,10 @@ export async function createOrder(
         },
     });
 }
+
+export async function updateOrder(orderId, updatedFields) {
+    return prisma.order.update({
+        where: { order_id: orderId },
+        data: updatedFields,
+    });
+}
