@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
 import type { MockTrip } from "@/lib/assignment/mockData";
 import type { Driver } from "@/lib/routing/types";
 
@@ -109,8 +109,8 @@ export default function CalendarView({
     const endMonth = monthNames[weekRange.sunday.getMonth()];
     const weekLabel =
         startMonth === endMonth
-            ? `${startMonth} ${weekRange.monday.getDate()} – ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`
-            : `${startMonth} ${weekRange.monday.getDate()} – ${endMonth} ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`;
+            ? `${startMonth} ${weekRange.monday.getDate()} - ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`
+            : `${startMonth} ${weekRange.monday.getDate()} - ${endMonth} ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`;
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
@@ -163,9 +163,16 @@ export default function CalendarView({
 
             <div className="overflow-auto max-h-96 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
-                    <thead>
+                    <thead className="sticky top-0 z-20 bg-card">
                         <tr>
-                            <th className="sticky left-0 bg-card z-10 px-2 py-2 text-left font-semibold text-foreground border-r border-b border-border rounded-tl-lg min-w-30">
+                            <th
+                                className="sticky left-0 px-2 py-2 z-30 text-left font-semibold text-foreground bg-card border-r border-b border-border 
+                                rounded-tl-lg min-w-30"
+                            >
+                                <User
+                                    size={14}
+                                    className="inline mr-1.5 -mt-0.5"
+                                />
                                 Driver
                             </th>
                             {weekDates.map((d, i) => {
@@ -204,7 +211,7 @@ export default function CalendarView({
                         )}
                         {filteredDrivers.map((driver) => (
                             <tr key={driver.id_}>
-                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-medium text-foreground border-r border-b border-border">
+                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
                                     {driver.driver_id}
                                 </td>
                                 {DAYS.map((day) => {
