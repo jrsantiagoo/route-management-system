@@ -88,7 +88,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
             </button>
 
             {open && (
-                <div className="absolute left-0 top-full mt-2 bg-card border border-border rounded-md shadow-lg p-4 z-30">
+                <div className="absolute left-0 top-full mt-2 p-4 z-30 bg-card border border-border rounded-md shadow-lg">
                     <h4 className="text-sm font-semibold text-foreground mb-3">
                         Create Assignment
                     </h4>
