@@ -59,7 +59,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
             tag_type: "ASSIGNED",
             scheduled_date: `${date}T08:00:00Z`,
             created_at: now.toISOString(),
-            purpose: "General delivery",
+            purpose: "General Delivery",
             destination: route.name,
             driver_id_: driver.id_,
             route_id_: route.id_,
