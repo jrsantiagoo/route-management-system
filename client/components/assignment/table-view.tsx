@@ -84,16 +84,6 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.length === 0 && (
-                            <tr>
-                                <td
-                                    colSpan={7}
-                                    className="px-3 py-8 text-center text-foreground"
-                                >
-                                    No assignments found.
-                                </td>
-                            </tr>
-                        )}
                         {filtered.map((t) => (
                             <tr
                                 key={t.id_}
@@ -117,7 +107,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {formatDate(t.created_at)}
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="pl-7 px-3 py-2">
                                     <button
                                         onClick={() => onDeleted(t.id_)}
                                         className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
@@ -128,6 +118,16 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 </td>
                             </tr>
                         ))}
+                        {filtered.length === 0 && (
+                            <tr>
+                                <td
+                                    colSpan={7}
+                                    className="px-3 py-8 text-center text-foreground"
+                                >
+                                    No assignments found.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
