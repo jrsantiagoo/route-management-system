@@ -72,6 +72,41 @@ export const refreshToken = async (req, res) => {
     });
 };
 
+// --- CHANGE PASSWORD ---
+export const changePassword = async (req, res) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Validate that new password and confirmation match
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: "New password and confirmation do not match" });
+    }
+
+    // Get the current user from the authenticate middleware
+    const userEmail = req.user.user.email;
+
+    // Verify the old password by attempting to sign in
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: oldPassword,
+    });
+
+    if (verifyError) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Update to the new password
+    const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+    });
+
+    if (updateError) {
+        return res.status(400).json({ error: updateError.message });
+    }
+
+    res.json({ message: "Password changed successfully" });
+};
+
+
 // --- LOGOUT ---
 export const logout = async (req, res) => {
     const { error } = await supabase.auth.signOut();
