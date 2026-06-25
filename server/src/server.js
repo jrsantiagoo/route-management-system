@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth-routes.js";
 import tripRoutes from "./routes/trip-routes.js";
 import driverRoutes from "./routes/driver-routes.js";
 import orderRoutes from "./routes/order-routes.js";
+import fuelLogRoutes from "./routes/fuel-log-routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/fuel_logs", fuelLogRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
