@@ -1,7 +1,6 @@
 "use client";
 
 import ChangePasswordCard from "@/components/profile/change-password-card";
-import PersonalInfoCard from "@/components/profile/personal-info";
 import ProfileCard from "@/components/profile/avatar-card";
 
 const placeholderAcc = { username: "Admin", email: "admin@gmail.com" };
@@ -21,8 +20,6 @@ export default function ProfilePage() {
                 email={placeholderAcc.email}
                 avatarUrl=""
             />
-
-            <PersonalInfoCard />
 
             <ChangePasswordCard />
         </div>
