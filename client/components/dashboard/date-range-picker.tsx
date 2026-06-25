@@ -114,7 +114,7 @@ export default function DateRangePicker({
             {/* Date Range Picker button */}
             <button
                 onClick={() => setOpen((p) => !p)}
-                className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-medium 
+                className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-card text-sm font-semibold 
                     border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
             >
                 <CalendarDays size={16} />
@@ -127,7 +127,7 @@ export default function DateRangePicker({
 
             {/* Collapsable date range picker widget */}
             {open && (
-                <div className="absolute right-0 mt-2 w-72 bg-card border border-border rounded-md shadow-lg p-4 z-30">
+                <div className="absolute right-0 mt-2 p-4 w-72 z-30 bg-card border border-border rounded-md shadow shadow-muted-foreground">
                     <h4 className="text-sm font-semibold text-foreground mb-3">
                         Date Range
                     </h4>

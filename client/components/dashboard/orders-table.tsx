@@ -1,88 +1,17 @@
 import { orders } from "@/lib/dashboard/mockData";
-import { ChevronDown } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-
-interface FilterSelectProps {
-    label: string;
-    value: string;
-    options: string[];
-    onChange: (v: string) => void;
-}
-
-// Filter Component
-function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
-    const [open, setOpen] = useState(false);
-    const isActive = value !== "All";
-    const ref = useRef<HTMLDivElement>(null);
-
-    // Close on click outside
-    useEffect(() => {
-        function handleClick(e: MouseEvent) {
-            if (ref.current && !ref.current.contains(e.target as Node))
-                setOpen(false);
-        }
-        document.addEventListener("mousedown", handleClick);
-        return () => document.removeEventListener("mousedown", handleClick);
-    }, []);
-
-    return (
-        <div ref={ref} className="relative">
-            {/* Filter Button */}
-            <button
-                onClick={() => setOpen(!open)}
-                className={`
-                    flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs
-                    outline-none hover:bg-secondary dark:hover:text-primary transition
-                    ${
-                        isActive
-                            ? "border-primary-foreground bg-primary dark:bg-primary-foreground/40 text-foreground"
-                            : "border-gray-300 text-foreground dark:bg-card"
-                    }
-                `}
-            >
-                <span>{value === "All" ? label : value}</span>
-                <ChevronDown
-                    size={14}
-                    className={`transition ${open ? "rotate-180" : ""} ${isActive ? "text-foreground" : "text-muted-foreground"}`}
-                />
-            </button>
-
-            {/* Collapsable Dropdown Options */}
-            {open && (
-                <div
-                    className="absolute left-0 top-full z-10 mt-1 flex w-max min-w-full flex-col rounded-lg border border-border 
-                        bg-card shadow shadow-muted-foreground"
-                >
-                    <button
-                        onClick={() => {
-                            onChange("All");
-                            setOpen(false);
-                        }}
-                        className="rounded-t-lg px-3 py-1.5 text-left text-xs transition hover:bg-secondary dark:hover:text-primary"
-                    >
-                        {label}
-                    </button>
-                    {options.map((opt) => (
-                        <button
-                            key={opt}
-                            onClick={() => {
-                                onChange(opt);
-                                setOpen(false);
-                            }}
-                            className={`
-                                px-3 py-1.5 text-left text-xs transition hover:bg-secondary dark:hover:text-primary
-                                last:rounded-b-lg
-                                ${value === opt ? "bg-primary dark:bg-primary-foreground/35 text-foreground" : ""}
-                            `}
-                        >
-                            {opt}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
+import type { Order } from "@/lib/dashboard/mockData";
+import {
+    CalendarClock,
+    MapPinned,
+    Package,
+    PackageSearch,
+    Search,
+    User,
+} from "lucide-react";
+import { useState, useCallback } from "react";
+import { useSort } from "@/lib/hooks/useSort";
+import SortableHeader from "@/components/ui/sortable-header";
+import FilterSelect from "../ui/filter-select";
 
 // Orders Table Component with search functionality
 export default function OrdersTable() {
@@ -118,6 +47,35 @@ export default function OrdersTable() {
         );
     });
 
+    // Sort orders by the currently active column
+    const getOrderVal = useCallback((o: Order, key: string) => {
+        switch (key) {
+            case "id":
+                return o.id;
+            case "client":
+                return o.client;
+            case "destination":
+                return o.destination;
+            case "orderedOn":
+                return o.orderedOn;
+            case "deliverBy":
+                return o.deliverBy;
+            case "packageContent":
+                return o.packageContent;
+            case "packageSize":
+                return o.packageSize;
+            case "packageWeight":
+                return o.packageWeight;
+            default:
+                return "";
+        }
+    }, []);
+    const {
+        sorted: sortedOrders,
+        state: sortState,
+        toggle: toggleSort,
+    } = useSort(filtered, getOrderVal);
+
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Header + search */}
@@ -125,14 +83,20 @@ export default function OrdersTable() {
                 <h3 className="text-base font-semibold text-foreground">
                     Orders
                 </h3>
-                <input
-                    type="text"
-                    placeholder="Search orders…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm text-foreground 
+                <div className="relative">
+                    <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search orders…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground 
                         outline-none transition focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                />
+                    />
+                </div>
             </div>
 
             {/* Filter Options */}
@@ -158,38 +122,102 @@ export default function OrdersTable() {
             </div>
 
             {/* Scrollable table */}
-            <div className="overflow-auto max-h-96 scrollbar-thumb-muted-foreground">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+            <div className="overflow-auto max-h-96 rounded-lg scrollbar-thumb-muted-foreground">
+                <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
                     <thead className="sticky top-0 bg-card">
                         <tr>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            <SortableHeader
+                                sortKey="id"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card rounded-tl-lg"
+                            >
+                                <Package
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Order ID
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="client"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
+                                <User
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Client
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="destination"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
+                                <MapPinned
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Destination
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="orderedOn"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
+                                <CalendarClock
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Ordered On
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="deliverBy"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
+                                <CalendarClock
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Deliver By
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageContent"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
+                                <PackageSearch
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
                                 Package Content
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageSize"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card"
+                            >
                                 Package Size
-                            </th>
-                            <th className="px-3 py-2 font-semibold text-foreground">
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="packageWeight"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card rounded-tr-lg"
+                            >
                                 Package Weight
-                            </th>
+                            </SortableHeader>
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map((o) => (
+                        {sortedOrders.map((o) => (
                             <tr
                                 key={o.id}
                                 className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
