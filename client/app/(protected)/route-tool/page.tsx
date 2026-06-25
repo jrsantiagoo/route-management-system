@@ -153,12 +153,12 @@ export default function RoutingTool() {
     return (
         <div
             style={{
-                margin: "-2rem",
+                margin: "-1.25rem -2rem -2rem -2rem",
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
-                background: "#fff",
+                background: "var(--background)",
             }}
         >
             <RouteToolbar
@@ -171,7 +171,13 @@ export default function RoutingTool() {
                 onSave={handleSave}
             />
 
-            <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+            <div
+                style={{
+                    flex: 1,
+                    position: "relative",
+                    overflow: "hidden",
+                }}
+            >
                 <RouteMap
                     stops={stops}
                     polyline={polyline}
