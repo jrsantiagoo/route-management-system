@@ -76,7 +76,7 @@ export const refreshToken = async (req, res) => {
 export const changePassword = async (req, res) => {
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
-    // Validate that new password and confirmation match
+    // Validate new password and confirmation match
     if (newPassword !== confirmPassword) {
         return res.status(400).json({ error: "New password and confirmation do not match" });
     }
@@ -94,7 +94,7 @@ export const changePassword = async (req, res) => {
         return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Update to the new password
+    // Update password
     const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
     });
