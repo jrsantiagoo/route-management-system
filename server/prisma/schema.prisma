@@ -33,7 +33,7 @@ model route {
   createdAt             DateTime   @default(now())
   
   stops                 stop[]
-  trips                 trip[]
+  weekly_assignments    weekly_assignment[]
 }
 
 model stop {
@@ -69,42 +69,57 @@ model agent_profile {
 
   // Relations
   //vehicles vehicle[]
-  //fuel_log fuel_log[]
-  trips     trip[]
+  fuel_log            fuel_log[]
+  weekly_assignments  weekly_assignment[]
 
   //@@index([agent_id_, tenant_id_])
   @@map("agent_profile")
   //@@schema("agents")
 }
 
-model trip {
-  id_            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  status         TripStatus @default(PENDING)
-  tag_type       TagTypes   @default(OPEN)
-  // destination    String     @db.Text
-  scheduled_date DateTime?  @db.Timestamptz(6)
-  notes          String?    @db.Text
-  image_url      String?    @db.Text
-  proof_url      String?    @db.Text
-  accepted_at    DateTime?  @db.Timestamptz(6)
-  departed_at    DateTime?  @db.Timestamptz(6)
-  completed_at   DateTime?  @db.Timestamptz(6)
-
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime  @updatedAt @db.Timestamptz(6)
-  deleted_at DateTime? @db.Timestamptz(6)
+model weekly_assignment{
+  id_             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  day_of_week     Int
 
   // Foreign Keys
-  driver_id_       String? @db.Uuid // FK to agent_profile
-  route_id_        String   @db.Uuid
+  route_id_       String        @db.Uuid
+  driver_id_      String        @db.Uuid 
+
+  route           route         @relation(fields: [route_id_], references: [id_])
+  agent_profile   agent_profile @relation(fields: [driver_id_], references: [id_])
+  trips           trip[]
+
+  @@unique([route_id_, driver_id_, day_of_week])
+}
+
+model trip {
+  id_                     String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status                  TripStatus @default(PENDING)
+  tag_type                TagTypes   @default(OPEN)
+  scheduled_date          DateTime?  @db.Timestamptz(6)
+  notes                   String?    @db.Text
+  image_url               String?    @db.Text
+  proof_url               String?    @db.Text
+  accepted_at             DateTime?  @db.Timestamptz(6)
+  departed_at             DateTime?  @db.Timestamptz(6)
+  completed_at            DateTime?  @db.Timestamptz(6)
+
+  created_at              DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime   @updatedAt @db.Timestamptz(6)
+  deleted_at              DateTime?  @db.Timestamptz(6)
+
+  // Foreign Keys
+  weekly_assignment_id_   String?    @db.Uuid
+
   //vehicle_id_      String? @db.Uuid
   //assigned_by      String? @db.Uuid // FK to current user
   //task_purpose_id_ String? @db.Uuid
   //tenant_id_       String  @db.Uuid
 
   // Relations
-  agent_profile agent_profile? @relation(fields: [driver_id_], references: [id_])
-  route          route           @relation(fields: [route_id_], references: [id_])
+  weekly_assignment       weekly_assignment? @relation(fields: [weekly_assignment_id_], references: [id_])
+  orders                  order[]
+            
   // vehicle       vehicle?       @relation(fields: [vehicle_id_], references: [id_])
 
   //trip_tasks trip_task[]
@@ -118,8 +133,7 @@ model trip {
   // @@map("trip")
   // @@schema("trips")
 
-  @@index([driver_id_])
-  @@index([route_id_])
+  @@index([weekly_assignment_id_])
   @@index([status])
   @@map("trip")
   //@@schema("trips")
@@ -144,6 +158,14 @@ enum TripStatus {
   CANCELLED
 
   //@@schema("trips")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
 }
 
 enum TagTypes {
