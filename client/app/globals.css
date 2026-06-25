@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 /* Class-based dark mode: `dark:` utilities apply when <html> has the `.dark` class. */
-/* The login page initializes this from the OS preference and lets the user toggle it. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -46,19 +45,13 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ── Routing map: dark mode ────────────────────────────────────────────────
-   The dark basemap (CARTO Dark Matter) is near-black. We give it a midnight-blue
-   tint by filtering ONLY the tile layer, so the route polyline (overlay pane),
-   markers, popups and controls stay un-tinted and the blue/white route line
-   remains crisp. Tweak the single `filter` declaration below to taste. */
 .dark .leaflet-tile-pane {
-    filter: brightness(0.9) saturate(1.7) sepia(0.35) hue-rotate(178deg)
-        contrast(1.05);
+    filter: brightness(1.12) contrast(0.88) saturate(0) sepia(1)
+        hue-rotate(178deg) saturate(2.2) brightness(0.9) contrast(1.05);
 }
 
-/* Fill map gutters/gaps with navy instead of Leaflet's default light grey. */
 .dark .leaflet-container {
-    background: #0a1626;
+    background: #0c1a2b;
 }
 
 /* Marker popups → midnight-blue card to match the route panel. */
@@ -86,16 +79,7 @@ body {
     background: #103a5f;
 }
 
-/* The zoom control is positioned beside the Route Plan panel by a custom
-   in-map control (see PanelZoomControl in RouteMapInner.tsx + layout.ts), not by
-   offsetting Leaflet's default control — so no `.leaflet-control-zoom` offset
-   rule is needed here. Its `.leaflet-bar a` styling (incl. dark mode) is above. */
-
-/* ── Dark-mode scrollbars ──────────────────────────────────────────────────
-   Applied to the Route Plan list and the "Add a stop" dropdown lists via the
-   `route-scrollbar` class. Scoped under `.dark` so light mode keeps the default
-   browser scrollbar. Dark navy track, light rounded inset thumb, chevron arrow
-   buttons — matching the reference. */
+/* Dark-mode scrollbars for the .route-scrollbar lists. */
 .dark .route-scrollbar {
     scrollbar-width: thin; /* Firefox */
     scrollbar-color: #cbd5e1 #0b1f35;
@@ -111,7 +95,7 @@ body {
     background: #cbd5e1;
     border-radius: 999px;
     /* transparent border over a padding-box clip insets the thumb, leaving the
-       track visible on either side for the pill look in the reference. */
+       track visible on either side for the pill look. */
     border: 3px solid transparent;
     background-clip: padding-box;
 }
