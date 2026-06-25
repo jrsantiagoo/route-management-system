@@ -3,10 +3,14 @@
 // Leaflet accesses `window` on module evaluation and will throw during SSR without this.
 import dynamic from "next/dynamic";
 import { Stop } from "@/lib/routing/types";
+import { useTheme } from "@/lib/theme-context";
 
-const RouteMapInner = dynamic(() => import("./RouteMapInner"), {
-    ssr: false,
-    loading: () => (
+// Theme-aware loading placeholder so there is no light flash before the
+// (potentially dark) basemap mounts.
+function MapLoading() {
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
+    return (
         <div
             style={{
                 height: "100%",
@@ -14,8 +18,8 @@ const RouteMapInner = dynamic(() => import("./RouteMapInner"), {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "#f3f4f6",
-                color: "#9ca3af",
+                background: isDark ? "#1a1d21" : "#f3f4f6",
+                color: isDark ? "#6b7280" : "#9ca3af",
                 gap: "8px",
                 fontSize: "14px",
             }}
@@ -23,7 +27,12 @@ const RouteMapInner = dynamic(() => import("./RouteMapInner"), {
             <span style={{ fontSize: "28px" }}>🗺️</span>
             <span>Loading map…</span>
         </div>
-    ),
+    );
+}
+
+const RouteMapInner = dynamic(() => import("./RouteMapInner"), {
+    ssr: false,
+    loading: () => <MapLoading />,
 });
 
 interface RouteMapProps {
@@ -32,10 +41,14 @@ interface RouteMapProps {
     previewStop?: Stop | null;
 }
 
-export default function RouteMap({ stops, polyline }: RouteMapProps) {
+export default function RouteMap({ stops, polyline, previewStop }: RouteMapProps) {
     return (
         <div style={{ height: "100%", width: "100%" }}>
-            <RouteMapInner stops={stops} polyline={polyline} />
+            <RouteMapInner
+                stops={stops}
+                polyline={polyline}
+                previewStop={previewStop}
+            />
         </div>
     );
 }
