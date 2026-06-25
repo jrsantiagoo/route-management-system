@@ -59,6 +59,18 @@ export async function getOrderById(orderId) {
     return order;
 }
 
+export async function getTripOrders(tripId) {
+    const trip = await prisma.trip.findUnique({
+        where: { id_: tripId },
+    });
+
+    if (!trip) throw new Error("Trip not found");
+
+    return prisma.order.findMany({
+        where: { trip_id_: tripId },
+    });
+}
+
 // --- CREATE AN ORDER ---
 export async function createOrder(
     client,
