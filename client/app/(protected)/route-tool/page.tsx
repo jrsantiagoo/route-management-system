@@ -153,7 +153,9 @@ export default function RoutingTool() {
     return (
         <div
             style={{
-                margin: "-1.25rem -2rem -2rem -2rem",
+                position: "relative",
+                zIndex: 0,
+                margin: "-1.75rem -2rem -2rem -2rem",
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
