@@ -137,6 +137,7 @@ export default function RoutingTool() {
             vehicleType,
             assignedWeek: "",
             createdAt: new Date().toISOString(),
+            id_: "",
         };
         //saveRoute(plan);
 
