@@ -46,7 +46,7 @@ model stop {
   lng         Float
   order       Int                             // sequence in the route
 
-  route       route     @relation(fields: [route_id_], references: [id_])
+  route       route     @relation(fields: [route_id_], references: [id_], onDelete: Cascade)
 
   @@index([route_id_]) 
 }
