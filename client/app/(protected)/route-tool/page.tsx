@@ -9,14 +9,18 @@ import {
 } from "@/lib/routing/types";
 import { DEFAULT_STOPS } from "@/lib/routing/mockData";
 import { fetchRoute } from "@/lib/routing/routingService";
-import { saveRoute } from "@/lib/routing/storageHelper";
+import {
+    saveRoute,
+    loadSavedRoutes,
+    isRouteNameTaken,
+} from "@/lib/routing/storageHelper";
 import { recommendVehicle } from "@/lib/routing/vehicleLogic";
 import RouteMap from "@/components/routing/RouteMap";
 import RouteToolbar from "@/components/routing/RouteToolbar";
 import RouteOrderingPanel from "@/components/routing/RouteOrderingPanel";
 import SuggestRoutesModal from "@/components/routing/SuggestRoutesModal";
+import SaveRouteModal from "@/components/routing/SaveRouteModal";
 import Toast from "@/components/routing/Toast";
-import { createRoute, getRoutes } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -34,6 +38,7 @@ export default function RoutingTool() {
     const [previewStop, setPreviewStop] = useState<Stop | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+    const [isSaveOpen, setIsSaveOpen] = useState(false);
     const [isLoadingRoute, setIsLoadingRoute] = useState(false);
     const [routeError, setRouteError] = useState<string | null>(null);
     const [toast, setToast] = useState<string | null>(null);
@@ -96,40 +101,15 @@ export default function RoutingTool() {
         setIsEditMode(false);
     }
 
-    async function generateRouteName(): Promise<string> {
-        const datePart = `Route – ${new Date().toLocaleDateString("en-PH", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        })}`;
+    function handleConfirmSave(name: string) {
+        // Guard against a name added in another tab between opening and saving.
+        if (isRouteNameTaken(name, routeIdRef.current)) return;
 
-        // Fetch existing routes
-        const existing = (await getRoutes()).data as RoutePlan[];
-
-        // Filter routes created today and extract their sequence numbers
-        const todayRouteNumbers = existing
-            .filter((r) => r.name.startsWith(datePart))
-            .map((r) => {
-                // Extract the last 4 digits from the route name
-                const matches = r.name.match(/- (\d{4})$/);
-                return matches ? parseInt(matches[1], 10) : 0;
-            });
-
-        // Next sequence number (start at 1 if none exist)
-        const nextSequence =
-            todayRouteNumbers.length > 0
-                ? Math.max(...todayRouteNumbers) + 1
-                : 1;
-
-        // Pad the number to 4 digits
-        const paddedSequence = String(nextSequence).padStart(4, "0");
-        return `${datePart} - ${paddedSequence}`;
-    }
-    async function handleSave() {
         const vehicleType = recommendVehicle(stops.length);
         const plan: RoutePlan = {
+            id_: routeIdRef.current,
             id: routeIdRef.current,
-            name: await generateRouteName(),
+            name,
             stops,
             segments,
             totalDistanceKm,
@@ -138,15 +118,11 @@ export default function RoutingTool() {
             assignedWeek: "",
             createdAt: new Date().toISOString(),
         };
-        //saveRoute(plan);
-
-        const response = await createRoute(plan);
-        const data = await response;
-        if (data.success) {
-            setToast("Route saved successfully.");
-        } else {
-            setToast("Failed to save route.");
-        }
+        saveRoute(plan);
+        // Fresh id so the next save creates a new record instead of overwriting.
+        routeIdRef.current = generateRouteId();
+        setIsSaveOpen(false);
+        setToast("Route saved successfully.");
     }
 
     return (
@@ -167,7 +143,7 @@ export default function RoutingTool() {
                     setPreviewStop(null);
                 }}
                 onSuggestRoutes={() => setIsSuggestOpen(true)}
-                onSave={handleSave}
+                onSave={() => setIsSaveOpen(true)}
             />
 
             <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
@@ -197,6 +173,14 @@ export default function RoutingTool() {
                     onClose={() => setIsSuggestOpen(false)}
                     onApply={handleApplySuggested}
                     currentStops={stops}
+                />
+            )}
+
+            {isSaveOpen && (
+                <SaveRouteModal
+                    onClose={() => setIsSaveOpen(false)}
+                    onSave={handleConfirmSave}
+                    existingNames={loadSavedRoutes().map((r) => r.name)}
                 />
             )}
 
