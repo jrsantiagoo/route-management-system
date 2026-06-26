@@ -49,6 +49,7 @@ export async function getAllOrders() {
     });
 }
 
+// --- GET ORDER BY ID ---
 export async function getOrderById(orderId) {
     const order = await prisma.order.findUnique({
         where: { order_id: orderId },
@@ -59,6 +60,7 @@ export async function getOrderById(orderId) {
     return order;
 }
 
+// --- GET ORDERS BY TRIP ID ---
 export async function getTripOrders(tripId) {
     const trip = await prisma.trip.findUnique({
         where: { id_: tripId },
@@ -68,6 +70,21 @@ export async function getTripOrders(tripId) {
 
     return prisma.order.findMany({
         where: { trip_id_: tripId },
+    });
+}
+
+export async function getDeliveredOrdersRange(startDate, endDate) {
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) dateFilter.lte = new Date(endDate);
+
+    return prisma.order.findMany({
+        where: {
+            ...(Object.keys(dateFilter).length > 0 && {
+                delivered_by: dateFilter,
+            }),
+        },
+        orderBy: { delivered_by: "asc" },
     });
 }
 

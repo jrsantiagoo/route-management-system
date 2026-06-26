@@ -34,11 +34,11 @@ export async function updateLog(req, res) {
     }
 }
 
-export async function dailyFuelConsumption(req, res) {
+export async function dailyFuelPerOrder(req, res) {
     try {
         const { startDate, endDate } = req.body;
 
-        const result = await fuelLogService.dailyFuelConsumption(
+        const result = await fuelLogService.dailyFuelPerOrder(
             startDate,
             endDate,
         );
