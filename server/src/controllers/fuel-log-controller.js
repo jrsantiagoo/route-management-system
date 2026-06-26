@@ -33,3 +33,18 @@ export async function updateLog(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function dailyFuelConsumption(req, res) {
+    try {
+        const { startDate, endDate } = req.body;
+
+        const result = await fuelLogService.dailyFuelConsumption(
+            startDate,
+            endDate,
+        );
+
+        res.json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}

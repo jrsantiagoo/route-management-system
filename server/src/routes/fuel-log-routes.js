@@ -7,5 +7,6 @@ const router = Router();
 router.get("/", fuelLogController.getAllLogs);
 router.post("/", fuelLogController.createLog);
 router.put("/:logId", fuelLogController.updateLog);
+router.post("/daily_fuel_consumption", fuelLogController.dailyFuelConsumption);
 
 export default router;
