@@ -1,11 +1,5 @@
-// Shared dark-mode palette for the routing UI (panel, toolbar, buttons, popover,
-// modal). These values are applied ONLY when the app theme is "dark"; light mode
-// keeps each component's original hardcoded colors untouched.
-//
-// Usage:
-//   const { theme } = useTheme();
-//   const dark = theme === "dark";
-//   background: dark ? DARK.panelBg : "#fff"
+// Dark-mode palette for the routing UI. Applied only when theme === "dark";
+// light mode keeps each component's own colors.
 export const DARK = {
     // Surfaces
     panelBg: "#0d1b2e", // Route Plan panel / popover / modal body (midnight-blue)
@@ -18,7 +12,7 @@ export const DARK = {
     text: "#e5edf5", // primary text
     textMuted: "#94a3b8", // distance/duration, addresses, secondary text
 
-    // Buttons (matches the "Full Summary" reference: navy bg + bright blue text)
+    // Buttons — navy bg + bright blue text
     btnBg: "#0c2a45",
     btnText: "#2da8ff",
     btnBorder: "#1e466e",

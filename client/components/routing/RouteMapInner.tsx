@@ -1,6 +1,5 @@
 "use client";
-// This file is loaded ONLY on the client (via dynamic import with ssr:false in RouteMap.tsx).
-// Leaflet cannot run on the server – never remove the dynamic import wrapper.
+// Client-only (loaded via the ssr:false dynamic import in RouteMap.tsx).
 import { useEffect, useRef } from "react";
 import {
     MapContainer,
@@ -16,7 +15,7 @@ import { Stop } from "@/lib/routing/types";
 import { useTheme } from "@/lib/theme-context";
 import { ZOOM_CONTROL_LEFT, PANEL_TOP } from "./layout";
 
-// Fix broken default marker icons when bundled by webpack / Next.js
+// Fix default marker icon paths under the Next.js bundler.
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
     ._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -28,8 +27,7 @@ L.Icon.Default.mergeOptions({
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// Muted, low-clutter CARTO basemaps – both are free and need no API key.
-// Light = Positron, Dark = Dark Matter. The map follows the app theme toggle.
+// CARTO basemaps (free, no API key): Positron for light, Dark Matter for dark.
 const BASEMAPS = {
     light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
@@ -38,14 +36,13 @@ const BASEMAPS = {
 const CARTO_ATTRIBUTION =
     '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>';
 
-// Route line styling. The blue line sits on top of a wider white casing so it
-// stays readable over roads and labels on either basemap.
+// Blue route line over a wider white casing so it stays readable on both basemaps.
 const ROUTE_COLOR = "#2563eb";
 const ROUTE_CASING = "#ffffff";
 const ROUTE_WEIGHT = 6;
 const ROUTE_CASING_WEIGHT = 10;
 
-// Stop marker colors – start and end stay visually distinct from the middle stops.
+// Stop marker colors.
 const START_COLOR = "#22c55e";
 const END_COLOR = "#ef4444";
 const MID_COLOR = ROUTE_COLOR;
@@ -61,12 +58,8 @@ function createStopIcon(label: string, color: string): L.DivIcon {
     });
 }
 
-/**
- * Fits the map to the full route. Prefers the OSRM polyline geometry (which
- * extends beyond the raw stop coordinates) and falls back to the stops while
- * the route is still being calculated. Extra left padding keeps the route clear
- * of the route-ordering panel (288px wide, pinned top-left).
- */
+// Fits the map to the route: OSRM polyline if available, else the raw stops.
+// Left padding keeps the route clear of the ordering panel.
 function FitBoundsController({
     stops,
     polyline,
@@ -90,7 +83,6 @@ function FitBoundsController({
         if (points.length >= 2) {
             const bounds = L.latLngBounds(points);
             map.fitBounds(bounds, {
-                // [x, y] – wide left gutter clears the ordering panel.
                 paddingTopLeft: [330, 60],
                 paddingBottomRight: [60, 60],
             });
@@ -102,22 +94,16 @@ function FitBoundsController({
     return null;
 }
 
-/**
- * Custom zoom control rendered inside the map but positioned to sit immediately
- * to the right of the Route Plan panel (geometry from layout.ts). This replaces
- * Leaflet's default top-left control, which was painted behind the panel: the
- * panel is an absolutely-positioned sibling of the map with z-index 9999, while
- * Leaflet's control layer caps at z-index 1000, so any overlap hid the control.
- * Placing it beside the panel removes the overlap entirely. Uses Leaflet's own
- * `.leaflet-bar` / zoom-button classes so existing (incl. dark-mode) styles apply.
- */
+// In-map zoom control placed to the right of the Route Plan panel (geometry
+// from layout.ts), since the default top-left control rendered behind it.
+// Reuses Leaflet's .leaflet-bar / zoom-button classes for styling.
 function PanelZoomControl() {
     const map = useMap();
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!ref.current) return;
-        // Keep button clicks/scroll from reaching the map underneath.
+        // Don't let clicks/scroll reach the map underneath.
         L.DomEvent.disableClickPropagation(ref.current);
         L.DomEvent.disableScrollPropagation(ref.current);
     }, []);
@@ -184,8 +170,7 @@ export default function RouteMapInner({
             zoomControl={false}
         >
             <TileLayer
-                // key forces a clean remount when the theme toggles so the
-                // basemap swaps between Positron and Dark Matter.
+                // key remounts the layer on theme toggle to swap basemaps.
                 key={theme}
                 attribution={CARTO_ATTRIBUTION}
                 url={BASEMAPS[theme]}

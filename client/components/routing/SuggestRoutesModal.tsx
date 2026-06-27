@@ -451,8 +451,7 @@ export default function SuggestRoutesModal({
                                         <span>{route.stops.length} stops</span>
                                     </div>
 
-                                    {/* Historical insight — supporting context only.
-                                        Distance/duration above remain the live OSRM values. */}
+                                    {/* Historical insight */}
                                     {route.historicalInsight && (
                                         <div
                                             style={{

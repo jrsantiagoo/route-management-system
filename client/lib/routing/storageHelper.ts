@@ -12,6 +12,15 @@ export function loadSavedRoutes(): RoutePlan[] {
     }
 }
 
+// Case-insensitive, trimmed check against saved route names. `excludeId` lets an
+// existing route keep its own name when being re-saved.
+export function isRouteNameTaken(name: string, excludeId?: string): boolean {
+    const target = name.trim().toLowerCase();
+    return loadSavedRoutes().some(
+        (r) => r.id !== excludeId && r.name.trim().toLowerCase() === target,
+    );
+}
+
 export function saveRoute(plan: RoutePlan): void {
     if (typeof window === "undefined") return;
     try {
