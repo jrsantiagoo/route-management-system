@@ -1,12 +1,10 @@
 "use client";
-// Dynamic import with ssr:false is required to prevent Leaflet from running on the server.
-// Leaflet accesses `window` on module evaluation and will throw during SSR without this.
+// ssr:false — Leaflet touches `window` on import and breaks SSR.
 import dynamic from "next/dynamic";
 import { Stop } from "@/lib/routing/types";
 import { useTheme } from "@/lib/theme-context";
 
-// Theme-aware loading placeholder so there is no light flash before the
-// (potentially dark) basemap mounts.
+// Themed placeholder to avoid a light flash before the basemap mounts.
 function MapLoading() {
     const { theme } = useTheme();
     const isDark = theme === "dark";
