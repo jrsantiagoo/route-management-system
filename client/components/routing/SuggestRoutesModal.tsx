@@ -11,6 +11,8 @@ import {
     formatDuration,
     formatWeek,
 } from "@/lib/routing/formatters";
+import { useTheme } from "@/lib/theme-context";
+import { DARK } from "./routeTheme";
 
 interface SuggestRoutesModalProps {
     onClose: () => void;
@@ -23,6 +25,8 @@ export default function SuggestRoutesModal({
     onApply,
     currentStops,
 }: SuggestRoutesModalProps) {
+    const { theme } = useTheme();
+    const dark = theme === "dark";
     const [selectedWeek, setSelectedWeek] = useState(
         MOCK_WEEKLY_AVAILABILITY[0].week,
     );
@@ -69,14 +73,15 @@ export default function SuggestRoutesModal({
             {/* Dialog */}
             <div
                 style={{
-                    background: "#fff",
+                    background: dark ? DARK.panelBg : "#fff",
                     borderRadius: "8px",
                     width: "520px",
                     maxWidth: "92vw",
                     maxHeight: "88vh",
                     display: "flex",
                     flexDirection: "column",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                    border: dark ? `1px solid ${DARK.panelBorder}` : "none",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
                 }}
             >
                 {/* Header */}
@@ -86,7 +91,7 @@ export default function SuggestRoutesModal({
                         justifyContent: "space-between",
                         alignItems: "flex-start",
                         padding: "16px 20px",
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                     }}
                 >
                     <div>
@@ -95,7 +100,7 @@ export default function SuggestRoutesModal({
                                 margin: 0,
                                 fontSize: "16px",
                                 fontWeight: 700,
-                                color: "#111827",
+                                color: dark ? DARK.text : "#111827",
                             }}
                         >
                             Suggest Routes
@@ -104,7 +109,7 @@ export default function SuggestRoutesModal({
                             style={{
                                 margin: "3px 0 0",
                                 fontSize: "12px",
-                                color: "#6b7280",
+                                color: dark ? DARK.textMuted : "#6b7280",
                             }}
                         >
                             Automated delivery route planning
@@ -117,7 +122,7 @@ export default function SuggestRoutesModal({
                             border: "none",
                             fontSize: "20px",
                             cursor: "pointer",
-                            color: "#6b7280",
+                            color: dark ? DARK.textMuted : "#6b7280",
                             lineHeight: 1,
                             padding: "0 4px",
                         }}
@@ -131,7 +136,7 @@ export default function SuggestRoutesModal({
                 <div
                     style={{
                         padding: "16px 20px",
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                     }}
                 >
                     <div
@@ -147,7 +152,7 @@ export default function SuggestRoutesModal({
                                     display: "block",
                                     fontSize: "12px",
                                     fontWeight: 600,
-                                    color: "#374151",
+                                    color: dark ? DARK.text : "#374151",
                                     marginBottom: "6px",
                                 }}
                             >
@@ -161,11 +166,11 @@ export default function SuggestRoutesModal({
                                 style={{
                                     width: "100%",
                                     padding: "8px 10px",
-                                    border: "1px solid #d1d5db",
+                                    border: `1px solid ${dark ? DARK.panelBorder : "#d1d5db"}`,
                                     borderRadius: "4px",
                                     fontSize: "13px",
-                                    color: "#111827",
-                                    background: "#fff",
+                                    color: dark ? DARK.text : "#111827",
+                                    background: dark ? DARK.elevatedBg : "#fff",
                                 }}
                             >
                                 {MOCK_WEEKLY_AVAILABILITY.map((w) => (
@@ -180,9 +185,17 @@ export default function SuggestRoutesModal({
                             disabled={isLoading}
                             style={{
                                 padding: "8px 22px",
-                                background: isLoading ? "#9ca3af" : "#374151",
-                                color: "#fff",
-                                border: "none",
+                                background: isLoading
+                                    ? dark
+                                        ? "#1e293b"
+                                        : "#9ca3af"
+                                    : dark
+                                      ? DARK.btnBg
+                                      : "#374151",
+                                color: dark ? DARK.btnText : "#fff",
+                                border: dark
+                                    ? `1px solid ${DARK.btnBorder}`
+                                    : "none",
                                 borderRadius: "4px",
                                 fontSize: "13px",
                                 fontWeight: 500,
@@ -204,14 +217,14 @@ export default function SuggestRoutesModal({
                             fontSize: "12px",
                         }}
                     >
-                        <span style={{ color: "#6b7280" }}>
+                        <span style={{ color: dark ? DARK.textMuted : "#6b7280" }}>
                             Fleet this week:
                         </span>
-                        <span style={{ color: "#374151" }}>
+                        <span style={{ color: dark ? DARK.text : "#374151" }}>
                             <strong>{availability.cars}</strong> car
                             {availability.cars !== 1 ? "s" : ""}
                         </span>
-                        <span style={{ color: "#374151" }}>
+                        <span style={{ color: dark ? DARK.text : "#374151" }}>
                             <strong>{availability.motorcycles}</strong>{" "}
                             motorcycle
                             {availability.motorcycles !== 1 ? "s" : ""}
@@ -229,7 +242,7 @@ export default function SuggestRoutesModal({
                             style={{
                                 textAlign: "center",
                                 padding: "48px 0",
-                                color: "#6b7280",
+                                color: dark ? DARK.textMuted : "#6b7280",
                                 fontSize: "13px",
                             }}
                         >
@@ -246,7 +259,7 @@ export default function SuggestRoutesModal({
                             <div
                                 style={{
                                     fontSize: "12px",
-                                    color: "#9ca3af",
+                                    color: dark ? DARK.textMuted : "#9ca3af",
                                     marginTop: "4px",
                                 }}
                             >
@@ -261,7 +274,7 @@ export default function SuggestRoutesModal({
                             style={{
                                 textAlign: "center",
                                 padding: "48px 0",
-                                color: "#9ca3af",
+                                color: dark ? DARK.textMuted : "#9ca3af",
                                 fontSize: "13px",
                             }}
                         >
@@ -276,12 +289,12 @@ export default function SuggestRoutesModal({
                             style={{
                                 textAlign: "center",
                                 padding: "48px 0",
-                                color: "#9ca3af",
+                                color: dark ? DARK.textMuted : "#9ca3af",
                                 fontSize: "13px",
                             }}
                         >
                             Select a delivery week and click{" "}
-                            <strong style={{ color: "#6b7280" }}>
+                            <strong style={{ color: dark ? DARK.textMuted : "#6b7280" }}>
                                 Generate
                             </strong>{" "}
                             to see suggested routes.
@@ -296,7 +309,7 @@ export default function SuggestRoutesModal({
                                 <div
                                     key={route.id}
                                     style={{
-                                        border: "1px solid #e5e7eb",
+                                        border: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                                         borderRadius: "6px",
                                         padding: "14px",
                                         marginBottom: "10px",
@@ -316,7 +329,7 @@ export default function SuggestRoutesModal({
                                                 style={{
                                                     fontSize: "14px",
                                                     fontWeight: 700,
-                                                    color: "#111827",
+                                                    color: dark ? DARK.text : "#111827",
                                                 }}
                                             >
                                                 {route.name}
@@ -325,7 +338,7 @@ export default function SuggestRoutesModal({
                                                 <div
                                                     style={{
                                                         fontSize: "12px",
-                                                        color: "#6b7280",
+                                                        color: dark ? DARK.textMuted : "#6b7280",
                                                         marginTop: "2px",
                                                     }}
                                                 >
@@ -340,9 +353,15 @@ export default function SuggestRoutesModal({
                                             }}
                                             style={{
                                                 padding: "5px 16px",
-                                                background: "#374151",
-                                                color: "#fff",
-                                                border: "none",
+                                                background: dark
+                                                    ? DARK.btnBg
+                                                    : "#374151",
+                                                color: dark
+                                                    ? DARK.btnText
+                                                    : "#fff",
+                                                border: dark
+                                                    ? `1px solid ${DARK.btnBorder}`
+                                                    : "none",
                                                 borderRadius: "4px",
                                                 fontSize: "12px",
                                                 fontWeight: 500,
@@ -413,7 +432,7 @@ export default function SuggestRoutesModal({
                                             display: "flex",
                                             gap: "12px",
                                             fontSize: "12px",
-                                            color: "#6b7280",
+                                            color: dark ? DARK.textMuted : "#6b7280",
                                             marginBottom: "8px",
                                         }}
                                     >
@@ -432,11 +451,94 @@ export default function SuggestRoutesModal({
                                         <span>{route.stops.length} stops</span>
                                     </div>
 
+                                    {/* Historical insight */}
+                                    {route.historicalInsight && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                gap: "7px",
+                                                alignItems: "flex-start",
+                                                marginBottom: "8px",
+                                                padding: "7px 9px",
+                                                borderRadius: "4px",
+                                                background: dark
+                                                    ? "rgba(45,168,255,0.08)"
+                                                    : "#f0f7ff",
+                                                border: `1px solid ${dark ? DARK.panelBorder : "#dbeafe"}`,
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    flexShrink: 0,
+                                                    fontSize: "12px",
+                                                    lineHeight: "16px",
+                                                }}
+                                                aria-hidden="true"
+                                            >
+                                                📈
+                                            </span>
+                                            <div style={{ minWidth: 0 }}>
+                                                <div
+                                                    style={{
+                                                        fontSize: "12px",
+                                                        fontStyle: "italic",
+                                                        color: dark
+                                                            ? DARK.text
+                                                            : "#334155",
+                                                    }}
+                                                >
+                                                    {route.historicalInsight}
+                                                </div>
+                                                {(route.previousAverageDistance !==
+                                                    undefined ||
+                                                    route.previousAverageDuration !==
+                                                        undefined ||
+                                                    route.successfulTripCount !==
+                                                        undefined) && (
+                                                    <div
+                                                        style={{
+                                                            fontSize: "11px",
+                                                            marginTop: "2px",
+                                                            color: dark
+                                                                ? DARK.textMuted
+                                                                : "#64748b",
+                                                        }}
+                                                    >
+                                                        {"Past avg: "}
+                                                        {[
+                                                            route.previousAverageDistance !==
+                                                            undefined
+                                                                ? formatDistance(
+                                                                      route.previousAverageDistance,
+                                                                  )
+                                                                : null,
+                                                            route.previousAverageDuration !==
+                                                            undefined
+                                                                ? formatDuration(
+                                                                      route.previousAverageDuration,
+                                                                  )
+                                                                : null,
+                                                            route.successfulTripCount !==
+                                                            undefined
+                                                                ? `${route.successfulTripCount} trips`
+                                                                : null,
+                                                        ]
+                                                            .filter(Boolean)
+                                                            .join(" · ")}
+                                                        {route.historicalPeriod
+                                                            ? ` (${route.historicalPeriod})`
+                                                            : ""}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Stop list preview */}
                                     <div
                                         style={{
                                             fontSize: "12px",
-                                            color: "#374151",
+                                            color: dark ? DARK.text : "#374151",
                                         }}
                                     >
                                         {route.stops.map((stop, i) => (
@@ -494,8 +596,8 @@ export default function SuggestRoutesModal({
                 <div
                     style={{
                         padding: "10px 20px",
-                        borderTop: "1px solid #e5e7eb",
-                        background: "#f9fafb",
+                        borderTop: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
+                        background: dark ? DARK.toolbarBg : "#f9fafb",
                         borderRadius: "0 0 8px 8px",
                     }}
                 >
@@ -503,7 +605,7 @@ export default function SuggestRoutesModal({
                         style={{
                             margin: 0,
                             fontSize: "11px",
-                            color: "#9ca3af",
+                            color: dark ? DARK.textMuted : "#9ca3af",
                             lineHeight: 1.5,
                         }}
                     >

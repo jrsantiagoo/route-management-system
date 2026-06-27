@@ -1,4 +1,8 @@
-import { Stop, WeeklyVehicleAvailability } from "./types";
+import {
+    Stop,
+    WeeklyVehicleAvailability,
+    HistoricalRoutePerformance,
+} from "./types";
 
 export const MANILA_LOCATIONS: Stop[] = [
     {
@@ -73,4 +77,67 @@ export const MOCK_WEEKLY_AVAILABILITY: WeeklyVehicleAvailability[] = [
     { week: "2026-06-16", motorcycles: 1, cars: 4 },
     { week: "2026-06-23", motorcycles: 3, cars: 2 },
     { week: "2026-06-30", motorcycles: 2, cars: 3 },
+];
+
+/**
+ * Mocked historical route-performance data. There is no backend yet, so these
+ * records stand in for "how this kind of route has done before". Route
+ * suggestions are matched against these to show supporting historical insight.
+ *
+ * Two flavours of record:
+ *  - With `stopIds`: describes a specific, previously-run stop combination
+ *    (matched regardless of order). These take priority.
+ *  - Without `stopIds`: a generic record for a vehicle + optimization "kind",
+ *    so any new suggestion still gets relevant context.
+ *
+ * Dates/periods are anchored around late June 2026 (the app's mock "today").
+ */
+export const MOCK_HISTORICAL_ROUTES: HistoricalRoutePerformance[] = [
+    // Specific: the default DLSU → Rizal Park run that the tool opens with.
+    {
+        id: "hist-000",
+        label: "DLSU → Rizal Park",
+        stopIds: ["loc-000", "loc-001"],
+        vehicleType: "motorcycle",
+        optimizationType: "fastest",
+        averageDistanceKm: 3.1,
+        averageDurationMinutes: 11,
+        successfulTripCount: 9,
+        lastUsed: "2026-05-30",
+        historicalPeriod: "last month",
+    },
+    // Generic kind-level records (matched by vehicleType + optimizationType).
+    {
+        id: "hist-car-fastest",
+        label: "Car · fastest",
+        vehicleType: "car",
+        optimizationType: "fastest",
+        averageDistanceKm: 24.5,
+        averageDurationMinutes: 52,
+        successfulTripCount: 18,
+        lastUsed: "2026-06-10",
+        historicalPeriod: "two weeks ago",
+    },
+    {
+        id: "hist-car-shortest",
+        label: "Car · shortest distance",
+        vehicleType: "car",
+        optimizationType: "shortest",
+        averageDistanceKm: 21.2,
+        averageDurationMinutes: 61,
+        successfulTripCount: 12,
+        lastUsed: "2026-05-26",
+        historicalPeriod: "last month",
+    },
+    {
+        id: "hist-moto-fastest",
+        label: "Motorcycle · express",
+        vehicleType: "motorcycle",
+        optimizationType: "fastest",
+        averageDistanceKm: 12.8,
+        averageDurationMinutes: 33,
+        successfulTripCount: 25,
+        lastUsed: "2026-06-17",
+        historicalPeriod: "last week",
+    },
 ];

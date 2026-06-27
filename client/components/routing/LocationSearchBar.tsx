@@ -3,6 +3,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Stop } from '@/lib/routing/types';
 import { MANILA_LOCATIONS } from '@/lib/routing/mockData';
 import { GeocodingResult, searchLocation } from '@/lib/routing/geocodingService';
+import { useTheme } from '@/lib/theme-context';
+import { DARK } from './routeTheme';
 
 interface AddStopPopoverProps {
   stops: Stop[];
@@ -24,6 +26,8 @@ function geocodingResultToStop(result: GeocodingResult): Stop {
 }
 
 export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopPopoverProps) {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
   const [view, setView] = useState<View>('closed');
   const [savedQuery, setSavedQuery] = useState('');
   const [geoQuery, setGeoQuery] = useState('');
@@ -153,11 +157,11 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
           style={{
             width: '100%',
             padding: '7px 10px',
-            border: '1px dashed #d1d5db',
+            border: `1px dashed ${dark ? DARK.addBorder : '#d1d5db'}`,
             borderRadius: '4px',
             fontSize: '12px',
-            color: '#6b7280',
-            background: '#fafafa',
+            color: dark ? DARK.textMuted : '#6b7280',
+            background: dark ? DARK.addBg : '#fafafa',
             cursor: 'pointer',
             display: 'flex',
             justifyContent: 'space-between',
@@ -176,11 +180,11 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
     <div ref={containerRef} style={{ padding: '4px 0' }}>
       <div
         style={{
-          border: '1px solid #d1d5db',
+          border: `1px solid ${dark ? DARK.panelBorder : '#d1d5db'}`,
           borderRadius: '6px',
-          background: '#fff',
+          background: dark ? DARK.elevatedBg : '#fff',
           overflow: 'hidden',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          boxShadow: dark ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.08)',
         }}
       >
         {/* ── Saved locations view ── */}
@@ -193,10 +197,10 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 8px',
-                borderBottom: '1px solid #f3f4f6',
+                borderBottom: `1px solid ${dark ? DARK.divider : '#f3f4f6'}`,
               }}
             >
-              <span style={{ color: '#9ca3af', fontSize: '12px', flexShrink: 0 }}>🔍</span>
+              <span style={{ color: dark ? DARK.textMuted : '#9ca3af', fontSize: '12px', flexShrink: 0 }}>🔍</span>
               <input
                 ref={savedInputRef}
                 type="text"
@@ -208,7 +212,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   border: 'none',
                   outline: 'none',
                   fontSize: '12px',
-                  color: '#111827',
+                  color: dark ? DARK.text : '#111827',
                   background: 'transparent',
                   padding: '2px 0',
                 }}
@@ -220,7 +224,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: '#9ca3af',
+                  color: dark ? DARK.textMuted : '#9ca3af',
                   fontSize: '16px',
                   lineHeight: 1,
                   padding: '0 2px',
@@ -232,9 +236,9 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
             </div>
 
             {/* Saved location list — 5 rows visible, scroll for more */}
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div className="route-scrollbar" style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {filteredSaved.length === 0 ? (
-                <div style={{ padding: '10px', fontSize: '12px', color: '#9ca3af' }}>
+                <div style={{ padding: '10px', fontSize: '12px', color: dark ? DARK.textMuted : '#9ca3af' }}>
                   {savedQuery.trim()
                     ? 'No matching saved locations.'
                     : 'All saved locations are already added.'}
@@ -244,7 +248,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   <div
                     key={loc.id}
                     style={{
-                      borderBottom: i < filteredSaved.length - 1 ? '1px solid #f3f4f6' : 'none',
+                      borderBottom: i < filteredSaved.length - 1 ? `1px solid ${dark ? DARK.divider : '#f3f4f6'}` : 'none',
                     }}
                   >
                     <button
@@ -257,19 +261,19 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                         padding: '8px 10px',
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = '#f9fafb';
+                        (e.currentTarget as HTMLElement).style.background = dark ? DARK.rowHover : '#f9fafb';
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLElement).style.background = 'none';
                       }}
                     >
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#111827' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: dark ? DARK.text : '#111827' }}>
                         {loc.name}
                       </span>
                       <span
                         style={{
                           fontSize: '11px',
-                          color: '#6b7280',
+                          color: dark ? DARK.textMuted : '#6b7280',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -285,7 +289,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
             </div>
 
             {/* Footer: open geo search */}
-            <div style={{ borderTop: '1px solid #f3f4f6' }}>
+            <div style={{ borderTop: `1px solid ${dark ? DARK.divider : '#f3f4f6'}` }}>
               <button
                 onClick={() => {
                   clearGeoQuery();
@@ -295,11 +299,11 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   ...rowBase,
                   padding: '8px 10px',
                   gap: '7px',
-                  color: '#2563eb',
+                  color: dark ? DARK.accent : '#2563eb',
                   fontSize: '12px',
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = '#eff6ff';
+                  (e.currentTarget as HTMLElement).style.background = dark ? DARK.accentHover : '#eff6ff';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.background = 'none';
@@ -322,7 +326,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                 alignItems: 'center',
                 gap: '4px',
                 padding: '6px 8px',
-                borderBottom: '1px solid #f3f4f6',
+                borderBottom: `1px solid ${dark ? DARK.divider : '#f3f4f6'}`,
               }}
             >
               <button
@@ -332,7 +336,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: dark ? DARK.textMuted : '#6b7280',
                   fontSize: '14px',
                   lineHeight: 1,
                   padding: '0 4px 0 0',
@@ -343,7 +347,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
               </button>
               <span
                 style={{
-                  color: '#9ca3af',
+                  color: dark ? DARK.textMuted : '#9ca3af',
                   fontSize: '12px',
                   flexShrink: 0,
                   minWidth: '14px',
@@ -363,7 +367,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   border: 'none',
                   outline: 'none',
                   fontSize: '12px',
-                  color: '#111827',
+                  color: dark ? DARK.text : '#111827',
                   background: 'transparent',
                   padding: '2px 0',
                 }}
@@ -376,7 +380,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    color: '#9ca3af',
+                    color: dark ? DARK.textMuted : '#9ca3af',
                     fontSize: '16px',
                     lineHeight: 1,
                     padding: '0 2px',
@@ -389,14 +393,14 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
             </div>
 
             {/* Geo results */}
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div className="route-scrollbar" style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {geoStatus === 'idle' && (
-                <div style={{ padding: '10px', fontSize: '12px', color: '#9ca3af' }}>
+                <div style={{ padding: '10px', fontSize: '12px', color: dark ? DARK.textMuted : '#9ca3af' }}>
                   Type an address, or paste coordinates (lat, lng)
                 </div>
               )}
               {geoStatus === 'loading' && (
-                <div style={{ padding: '10px', fontSize: '12px', color: '#6b7280' }}>
+                <div style={{ padding: '10px', fontSize: '12px', color: dark ? DARK.textMuted : '#6b7280' }}>
                   Searching…
                 </div>
               )}
@@ -406,7 +410,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                 </div>
               )}
               {geoStatus === 'done' && geoResults.length === 0 && (
-                <div style={{ padding: '10px', fontSize: '12px', color: '#9ca3af' }}>
+                <div style={{ padding: '10px', fontSize: '12px', color: dark ? DARK.textMuted : '#9ca3af' }}>
                   No results found.
                 </div>
               )}
@@ -415,7 +419,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                   <div
                     key={result.id}
                     style={{
-                      borderBottom: i < geoResults.length - 1 ? '1px solid #f3f4f6' : 'none',
+                      borderBottom: i < geoResults.length - 1 ? `1px solid ${dark ? DARK.divider : '#f3f4f6'}` : 'none',
                     }}
                     onMouseEnter={() => onPreview(geocodingResultToStop(result))}
                     onMouseLeave={() => onPreview(null)}
@@ -433,7 +437,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                           style={{
                             fontSize: '12px',
                             fontWeight: 600,
-                            color: '#111827',
+                            color: dark ? DARK.text : '#111827',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -444,7 +448,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                         <div
                           style={{
                             fontSize: '11px',
-                            color: '#6b7280',
+                            color: dark ? DARK.textMuted : '#6b7280',
                             marginTop: '1px',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -459,9 +463,9 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                         style={{
                           flexShrink: 0,
                           padding: '3px 10px',
-                          background: '#374151',
-                          color: '#fff',
-                          border: 'none',
+                          background: dark ? DARK.btnBg : '#374151',
+                          color: dark ? DARK.btnText : '#fff',
+                          border: dark ? `1px solid ${DARK.btnBorder}` : 'none',
                           borderRadius: '4px',
                           fontSize: '11px',
                           fontWeight: 500,
