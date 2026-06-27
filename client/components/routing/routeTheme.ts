@@ -3,7 +3,7 @@
 export const DARK = {
     // Surfaces
     panelBg: "#0d1b2e", // Route Plan panel / popover / modal body (midnight-blue)
-    toolbarBg: "#0a1322", // toolbar bar (slightly deeper navy)
+    toolbarBg: "var(--background)", // toolbar bar (slightly deeper navy)
     elevatedBg: "#0f2237", // inputs, selects, nested cards
     panelBorder: "#1e3a5f", // subtle lighter-navy separators
     divider: "#16273d", // faint inner dividers
