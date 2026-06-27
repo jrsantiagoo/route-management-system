@@ -31,7 +31,7 @@ export default function RouteToolbar({
         transition: "background 0.15s",
     };
 
-    // Dark-mode only hover background.
+    // Hover handlers only adjust background; light mode keeps its (none) behavior.
     const hoverIn = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (dark) e.currentTarget.style.background = DARK.btnHover;
     };
@@ -64,6 +64,7 @@ export default function RouteToolbar({
                 onMouseLeave={(e) => hoverOut(e, isEditMode)}
                 style={{
                     ...baseBtn,
+                    // Active (editing) state stays clearly identifiable in both themes.
                     background: dark
                         ? isEditMode
                             ? DARK.btnActiveBg
