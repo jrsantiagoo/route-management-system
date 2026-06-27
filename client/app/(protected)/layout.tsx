@@ -35,7 +35,7 @@ export default function protectedLayout({
             />
             <Topbar sidebarCollapsed={collapsed} />
             <main
-                className={`${collapsed ? "ml-16" : "ml-64"}
+                className={`${collapsed ? "ml-20" : "ml-64"}
                     min-h-screen p-8 pt-23 bg-background text-foreground 
                     transition-[margin-left] duration-300`}
             >

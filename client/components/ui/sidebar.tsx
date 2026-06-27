@@ -27,7 +27,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
     return (
         <div
-            className={`fixed top-0 left-0 h-screen
+            className={`fixed top-0 left-0 h-screen z-30
                 ${collapsed ? "w-20" : "w-64"} 
                 bg-background border-r border-border
                 font-semibold transition-all duration-300`}
