@@ -46,8 +46,13 @@ export default function Assignment() {
     }, []);
 
     // Remove a trip by ID from the shared trips list
-    const handleDeleteTrip = useCallback((tripId: string) => {
-        setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
+    const handleDeleteTrip = useCallback(async (tripId: string) => {
+        try {
+            setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
+            await deleteTrip(tripId);
+        } catch (error) {
+            console.error("Failed to delete trip:", error);
+        }
     }, []);
 
     if (loading) {
