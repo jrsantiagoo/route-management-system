@@ -50,6 +50,14 @@ export default function Assignment() {
         setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
     }, []);
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64 text-muted-foreground">
+                Loading assignments…
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col gap-6">
             {/* Page Header */}

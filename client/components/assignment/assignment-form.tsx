@@ -51,9 +51,8 @@ export default function AssignmentForm({
 
         let newTrip;
         try {
-            newTrip = (await createTrip(route.id_, driver.id_, date))
-                .data as Trip;
-            console.log("success");
+            const result = await createTrip(route.id_, driver.id_, date);
+            newTrip = result.data as Trip;
         } catch (error) {
             console.error("Failed to create trip: ", error);
             return;
