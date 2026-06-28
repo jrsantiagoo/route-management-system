@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CalendarDays, List } from "lucide-react";
-//import { mockTrips, mockDrivers } from "@/lib/assignment/mockData";
-//import type { MockTrip } from "@/lib/assignment/mockData";
 import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
 import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
 import { getDrivers } from "@/lib/api/drivers";
