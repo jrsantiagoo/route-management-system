@@ -2,6 +2,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Stop } from "@/lib/routing/types";
+import { useTheme } from "@/lib/theme-context";
+import { DARK } from "./routeTheme";
 
 interface SortableStopItemProps {
     stop: Stop;
@@ -38,6 +40,13 @@ const ROLE_STYLES = {
     },
 };
 
+// Dark-mode box backgrounds/borders per role (badge colors are kept from above).
+const ROLE_STYLES_DARK = {
+    start: { bg: DARK.startBg, border: DARK.startBorder },
+    end: { bg: DARK.endBg, border: DARK.endBorder },
+    intermediate: { bg: DARK.midBg, border: DARK.midBorder },
+};
+
 export default function SortableStopItem({
     stop,
     role,
@@ -47,6 +56,8 @@ export default function SortableStopItem({
     distanceLabel,
     durationLabel,
 }: SortableStopItemProps) {
+    const { theme } = useTheme();
+    const dark = theme === "dark";
     const {
         attributes,
         listeners,
@@ -62,7 +73,11 @@ export default function SortableStopItem({
         opacity: isDragging ? 0.45 : 1,
     };
 
-    const { badge, badgeColor, bg, border, label } = ROLE_STYLES[role];
+    const { badge, badgeColor, label } = ROLE_STYLES[role];
+    const bg = dark ? ROLE_STYLES_DARK[role].bg : ROLE_STYLES[role].bg;
+    const border = dark
+        ? ROLE_STYLES_DARK[role].border
+        : ROLE_STYLES[role].border;
     const badgeContent = badge ?? String(stopNumber);
     const isEndpoint = role === "start" || role === "end";
 
@@ -76,7 +91,7 @@ export default function SortableStopItem({
                         alignItems: "center",
                         padding: "2px 8px 2px 32px",
                         fontSize: "11px",
-                        color: "#9ca3af",
+                        color: dark ? DARK.textMuted : "#9ca3af",
                         gap: "4px",
                     }}
                 >
@@ -84,7 +99,7 @@ export default function SortableStopItem({
                         style={{
                             width: "1px",
                             height: "12px",
-                            background: "#d1d5db",
+                            background: dark ? DARK.connector : "#d1d5db",
                             marginRight: "4px",
                         }}
                     />
@@ -164,7 +179,7 @@ export default function SortableStopItem({
                             style={{
                                 fontSize: "10px",
                                 fontWeight: 600,
-                                color: "#6b7280",
+                                color: dark ? DARK.textMuted : "#6b7280",
                                 textTransform: "uppercase",
                                 letterSpacing: "0.06em",
                                 marginBottom: "1px",
@@ -177,7 +192,7 @@ export default function SortableStopItem({
                         style={{
                             fontSize: "13px",
                             fontWeight: 500,
-                            color: "#111827",
+                            color: dark ? DARK.text : "#111827",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -189,7 +204,7 @@ export default function SortableStopItem({
                         <div
                             style={{
                                 fontSize: "11px",
-                                color: "#9ca3af",
+                                color: dark ? DARK.textMuted : "#9ca3af",
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",

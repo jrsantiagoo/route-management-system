@@ -19,6 +19,16 @@ export async function getOrderById(req, res) {
     }
 }
 
+export async function getTripOrders(req, res) {
+    try {
+        const { tripId } = req.params;
+        const orders = await orderService.getTripOrders(tripId);
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export async function createOrder(req, res) {
     try {
         const { client, destination, orderedOn, packageContent } = req.body;
