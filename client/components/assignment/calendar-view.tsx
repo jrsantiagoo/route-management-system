@@ -11,11 +11,11 @@ import {
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
-import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip } from "@/lib/routing/types";
 import type { Driver } from "@/lib/routing/types";
 
 interface CalendarViewProps {
-    trips: MockTrip[];
+    trips: Trip[];
     drivers: Driver[];
     onDeleted: (tripId: string) => void;
 }
@@ -59,7 +59,7 @@ export default function CalendarView({
     // Filter trips that fall within the current week
     const weekTrips = trips.filter((t) => {
         if (!t.scheduled_date || !t.driver_id_ || !t.route) return false;
-        const d = t.scheduled_date.slice(0, 10);
+        const d = t.scheduled_date.split("T")[0];
         return d >= weekStartStr && d <= weekEndStr;
     });
 
@@ -69,14 +69,15 @@ export default function CalendarView({
         Record<string, { tripId: string; routeName: string }[]>
     > = {};
     for (const trip of weekTrips) {
-        const driverKey = trip.agent_profile?.driver_id || trip.driver_id_;
+        const driverKey =
+            trip.agent_profile?.driver_id || trip.driver_id_ || "";
         const dayIndex = new Date(trip.scheduled_date).getDay();
         const dayName = DAYS[(dayIndex + 6) % 7];
         if (!grid[driverKey]) grid[driverKey] = {};
         if (!grid[driverKey][dayName]) grid[driverKey][dayName] = [];
         grid[driverKey][dayName].push({
             tripId: trip.id_,
-            routeName: trip.route.name,
+            routeName: trip.route.name || "",
         });
     }
 

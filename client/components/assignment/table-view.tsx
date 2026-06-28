@@ -10,13 +10,13 @@ import {
     Trash2,
     User,
 } from "lucide-react";
-import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 
 interface TableViewProps {
-    trips: MockTrip[];
+    trips: Trip[];
     onDeleted: (tripId: string) => void;
 }
 
@@ -73,7 +73,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     });
 
     // Sort trips by the currently active column
-    const getTripVal = useCallback((t: MockTrip, key: string) => {
+    const getTripVal = useCallback((t: Trip, key: string) => {
         switch (key) {
             case "route":
                 return t.route?.name ?? "";

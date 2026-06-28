@@ -5,7 +5,6 @@ import type { Driver } from "@/lib/routing/types";
 export const mockRoutes: RoutePlan[] = [
     {
         id_: "route-1",
-        id: "route-1",
         name: "Makati Loop",
         stops: [],
         segments: [],
@@ -17,7 +16,6 @@ export const mockRoutes: RoutePlan[] = [
     },
     {
         id_: "route-2",
-        id: "route-2",
         name: "BGC Express",
         stops: [],
         segments: [],
@@ -29,7 +27,6 @@ export const mockRoutes: RoutePlan[] = [
     },
     {
         id_: "route-3",
-        id: "route-3",
         name: "Ortigas Corridor",
         stops: [],
         segments: [],
@@ -41,7 +38,6 @@ export const mockRoutes: RoutePlan[] = [
     },
     {
         id_: "route-4",
-        id: "route-4",
         name: "Alabang Run",
         stops: [],
         segments: [],
@@ -53,7 +49,6 @@ export const mockRoutes: RoutePlan[] = [
     },
     {
         id_: "route-5",
-        id: "route-5",
         name: "Quezon City East",
         stops: [],
         segments: [],
@@ -65,7 +60,6 @@ export const mockRoutes: RoutePlan[] = [
     },
     {
         id_: "route-6",
-        id: "route-6",
         name: "Pasay–Taguig Link",
         stops: [],
         segments: [],

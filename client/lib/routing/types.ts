@@ -24,7 +24,6 @@ export interface RouteSegment {
 
 export interface RoutePlan {
     id_: string;
-    id: string;
     name: string;
     stops: Stop[];
     segments: RouteSegment[];
@@ -33,6 +32,20 @@ export interface RoutePlan {
     vehicleType: VehicleType;
     assignedWeek: string; // ISO Monday date string – set by the Assignment page
     createdAt: string; // ISO datetime string
+}
+
+export interface Trip {
+    id_: string;
+    status: string;
+    tag_type: string;
+    scheduled_date: string;
+    created_at: string;
+    purpose: string;
+    destination: string;
+    driver_id_?: string;
+    route_id_: string;
+    route: RoutePlan;
+    agent_profile?: Driver;
 }
 
 export interface SuggestedRoute {

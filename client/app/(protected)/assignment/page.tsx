@@ -1,19 +1,47 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CalendarDays, List } from "lucide-react";
-import { mockTrips, mockDrivers } from "@/lib/assignment/mockData";
-import type { MockTrip } from "@/lib/assignment/mockData";
+//import { mockTrips, mockDrivers } from "@/lib/assignment/mockData";
+//import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
+import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
+import { getDrivers } from "@/lib/api/drivers";
+import { getRoutes } from "@/lib/api/routes";
+
 import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
-    const [trips, setTrips] = useState<MockTrip[]>(mockTrips);
+    const [trips, setTrips] = useState<Trip[]>([]);
+    const [drivers, setDrivers] = useState<Driver[]>([]);
+    const [routes, setRoutes] = useState<RoutePlan[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [tripsRes, driversRes, routesRes] = await Promise.all([
+                    getAllTrips(),
+                    getDrivers(),
+                    getRoutes(),
+                ]);
+                setTrips(tripsRes.data);
+                setDrivers(driversRes.data);
+                setRoutes(routesRes.data);
+            } catch (err) {
+                console.error("Failed to load assignment data:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadData();
+    }, []);
 
     // Add a newly created trip to the shared trips list
-    const handleCreateTrip = useCallback((newTrip: MockTrip) => {
+    const handleCreateTrip = useCallback((newTrip: Trip) => {
         setTrips((prev) => [...prev, newTrip]);
     }, []);
 
@@ -35,7 +63,11 @@ export default function Assignment() {
             </div>
 
             <div className="flex items-center justify-between">
-                <AssignmentForm onCreated={handleCreateTrip} />
+                <AssignmentForm
+                    driverOptions={drivers}
+                    routeOptions={routes}
+                    onCreated={handleCreateTrip}
+                />
 
                 {/* Enables Calendar/Table view toggle */}
                 <div className="flex items-center rounded-lg border border-border bg-card p-px">
@@ -69,7 +101,7 @@ export default function Assignment() {
             {viewMode === "calendar" ? (
                 <CalendarView
                     trips={trips}
-                    drivers={mockDrivers}
+                    drivers={drivers}
                     onDeleted={handleDeleteTrip}
                 />
             ) : (
