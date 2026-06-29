@@ -1,5 +1,5 @@
-import { orders } from "@/lib/dashboard/mockData";
-import type { Order } from "@/lib/dashboard/mockData";
+// import { orders } from "@/lib/dashboard/mockData";
+import type { Order } from "@/lib/routing/types";
 import {
     CalendarClock,
     MapPinned,
@@ -13,37 +13,63 @@ import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 
+interface OrderTableProps {
+    orders: Order[];
+}
+
 // Orders Table Component with search functionality
-export default function OrdersTable() {
+export default function OrdersTable({ orders }: OrderTableProps) {
     const [search, setSearch] = useState("");
     const [clientFilter, setClientFilter] = useState("All");
     const [destinationFilter, setDestinationFilter] = useState("All");
     const [contentFilter, setContentFilter] = useState("All");
+    const [statusFilter, setStatusFilter] = useState("All");
 
     const clients = [...new Set(orders.map((o) => o.client))];
-    const destinations = [...new Set(orders.map((o) => o.destination))];
-    const contents = [...new Set(orders.map((o) => o.packageContent))];
+    const destinations = [
+        ...new Set(
+            orders
+                .map((o) => o.destination)
+                .filter((d): d is string => d !== undefined),
+        ),
+    ];
+    const contents = [
+        ...new Set(
+            orders
+                .map((o) => o.package_content)
+                .filter((c): c is string => c !== undefined),
+        ),
+    ];
+    const statuses = [...new Set(orders.map((o) => o.status))];
 
     const filtered = orders.filter((o) => {
         const matchesSearch =
             search === "" ||
-            o.id.toLowerCase().includes(search.toLowerCase()) ||
+            o.order_id.toLowerCase().includes(search.toLowerCase()) ||
             o.client.toLowerCase().includes(search.toLowerCase()) ||
-            o.destination.toLowerCase().includes(search.toLowerCase()) ||
-            o.packageContent.toLowerCase().includes(search.toLowerCase());
+            (o.destination ?? "")
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+            (o.package_content ?? "")
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+            o.status.toLowerCase().includes(search.toLowerCase());
 
         const matchesClient =
             clientFilter === "All" || o.client === clientFilter;
         const matchesDestination =
             destinationFilter === "All" || o.destination === destinationFilter;
         const matchesContent =
-            contentFilter === "All" || o.packageContent === contentFilter;
+            contentFilter === "All" || o.package_content === contentFilter;
+        const matchesStatus =
+            statusFilter === "All" || o.status === statusFilter;
 
         return (
             matchesSearch &&
             matchesClient &&
             matchesDestination &&
-            matchesContent
+            matchesContent &&
+            matchesStatus
         );
     });
 
@@ -51,21 +77,23 @@ export default function OrdersTable() {
     const getOrderVal = useCallback((o: Order, key: string) => {
         switch (key) {
             case "id":
-                return o.id;
+                return o.order_id;
             case "client":
                 return o.client;
             case "destination":
-                return o.destination;
+                return o.destination ?? "";
             case "orderedOn":
-                return o.orderedOn;
+                return o.ordered_on;
             case "deliverBy":
-                return o.deliverBy;
+                return o.delivered_by ?? "";
             case "packageContent":
-                return o.packageContent;
+                return o.package_content ?? "";
             case "packageSize":
-                return o.packageSize;
+                return o.package_size ?? "";
             case "packageWeight":
-                return o.packageWeight;
+                return o.package_weight ?? "";
+            case "status":
+                return o.status ?? "";
             default:
                 return "";
         }
@@ -118,6 +146,12 @@ export default function OrdersTable() {
                     value={contentFilter}
                     options={contents}
                     onChange={setContentFilter}
+                />
+                <FilterSelect
+                    label="All Statuses"
+                    value={statusFilter}
+                    options={statuses}
+                    onChange={setStatusFilter}
                 />
             </div>
 
@@ -214,28 +248,53 @@ export default function OrdersTable() {
                             >
                                 Package Weight
                             </SortableHeader>
+                            <SortableHeader
+                                sortKey="status"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                                className="bg-card rounded-tr-lg"
+                            >
+                                Status
+                            </SortableHeader>
                         </tr>
                     </thead>
                     <tbody>
                         {sortedOrders.map((o) => (
                             <tr
-                                key={o.id}
+                                key={o.id_}
                                 className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
                             >
                                 <td className="px-3 py-2 font-medium ">
-                                    {o.id}
+                                    {o.order_id}
                                 </td>
                                 <td className="px-3 py-2 ">{o.client}</td>
-                                <td className="px-3 py-2 ">{o.destination}</td>
-                                <td className="px-3 py-2 ">{o.orderedOn}</td>
-                                <td className="px-3 py-2 ">{o.deliverBy}</td>
                                 <td className="px-3 py-2 ">
-                                    {o.packageContent}
+                                    {o.destination || "—"}
                                 </td>
-                                <td className="px-3 py-2 ">{o.packageSize}</td>
                                 <td className="px-3 py-2 ">
-                                    {o.packageWeight}
+                                    {
+                                        new Date(o.ordered_on)
+                                            .toISOString()
+                                            .split("T")[0]
+                                    }
                                 </td>
+                                <td className="px-3 py-2 ">
+                                    {o.delivered_by
+                                        ? new Date(o.delivered_by)
+                                              .toISOString()
+                                              .split("T")[0]
+                                        : "—"}
+                                </td>
+                                <td className="px-3 py-2 ">
+                                    {o.package_content || "—"}
+                                </td>
+                                <td className="px-3 py-2 ">
+                                    {o.package_size || "—"}
+                                </td>
+                                <td className="px-3 py-2 ">
+                                    {o.package_weight || "—"}
+                                </td>
+                                <td className="px-3 py-2 ">{o.status}</td>
                             </tr>
                         ))}
                         {filtered.length === 0 && (

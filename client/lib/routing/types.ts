@@ -48,6 +48,19 @@ export interface Trip {
     agent_profile?: Driver;
 }
 
+export interface Order {
+    id_: string;
+    order_id: string;
+    client: string;
+    destination?: string;
+    ordered_on: string;
+    delivered_by?: string;
+    package_content?: string;
+    package_size?: string;
+    package_weight?: string;
+    status: string;
+}
+
 export interface SuggestedRoute {
     id: string;
     name: string;

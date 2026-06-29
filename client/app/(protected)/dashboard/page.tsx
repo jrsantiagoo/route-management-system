@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ComposedChart,
     Bar,
@@ -19,7 +19,10 @@ import DateRangePicker, {
 import StatCard from "@/components/dashboard/stat-card";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
-import { orders } from "@/lib/dashboard/mockData";
+//import { orders } from "@/lib/dashboard/mockData";
+import { getOrders } from "@/lib/api/orders";
+import type { Order } from "@/lib/routing/types";
+
 import {
     dailyDistanceWithTrend,
     dailyFuelWithTrend,
@@ -28,12 +31,19 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
 // Dashboard Page Component
 export default function Dashboard() {
+    const [orders, setOrders] = useState<Order[]>([]);
+
+    useEffect(() => {
+        getOrders().then((res) => setOrders(res.data));
+    }, []);
+
     // Derive stats from orders data
     const totalTrips = orders.length;
     const onTimeThreshold = 5;
     const onTime = orders.filter((o) => {
-        const [oy, om, od] = o.orderedOn.split("-").map(Number);
-        const [dy, dm, dd] = o.deliverBy.split("-").map(Number);
+        const [oy, om, od] = o.ordered_on.split("-").map(Number);
+        if (!o.delivered_by) return false;
+        const [dy, dm, dd] = o.delivered_by.split("-").map(Number);
         const orderDate = new Date(oy, om - 1, od);
         const deliverDate = new Date(dy, dm - 1, dd);
         const diffDays =
@@ -220,7 +230,7 @@ export default function Dashboard() {
             </div>
 
             {/* Orders Table */}
-            <OrdersTable />
+            <OrdersTable orders={orders} />
         </div>
     );
 }
