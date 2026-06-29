@@ -21,7 +21,8 @@ import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
 //import { orders } from "@/lib/dashboard/mockData";
 import { getOrders } from "@/lib/api/orders";
-import type { Order } from "@/lib/routing/types";
+import { getAllTrips } from "@/lib/api/trips";
+import type { Trip, Order } from "@/lib/routing/types";
 
 import {
     dailyDistanceWithTrend,
@@ -32,13 +33,15 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 // Dashboard Page Component
 export default function Dashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
+    const [trips, setTrips] = useState<Trip[]>([]);
 
     useEffect(() => {
         getOrders().then((res) => setOrders(res.data));
+        getAllTrips().then((res) => setTrips(res.data));
     }, []);
 
     // Derive stats from orders data
-    const totalTrips = orders.length;
+    const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
     const onTimeThreshold = 5;
     const onTime = orders.filter((o) => {
         const [oy, om, od] = o.ordered_on.split("-").map(Number);
@@ -52,7 +55,7 @@ export default function Dashboard() {
         return diffDays <= onTimeThreshold;
     }).length;
     const efficiency = Math.round((onTime / totalTrips) * 100);
-    const delivered = orders.length;
+    const delivered = orders.filter((o) => o.status === "COMPLETED").length;
 
     // Lifted date range state
     const now = new Date();
@@ -87,7 +90,7 @@ export default function Dashboard() {
     const comparisonLabel = presetComparison[range.preset];
 
     // Derive subtitle for each stat card
-    const tripsSubtitle = `out of ${orders.length} total trips`;
+    const tripsSubtitle = `out of ${trips.length} total trips`;
     const deliveredSubtitle = `out of ${orders.length} total orders`;
     const efficiencySubtitle: React.ReactNode =
         comparisonLabel === undefined ? undefined : (
