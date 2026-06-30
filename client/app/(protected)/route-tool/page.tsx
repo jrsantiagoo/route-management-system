@@ -14,6 +14,7 @@ import {
     loadSavedRoutes,
     isRouteNameTaken,
 } from "@/lib/routing/storageHelper";
+import { createRoute } from "@/lib/api/routes";
 import { recommendVehicle } from "@/lib/routing/vehicleLogic";
 import RouteMap from "@/components/routing/RouteMap";
 import RouteToolbar from "@/components/routing/RouteToolbar";
@@ -101,7 +102,7 @@ export default function RoutingTool() {
         setIsEditMode(false);
     }
 
-    function handleConfirmSave(name: string) {
+    async function handleConfirmSave(name: string) {
         // Guard against a name added in another tab between opening and saving.
         if (isRouteNameTaken(name, routeIdRef.current)) return;
 
@@ -122,7 +123,17 @@ export default function RoutingTool() {
         // Fresh id so the next save creates a new record instead of overwriting.
         routeIdRef.current = generateRouteId();
         setIsSaveOpen(false);
-        setToast("Route saved successfully.");
+
+        try {
+            const res = await createRoute(plan);
+            if (res.success) {
+                setToast("Route saved successfully.");
+            } else {
+                setToast(res.message || "Failed to save route.");
+            }
+        } catch {
+            setToast("Failed to save route to server. Saved locally.");
+        }
     }
 
     return (
