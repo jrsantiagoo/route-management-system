@@ -106,7 +106,7 @@ export async function getOrdersRange(startDate, endDate) {
     return prisma.order.findMany({
         where: {
             ...(Object.keys(dateFilter).length > 0 && {
-                ordered_on: dateFilter,
+                OR: [{ ordered_on: dateFilter }, { delivered_by: dateFilter }],
             }),
         },
         orderBy: { ordered_on: "asc" },

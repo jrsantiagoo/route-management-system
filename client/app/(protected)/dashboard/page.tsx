@@ -19,8 +19,8 @@ import DateRangePicker, {
 import StatCard from "@/components/dashboard/stat-card";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
-import { getOrders } from "@/lib/api/orders";
-import { getAllTrips } from "@/lib/api/trips";
+import { getOrders, getOrdersRange } from "@/lib/api/orders";
+import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import { getEfficiency } from "@/lib/api/efficiency";
 import type { Trip, Order } from "@/lib/routing/types";
@@ -30,17 +30,6 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
 // Dashboard Page Component
 export default function Dashboard() {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [trips, setTrips] = useState<Trip[]>([]);
-
-    useEffect(() => {
-        getOrders().then((res) => setOrders(res.data));
-        getAllTrips().then((res) => setTrips(res.data));
-    }, []);
-
-    // Derive stats from orders data
-    const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
-    const delivered = orders.filter((o) => o.status === "COMPLETED").length;
     // const onTimeThreshold = 5;
     // const onTime = orders.filter((o) => {
     //     const [oy, om, od] = o.ordered_on.split("-").map(Number);
@@ -87,14 +76,31 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [trips, setTrips] = useState<Trip[]>([]);
+
+    useEffect(() => {
+        getOrdersRange(range.start, range.end).then((res) =>
+            setOrders(res.data),
+        );
+        getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
+    }, [range]);
+
+    // Derive stats from orders data
+    const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
+    const delivered = orders.filter((o) => o.status === "COMPLETED").length;
+
     // Fuel per Order
     const [fuelData, setFuelData] = useState<
         { day: string; fuel: number; trend: number }[]
     >([]);
+    // Distance per Order
     const [distanceData, setDistanceData] = useState<
         { day: string; distance: number; trend: number }[]
     >([]);
+    // Overall Efficiency
     const [efficiency, setEfficiency] = useState<number>(0);
+    // For Efficiency Comparison
     const [previousEfficiency, setPreviousEfficiency] = useState<number | null>(
         null,
     );
@@ -121,6 +127,7 @@ export default function Dashboard() {
             );
             setFuelData(computeTrend(mapped, "fuel"));
         });
+
         getEfficiency(range.start, range.end).then((res) => {
             if (res.success) setEfficiency(res.data);
         });
@@ -133,6 +140,7 @@ export default function Dashboard() {
                 });
             }
         }
+
         getDistancePerOrder(range.start, range.end).then((res) => {
             const mapped = (res.data ?? []).map(
                 (d: { date: string; distancePerOrder: number }) => ({
