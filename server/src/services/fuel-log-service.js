@@ -1,6 +1,45 @@
 import prisma from "../lib/prisma.js";
 import * as orderdService from "./order-service.js";
 
+export function buildDailyPerOrderMetrics(
+    logs,
+    orders,
+    valueKey,
+    totalKey,
+    perOrderKey,
+) {
+    const buckets = {};
+
+    for (const log of logs) {
+        const dateKey = new Date(log.log_date).toISOString().split("T")[0];
+
+        if (!buckets[dateKey]) {
+            buckets[dateKey] = { [totalKey]: 0, orderCount: 0 };
+        }
+
+        buckets[dateKey][totalKey] += Number(log[valueKey] || 0);
+    }
+
+    for (const order of orders) {
+        const dateKey = new Date(order.delivered_by)
+            .toISOString()
+            .split("T")[0];
+
+        if (!buckets[dateKey]) continue;
+
+        buckets[dateKey].orderCount += 1;
+    }
+
+    return Object.entries(buckets)
+        .map(([date, data]) => ({
+            date,
+            [totalKey]: data[totalKey],
+            orderCount: data.orderCount,
+            [perOrderKey]: data.orderCount > 0 ? data[totalKey] / data.orderCount : 0,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+}
+
 // --- ALL FUEL LOGS ---
 export async function getAllLogs() {
     return prisma.fuel_log.findMany({
@@ -44,6 +83,7 @@ export async function getLogsRange(startDate, endDate) {
         select: {
             log_date: true,
             liters_added: true,
+            distance_traveled: true,
         },
         orderBy: { log_date: "asc" },
     });
@@ -57,37 +97,28 @@ export async function dailyFuelPerOrder(startDate, endDate) {
         endDate,
     );
 
-    // Grouping by day
-    const buckets = {}; // { "2026-06-23": { totalFuel, totalDistance, count } }
+    return buildDailyPerOrderMetrics(
+        fuelLogs,
+        orders,
+        "liters_added",
+        "totalFuel",
+        "fuelPerOrder",
+    );
+}
 
-    for (const log of fuelLogs) {
-        // Extract just the date part, e.g. "2026-06-23"
-        const dateKey = new Date(log.log_date).toISOString().split("T")[0];
+// --- DAILY DISTANCE TRAVELED PER ORDER ---
+export async function dailyDistancePerOrder(startDate, endDate) {
+    const fuelLogs = await getLogsRange(startDate, endDate);
+    const orders = await orderdService.getDeliveredOrdersRange(
+        startDate,
+        endDate,
+    );
 
-        if (!buckets[dateKey]) {
-            buckets[dateKey] = { totalFuel: 0, orderCount: 0 };
-        }
-        buckets[dateKey].totalFuel += log.liters_added;
-        buckets[dateKey].count += 1;
-    }
-
-    for (const order of orders) {
-        const dateKey = new Date(order.delivered_by)
-            .toISOString()
-            .split("T")[0];
-
-        if (!buckets[dateKey]) continue;
-
-        buckets[dateKey].orderCount += 1;
-    }
-
-    return Object.entries(buckets)
-        .map(([date, data]) => ({
-            date,
-            totalFuel: data.totalFuel,
-            orderCount: data.orderCount,
-            fuelPerOrder:
-                data.orderCount > 0 ? data.totalFuel / data.orderCount : 0,
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
+    return buildDailyPerOrderMetrics(
+        fuelLogs,
+        orders,
+        "distance_traveled",
+        "totalDistance",
+        "distancePerOrder",
+    );
 }
