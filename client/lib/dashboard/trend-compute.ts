@@ -17,5 +17,6 @@ export function computeTrend<T extends Record<string, unknown>>(
     });
 }
 
+// Mock Data
 export const dailyDistanceWithTrend = computeTrend( dailyDistanceData, "distance");
 export const dailyFuelWithTrend = computeTrend(dailyFuelData, "fuel");
