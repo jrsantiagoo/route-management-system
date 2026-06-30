@@ -19,7 +19,6 @@ import DateRangePicker, {
 import StatCard from "@/components/dashboard/stat-card";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
-//import { orders } from "@/lib/dashboard/mockData";
 import { getOrders } from "@/lib/api/orders";
 import { getAllTrips } from "@/lib/api/trips";
 import { getFuelPerOrder } from "@/lib/api/fuel-log";
@@ -28,7 +27,6 @@ import type { Trip, Order } from "@/lib/routing/types";
 import {
     dailyDistanceWithTrend,
     computeTrend,
-    // dailyFuelWithTrend,
 } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
@@ -36,22 +34,10 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 export default function Dashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
-    const [fuelData, setFuelData] = useState<
-        { day: string; fuel: number; trend: number }[]
-    >([]);
 
     useEffect(() => {
         getOrders().then((res) => setOrders(res.data));
         getAllTrips().then((res) => setTrips(res.data));
-        getFuelPerOrder(range.start, range.end).then((res) => {
-            const mapped = (res.data ?? []).map(
-                (d: { date: string; fuelPerOrder: number }) => ({
-                    day: d.date,
-                    fuel: d.fuelPerOrder,
-                }),
-            );
-            setFuelData(computeTrend(mapped, "fuel"));
-        });
     }, []);
 
     // Derive stats from orders data
@@ -81,7 +67,7 @@ export default function Dashboard() {
         start: string;
         end: string;
         preset: Preset;
-    }>({ start: firstOfMonth, end: today, preset: "thisMonth" });
+    }>({ start: firstOfMonth, end: today, preset: "thisWeek" });
 
     // Maps selected preset to a comparison period.
     // Returns undefined for "allTime" & "custom" to hide subtitle.
@@ -93,6 +79,22 @@ export default function Dashboard() {
         allTime: undefined,
         custom: undefined,
     };
+
+    const [fuelData, setFuelData] = useState<
+        { day: string; fuel: number; trend: number }[]
+    >([]);
+
+    useEffect(() => {
+        getFuelPerOrder(range.start, range.end).then((res) => {
+            const mapped = (res.data ?? []).map(
+                (d: { date: string; fuelPerOrder: number }) => ({
+                    day: d.date,
+                    fuel: d.fuelPerOrder,
+                }),
+            );
+            setFuelData(computeTrend(mapped, "fuel"));
+        });
+    }, [range]);
 
     // Placeholder Value
     const efficiencyChange = 30;
