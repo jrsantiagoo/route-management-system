@@ -27,6 +27,17 @@ export async function getAllTrips() {
     return response.json();
 }
 
+export async function getTripsRange(startDate?: string, endDate?: string) {
+    const response = await fetch(`${API_URL}/api/trips/trips_date_range`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ startDate, endDate }),
+    });
+    return await response.json();
+}
+
 export async function getTripsByDriver(driverId: string) {
     const response = await fetch(`${API_URL}/api/trips/driver/${driverId}`);
     return response.json();

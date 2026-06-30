@@ -5,6 +5,7 @@ import {
     getTripsForDriver,
     getTripDetail,
     getAllTrips,
+    getTripsRange,
     createTrip,
     deleteTrip,
     getAssignmentGrid,
@@ -13,6 +14,7 @@ import {
 const router = Router();
 
 router.get("/", getAllTrips);
+router.post("/trips_date_range", getTripsRange);
 router.post("/", createTrip);
 router.post("/assign", assignTripToDriver);
 router.patch("/:id/status", changeTripStatus);

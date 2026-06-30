@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import * as orderdService from "./order-service.js";
+import * as orderService from "./order-service.js";
 
 export function buildDailyPerOrderMetrics(
     logs,
@@ -35,7 +35,8 @@ export function buildDailyPerOrderMetrics(
             date,
             [totalKey]: data[totalKey],
             orderCount: data.orderCount,
-            [perOrderKey]: data.orderCount > 0 ? data[totalKey] / data.orderCount : 0,
+            [perOrderKey]:
+                data.orderCount > 0 ? data[totalKey] / data.orderCount : 0,
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -85,11 +86,6 @@ export async function getLogsRange(startDate, endDate) {
             deleted_at: null,
             ...(Object.keys(dateFilter).length > 0 && { log_date: dateFilter }),
         },
-        select: {
-            log_date: true,
-            liters_added: true,
-            distance_traveled: true,
-        },
         orderBy: { log_date: "asc" },
     });
 }
@@ -97,7 +93,7 @@ export async function getLogsRange(startDate, endDate) {
 // --- DAILY FUEL CONSUMPTION PER ORDER ---
 export async function dailyFuelPerOrder(startDate, endDate) {
     const fuelLogs = await getLogsRange(startDate, endDate);
-    const orders = await orderdService.getDeliveredOrdersRange(
+    const orders = await orderService.getDeliveredOrdersRange(
         startDate,
         endDate,
     );
@@ -114,7 +110,7 @@ export async function dailyFuelPerOrder(startDate, endDate) {
 // --- DAILY DISTANCE TRAVELED PER ORDER ---
 export async function dailyDistancePerOrder(startDate, endDate) {
     const fuelLogs = await getLogsRange(startDate, endDate);
-    const orders = await orderdService.getDeliveredOrdersRange(
+    const orders = await orderService.getDeliveredOrdersRange(
         startDate,
         endDate,
     );

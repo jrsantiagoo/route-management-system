@@ -19,54 +19,51 @@ import DateRangePicker, {
 import StatCard from "@/components/dashboard/stat-card";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
-import { getOrders } from "@/lib/api/orders";
-import { getAllTrips } from "@/lib/api/trips";
+import { getOrders, getOrdersRange } from "@/lib/api/orders";
+import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
+import { getEfficiency } from "@/lib/api/efficiency";
 import type { Trip, Order } from "@/lib/routing/types";
 
-import {
-    computeTrend,
-} from "@/lib/dashboard/trend-compute";
+import { computeTrend } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
 // Dashboard Page Component
 export default function Dashboard() {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [trips, setTrips] = useState<Trip[]>([]);
-
-    useEffect(() => {
-        getOrders().then((res) => setOrders(res.data));
-        getAllTrips().then((res) => setTrips(res.data));
-    }, []);
-
-    // Derive stats from orders data
-    const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
-    const onTimeThreshold = 5;
-    const onTime = orders.filter((o) => {
-        const [oy, om, od] = o.ordered_on.split("-").map(Number);
-        if (!o.delivered_by) return false;
-        const [dy, dm, dd] = o.delivered_by.split("-").map(Number);
-        const orderDate = new Date(oy, om - 1, od);
-        const deliverDate = new Date(dy, dm - 1, dd);
-        const diffDays =
-            (deliverDate.getTime() - orderDate.getTime()) /
-            (1000 * 60 * 60 * 24);
-        return diffDays <= onTimeThreshold;
-    }).length;
-    const efficiency = Math.round((onTime / totalTrips) * 100);
-    const delivered = orders.filter((o) => o.status === "COMPLETED").length;
+    // const onTimeThreshold = 5;
+    // const onTime = orders.filter((o) => {
+    //     const [oy, om, od] = o.ordered_on.split("-").map(Number);
+    //     if (!o.delivered_by) return false;
+    //     const [dy, dm, dd] = o.delivered_by.split("-").map(Number);
+    //     const orderDate = new Date(oy, om - 1, od);
+    //     const deliverDate = new Date(dy, dm - 1, dd);
+    //     const diffDays =
+    //         (deliverDate.getTime() - orderDate.getTime()) /
+    //         (1000 * 60 * 60 * 24);
+    //     return diffDays <= onTimeThreshold;
+    // }).length;
+    // const efficiency = Math.round((onTime / totalTrips) * 100);
 
     // Lifted date range state
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-        .toISOString()
-        .slice(0, 10);
+    // const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    //     .toISOString()
+    //     .slice(0, 10);
+    const dayOfWeek = now.getDay();
+    const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - diff,
+    );
+    const firstOfWeek = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+
     const [range, setRange] = useState<{
         start: string;
         end: string;
         preset: Preset;
-    }>({ start: firstOfMonth, end: today, preset: "thisWeek" });
+    }>({ start: firstOfWeek, end: today, preset: "thisWeek" });
 
     // Maps selected preset to a comparison period.
     // Returns undefined for "allTime" & "custom" to hide subtitle.
@@ -79,11 +76,46 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [trips, setTrips] = useState<Trip[]>([]);
+
+    useEffect(() => {
+        getOrdersRange(range.start, range.end).then((res) =>
+            setOrders(res.data),
+        );
+        getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
+    }, [range]);
+
+    // Derive stats from orders data
+    const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
+    const delivered = orders.filter((o) => o.status === "COMPLETED").length;
 
     // Fuel per Order
     const [fuelData, setFuelData] = useState<
         { day: string; fuel: number; trend: number }[]
     >([]);
+    // Distance per Order
+    const [distanceData, setDistanceData] = useState<
+        { day: string; distance: number; trend: number }[]
+    >([]);
+    // Overall Efficiency
+    const [efficiency, setEfficiency] = useState<number>(0);
+    // For Efficiency Comparison
+    const [previousEfficiency, setPreviousEfficiency] = useState<number | null>(
+        null,
+    );
+
+    function getComparisonRange(start: string, end: string) {
+        const s = new Date(start),
+            e = new Date(end);
+        const periodMs = e.getTime() - s.getTime();
+        const prevEnd = new Date(s.getTime() - 86400000);
+        const prevStart = new Date(prevEnd.getTime() - periodMs);
+        return {
+            start: prevStart.toISOString().slice(0, 10),
+            end: prevEnd.toISOString().slice(0, 10),
+        };
+    }
 
     useEffect(() => {
         getFuelPerOrder(range.start, range.end).then((res) => {
@@ -95,14 +127,20 @@ export default function Dashboard() {
             );
             setFuelData(computeTrend(mapped, "fuel"));
         });
-    }, [range]);
 
-    // Distance per Order
-    const [distanceData, setDistanceData] = useState<
-        { day: string; distance: number; trend: number }[]
-    >([]);
+        getEfficiency(range.start, range.end).then((res) => {
+            if (res.success) setEfficiency(res.data);
+        });
 
-    useEffect(() => {
+        if (presetComparison[range.preset] !== undefined) {
+            const compRange = getComparisonRange(range.start, range.end);
+            if (compRange) {
+                getEfficiency(compRange.start, compRange.end).then((res) => {
+                    if (res.success) setPreviousEfficiency(res.data);
+                });
+            }
+        }
+
         getDistancePerOrder(range.start, range.end).then((res) => {
             const mapped = (res.data ?? []).map(
                 (d: { date: string; distancePerOrder: number }) => ({
@@ -114,8 +152,13 @@ export default function Dashboard() {
         });
     }, [range]);
 
-    // Placeholder Value
-    const efficiencyChange = 30;
+    const efficiencyChange =
+        previousEfficiency !== null && previousEfficiency !== 0
+            ? Math.round(
+                  ((efficiency - previousEfficiency) / previousEfficiency) *
+                      100,
+              )
+            : 0;
 
     // Checks if efficiency is going up or down
     const isEfficiencyPositive = efficiencyChange >= 0;
