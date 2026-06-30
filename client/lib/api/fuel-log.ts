@@ -13,3 +13,17 @@ export async function getFuelPerOrder(startDate?: string, endDate?: string) {
     );
     return await response.json();
 }
+
+export async function getDistancePerOrder(startDate?: string, endDate?: string) {
+    const response = await fetch(
+        `${API_URL}/api/fuel_logs/daily_distance_per_order`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ startDate, endDate }),
+        },
+    );
+    return await response.json();
+}

@@ -21,11 +21,10 @@ import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
 import { getOrders } from "@/lib/api/orders";
 import { getAllTrips } from "@/lib/api/trips";
-import { getFuelPerOrder } from "@/lib/api/fuel-log";
+import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import type { Trip, Order } from "@/lib/routing/types";
 
 import {
-    dailyDistanceWithTrend,
     computeTrend,
 } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
@@ -80,6 +79,8 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+
+    // Fuel per Order
     const [fuelData, setFuelData] = useState<
         { day: string; fuel: number; trend: number }[]
     >([]);
@@ -93,6 +94,23 @@ export default function Dashboard() {
                 }),
             );
             setFuelData(computeTrend(mapped, "fuel"));
+        });
+    }, [range]);
+
+    // Distance per Order
+    const [distanceData, setDistanceData] = useState<
+        { day: string; distance: number; trend: number }[]
+    >([]);
+
+    useEffect(() => {
+        getDistancePerOrder(range.start, range.end).then((res) => {
+            const mapped = (res.data ?? []).map(
+                (d: { date: string; distancePerOrder: number }) => ({
+                    day: d.date,
+                    distance: d.distancePerOrder,
+                }),
+            );
+            setDistanceData(computeTrend(mapped, "distance"));
         });
     }, [range]);
 
@@ -179,7 +197,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <ChartCard title="Average Distance per Order (km)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={dailyDistanceWithTrend}>
+                        <ComposedChart data={distanceData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />

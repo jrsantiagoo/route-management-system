@@ -17,8 +17,5 @@ export function computeTrend<T extends Record<string, unknown>>(
     });
 }
 
-export const dailyDistanceWithTrend = computeTrend(
-    dailyDistanceData,
-    "distance",
-);
+export const dailyDistanceWithTrend = computeTrend( dailyDistanceData, "distance");
 export const dailyFuelWithTrend = computeTrend(dailyFuelData, "fuel");
