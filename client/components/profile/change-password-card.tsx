@@ -2,11 +2,29 @@
 
 import { useState } from "react";
 import { Lock } from "lucide-react";
+import { changePassword } from "../../lib/api/auth";
 
 export default function ChangePasswordCard() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const result = await changePassword(currentPassword, newPassword, confirmPassword);
+            if (result.error) {
+                alert(result.error); // or show error in UI
+            } else {
+                alert("Password changed successfully!");
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong. Please try again.");
+        }
+    };
 
     return (
         <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border shadow-xl shadow-primary">
@@ -20,7 +38,7 @@ export default function ChangePasswordCard() {
 
             {/* Enables Password Change */}
             <form
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleSubmit}
                 className="flex flex-col gap-6 pl-7 pr-7 pb-7 pt-5"
             >
                 {/* Current Password Input */}
