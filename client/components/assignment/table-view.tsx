@@ -34,6 +34,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [routeFilter, setRouteFilter] = useState("All");
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
+    const [statusFilter, setStatusFilter] = useState("All");
 
     const routeOptions = [
         ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
@@ -51,6 +52,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 .map((d) => formatDate(d)),
         ),
     ] as string[];
+    const statusOptions = [...new Set(trips.map((t) => t.status))];
 
     // Filter trips by route name or driver ID
     const filtered = trips.filter((t) => {
@@ -67,8 +69,14 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
         const matchesScheduled =
             scheduledFilter === "All" ||
             formatDate(t.scheduled_date) === scheduledFilter;
+        const matchesStatus =
+            statusFilter === "All" || t.status === statusFilter;
         return (
-            matchesSearch && matchesRoute && matchesDriver && matchesScheduled
+            matchesSearch &&
+            matchesRoute &&
+            matchesDriver &&
+            matchesScheduled &&
+            matchesStatus
         );
     });
 
@@ -87,6 +95,8 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 return t.scheduled_date ?? "";
             case "created_at":
                 return t.created_at ?? "";
+            case "status":
+                return t.status;
             default:
                 return "";
         }
@@ -140,6 +150,12 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                     value={scheduledFilter}
                     options={scheduledOptions}
                     onChange={setScheduledFilter}
+                />
+                <FilterSelect
+                    label="All Statuses"
+                    value={statusFilter}
+                    options={statusOptions}
+                    onChange={setStatusFilter}
                 />
             </div>
 
@@ -211,6 +227,13 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 />
                                 Created At
                             </SortableHeader>
+                            <SortableHeader
+                                sortKey="status"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                Status
+                            </SortableHeader>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
                                 Actions
                             </th>
@@ -240,6 +263,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {formatDate(t.created_at)}
                                 </td>
+                                <td className="px-3 py-2">{t.status}</td>
                                 <td className="pl-7 px-3 py-2">
                                     <button
                                         onClick={() => onDeleted(t.id_)}
