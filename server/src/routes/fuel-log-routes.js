@@ -8,5 +8,6 @@ router.get("/", fuelLogController.getAllLogs);
 router.post("/", fuelLogController.createLog);
 router.put("/:logId", fuelLogController.updateLog);
 router.post("/daily_fuel_per_order", fuelLogController.dailyFuelPerOrder);
+router.post("/daily_distance_per_order", fuelLogController.dailyDistancePerOrder);
 
 export default router;
