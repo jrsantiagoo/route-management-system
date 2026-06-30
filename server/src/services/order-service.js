@@ -73,6 +73,7 @@ export async function getTripOrders(tripId) {
     });
 }
 
+// --- GET DELIVERED ORDERS GIVEN A DATE RANGE ---
 export async function getDeliveredOrdersRange(startDate, endDate) {
     const dateFilter = {};
     if (startDate) dateFilter.gte = new Date(startDate);
@@ -89,6 +90,26 @@ export async function getDeliveredOrdersRange(startDate, endDate) {
             }),
         },
         orderBy: { delivered_by: "asc" },
+    });
+}
+
+// --- GET ORDERS GIVEN A DATE RANGE ---
+export async function getOrdersRange(startDate, endDate) {
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+        // Set to the end of the day instead of the start of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateFilter.lte = end;
+    }
+    return prisma.order.findMany({
+        where: {
+            ...(Object.keys(dateFilter).length > 0 && {
+                ordered_on: dateFilter,
+            }),
+        },
+        orderBy: { ordered_on: "asc" },
     });
 }
 
