@@ -127,61 +127,15 @@ model trip {
   //@@schema("trips")
 }
 
-model order {
-  id_                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_id           String      @unique
-  client             String
-  destination        String?     
-  ordered_on         DateTime    @db.Timestamptz(6)
-  delivered_by       DateTime?   @db.Timestamptz(6)
-  package_content    String?
-  package_size       String?     
-  package_weight     Float?
-  status             OrderStatus   @default(PENDING)
-
-  trip_id_           String?       @db.Uuid
-  created_at         DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime      @updatedAt @db.Timestamptz(6)
-
-  trip               trip?         @relation(fields: [trip_id_], references: [id_], onDelete: SetNull)
-
-  @@index([trip_id_])
-}
-
-model fuel_log {
-  id_                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  log_date            DateTime?   @db.Timestamptz(6)
-  odometer_reading    Float
-  liters_added        Float
-  price_per_liter     Float
-  total_price         Float
-  receipt_url         String?     @db.Text
-  notes               String?     @db.Text
-
-  distance_traveled   Float
-  fuel_efficiency     Float
-  cost_per_km         Float
-  variance_percentage Float
-  needs_attention     Boolean
-
-  created_at          DateTime    @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime    @updatedAt @db.Timestamptz(6)
-  deleted_at          DateTime?   @db.Timestamptz(6)
-
-  // Foreign Keys
-  driver_id_          String?     @db.Uuid // FK to agent_profile
-  //vehicle_id_ String  @db.Uuid
-  //tenant_id_  String  @db.Uuid
-
-  // Relations
-  agent_profile       agent_profile? @relation(fields: [driver_id_], references: [id_])
-  // vehicle       vehicle        @relation(fields: [vehicle_id_], references: [id_])
-
-  // Indexes
-  //@@index([created_at, updated_at, vehicle_id_, tenant_id_])
-  @@index([created_at, updated_at])
-  @@map("fuel_log")
-  //@@schema("vehicles")
+model order_information {
+  id_                String
+  client             // not sure sa data type
+  destination        String?
+  order_date        DateTime
+  agent_id_            String        (foreign)
+  package_content    String
+  package_size        String?        (written as int*int*int cm in UI)
+  package_weight    Float
 }
 
 enum TripStatus {
