@@ -55,17 +55,6 @@ export async function calculateEfficiency(startDate, endDate) {
             baseline > 0
                 ? Math.min((actualEfficiency / baseline) * 100, 100)
                 : 0;
-
-        // console.log("fuelLogs.length:", fuelLogs.length);
-        // console.log("totalDistance:", totalDistance);
-        // console.log("totalLiters:", totalLiters);
-        // console.log("actualEfficiency:", actualEfficiency);
-        // console.log("baselineResult:", baselineResult);
-        // console.log("baseline:", baseline);
-        // console.log(
-        //     "Null distances:",
-        //     fuelLogs.filter((l) => l.distance_traveled == null),
-        // );
     }
 
     // --- Composite Efficiency Score ---
