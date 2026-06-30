@@ -5,6 +5,7 @@ import * as orderController from "../controllers/order-controller.js";
 const router = Router();
 
 router.get("/", orderController.getAllOrders);
+router.post("/orders_date_range", orderController.getOrdersRange);
 router.get("/:orderId", orderController.getOrderById);
 router.get("/trip_orders/:tripId", orderController.getTripOrders);
 router.post("/", orderController.createOrder);
