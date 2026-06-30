@@ -34,7 +34,12 @@ export async function getLogsRange(startDate, endDate) {
     const dateFilter = {};
     // In case a start or end date is not given
     if (startDate) dateFilter.gte = new Date(startDate);
-    if (endDate) dateFilter.lte = new Date(endDate);
+    if (endDate) {
+        // Set to the end of the day instead of the start of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateFilter.lte = end;
+    }
 
     return prisma.fuel_log.findMany({
         where: {

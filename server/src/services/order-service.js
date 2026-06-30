@@ -76,8 +76,12 @@ export async function getTripOrders(tripId) {
 export async function getDeliveredOrdersRange(startDate, endDate) {
     const dateFilter = {};
     if (startDate) dateFilter.gte = new Date(startDate);
-    if (endDate) dateFilter.lte = new Date(endDate);
-
+    if (endDate) {
+        // Set to the end of the day instead of the start of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateFilter.lte = end;
+    }
     return prisma.order.findMany({
         where: {
             ...(Object.keys(dateFilter).length > 0 && {
