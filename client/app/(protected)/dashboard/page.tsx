@@ -61,14 +61,23 @@ export default function Dashboard() {
     // Lifted date range state
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-        .toISOString()
-        .slice(0, 10);
+    // const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    //     .toISOString()
+    //     .slice(0, 10);
+    const dayOfWeek = now.getDay();
+    const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - diff,
+    );
+    const firstOfWeek = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+
     const [range, setRange] = useState<{
         start: string;
         end: string;
         preset: Preset;
-    }>({ start: firstOfMonth, end: today, preset: "thisWeek" });
+    }>({ start: firstOfWeek, end: today, preset: "thisWeek" });
 
     // Maps selected preset to a comparison period.
     // Returns undefined for "allTime" & "custom" to hide subtitle.
