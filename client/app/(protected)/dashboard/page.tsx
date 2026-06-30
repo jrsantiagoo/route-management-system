@@ -22,11 +22,13 @@ import OrdersTable from "@/components/dashboard/orders-table";
 //import { orders } from "@/lib/dashboard/mockData";
 import { getOrders } from "@/lib/api/orders";
 import { getAllTrips } from "@/lib/api/trips";
+import { getFuelPerOrder } from "@/lib/api/fuel-log";
 import type { Trip, Order } from "@/lib/routing/types";
 
 import {
     dailyDistanceWithTrend,
-    dailyFuelWithTrend,
+    computeTrend,
+    // dailyFuelWithTrend,
 } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
@@ -34,10 +36,22 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 export default function Dashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
+    const [fuelData, setFuelData] = useState<
+        { day: string; fuel: number; trend: number }[]
+    >([]);
 
     useEffect(() => {
         getOrders().then((res) => setOrders(res.data));
         getAllTrips().then((res) => setTrips(res.data));
+        getFuelPerOrder(range.start, range.end).then((res) => {
+            const mapped = (res.data ?? []).map(
+                (d: { date: string; fuelPerOrder: number }) => ({
+                    day: d.date,
+                    fuel: d.fuelPerOrder,
+                }),
+            );
+            setFuelData(computeTrend(mapped, "fuel"));
+        });
     }, []);
 
     // Derive stats from orders data
@@ -198,7 +212,7 @@ export default function Dashboard() {
 
                 <ChartCard title="Average Fuel Usage per Order (L)">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={dailyFuelWithTrend}>
+                        <ComposedChart data={fuelData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="day" />
                             <YAxis />
