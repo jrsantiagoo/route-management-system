@@ -1,26 +1,11 @@
-import { test, expect, Page } from "@playwright/test";
+import { test } from "@playwright/test";
 
-const BASE_URL = "http://localhost:3000";
-
-const MANAGER_EMAIL = process.env.TEST_MANAGER_EMAIL ?? "admin@gmail.com";
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? "admin";
-
-async function login(page: Page): Promise<void> {
-    await page.goto(BASE_URL);
-    await page.locator("#email").fill(MANAGER_EMAIL);
-    await page.locator("#password").fill(MANAGER_PASSWORD);
-    await page.getByRole("button", { name: "Sign In" }).click();
-    await page.waitForURL("**/dashboard");
-}
-
-// Test script 03-EmergencyDriverPing — blocked: no live tracking screen or
-// emergency-pickup flow exists yet.
+// Test script 03-EmergencyDriverPing — blocked entirely: no live tracking
+// screen or emergency-pickup flow exists yet (DD-04/RMS-74).
 test.describe("Emergency Driver Ping", () => {
-    test.fixme("identifies most available driver and updates their route for a valid emergency stop", async ({
-        page,
-    }) => {});
+    // Case 3-1
+    test.fixme("identifies most available driver and updates their route for a valid emergency stop", async () => {});
 
-    test.fixme("displays no-driver-available message when all drivers are at max capacity", async ({
-        page,
-    }) => {});
+    // Case 3-2
+    test.fixme("displays no-driver-available message when all drivers are at max capacity", async () => {});
 });

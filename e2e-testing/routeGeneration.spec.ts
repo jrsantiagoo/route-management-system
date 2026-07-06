@@ -1,8 +1,7 @@
-// Test script 01-RouteGeneration — the Suggest Routes modal on /route-tool,
-// as a logged-in manager (session comes from auth.setup.ts via storageState).
-// 1-3 and 1-4 are fixme: per-driver stop distribution doesn't exist yet.
-
 import { test, expect, Page } from '@playwright/test';
+
+// Test script 01-RouteGeneration — the Suggest Routes modal on /route-tool.
+// 1-3 and 1-4 are fixme: per-driver stop distribution doesn't exist (DD-01).
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -12,12 +11,12 @@ async function openSuggestModal(page: Page): Promise<void> {
 }
 
 test.describe('Route Generation', () => {
-  // Generation waits on OSRM for up to 20s, so give tests headroom.
+  // Generation can wait on OSRM for up to 20s.
   test.setTimeout(60_000);
 
   test.beforeEach(async ({ page }) => {
     await page.goto(`${BASE_URL}/route-tool`);
-    // Wait for the two default stops (DLSU → Rizal Park) to seed the route.
+    // The two default stops (DLSU → Rizal Park) seed the route.
     await expect(page.getByText('De La Salle University')).toBeVisible();
     await expect(page.getByText('Rizal Park')).toBeVisible();
   });
@@ -36,7 +35,6 @@ test.describe('Route Generation', () => {
 
   // Case 1-2: Missing Stops List
   test('shows an empty-state message when there are no stops to route', async ({ page }) => {
-    // Remove both default stops so the route is empty.
     await page.getByRole('button', { name: 'Edit' }).click();
     await page.getByRole('button', { name: 'Remove Rizal Park' }).click();
     await page.getByRole('button', { name: 'Remove De La Salle University' }).click();
@@ -46,7 +44,7 @@ test.describe('Route Generation', () => {
 
     await expect(page.getByText('Route A – Fastest')).toHaveCount(0);
 
-    // spec copy differs: "No stops provided. Please upload a stop list."
+    // Spec copy differs: "No stops provided. Please upload a stop list." (DD-02)
     await expect(
       page.getByText(/no routes available for this week/i)
     ).toBeVisible({ timeout: 10_000 });

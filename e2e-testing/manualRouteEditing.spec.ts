@@ -1,8 +1,6 @@
-// Test script 02-ManualRouteEditing — routing tool at /route-tool, as a
-// logged-in manager (session comes from auth.setup.ts via storageState;
-// without it the Topbar auth check redirects to the login page mid-test).
-// 2-3 is fixme (no driver concept in the editor); 2-5 asserts the missing
-// last-stop guard and fails until it ships.
+// Test script 02-ManualRouteEditing — routing tool at /route-tool.
+// 2-3 is fixme (no driver concept, DD-03); 2-5 asserts the missing
+// last-stop guard and fails until it ships (BR-01/RMS-79).
 
 import { test, expect, Page } from '@playwright/test';
 

@@ -1,14 +1,18 @@
-// Session comes from auth.setup.ts via storageState.
 import { test, expect } from "@playwright/test";
+
+// Test script 04-ReportGeneration — dashboard summary and Full Summary PDF.
+// 4-1/4-2/4-4/4-5 are fixme (DD-05); 4-6 is fixme (DD-06).
 
 const BASE_URL = "http://localhost:3000";
 
 test.describe("Report Generation", () => {
     test.setTimeout(60000);
+
     test.beforeEach(async ({ page }) => {
         await page.goto(`${BASE_URL}/dashboard`);
     });
 
+    // Case 4-3: In-App Summary Report
     test("displays all required metrics on the dashboard without downloading PDF", async ({
         page,
     }) => {
@@ -37,13 +41,18 @@ test.describe("Report Generation", () => {
         expect(filename).toContain("Route Management Statistics");
     });
 
+    // Case 4-1
     test.fixme("generates a daily PDF report with correct metrics and date", async () => {});
 
+    // Case 4-2
     test.fixme("generates a weekly PDF report with aggregated metrics and correct date range", async () => {});
 
+    // Case 4-4
     test.fixme("generates a report explicitly showing zero values when no trips are completed", async () => {});
 
+    // Case 4-5
     test.fixme("reflects only completed trips in metrics and lists incomplete trips separately", async () => {});
 
+    // Case 4-6
     test.fixme("upper management can download the PDF report successfully", async () => {});
 });

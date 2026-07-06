@@ -1,13 +1,11 @@
-// Test script 05-LiveDashboard — /dashboard as a logged-in manager
-// (session comes from auth.setup.ts via storageState).
-// The app renders 5 of the spec's metrics (time metrics missing); 5-2 is fixme
-// since the dashboard only refetches on date-range change.
-
 import { test, expect } from "@playwright/test";
+
+// Test script 05-LiveDashboard — /dashboard metrics and date-range picker.
+// 5-2 is fixme (DD-08); the three time metrics of 5-3 are missing (DD-07).
 
 const BASE_URL = "http://localhost:3000";
 
-// The five metric labels the dashboard actually renders today.
+// The five metric labels the dashboard renders today.
 const EXISTING_METRICS = [
     "Total Successful Trips",
     "Efficiency",
@@ -31,12 +29,10 @@ test.describe("Live Dashboard", () => {
             page.getByRole("heading", { name: "Dashboard" }),
         ).toBeVisible();
 
-        // All existing metric panels/widgets render without error.
         for (const label of EXISTING_METRICS) {
             await expect(page.getByText(label, { exact: true })).toBeVisible();
         }
 
-        // The date-range control and summary export are part of the panel set.
         await expect(page.getByRole("button", { name: "This Week" })).toBeVisible();
         await expect(
             page.getByRole("button", { name: "Full Summary" }),
@@ -51,7 +47,7 @@ test.describe("Live Dashboard", () => {
             await expect(page.getByText(label, { exact: true })).toBeVisible();
         }
 
-        // TODO once implemented (spec 5-3):
+        // TODO once the DD-07 time metrics ship:
         // await expect(page.getByText("Total Trip Time")).toBeVisible();
         // await expect(page.getByText("Average time per stop")).toBeVisible();
     });
@@ -59,29 +55,24 @@ test.describe("Live Dashboard", () => {
     test("switching the date-range preset updates the active range label", async ({
         page,
     }) => {
-        // Open the range picker (defaults to "This Week").
         await page.getByRole("button", { name: "This Week" }).click();
-
-        // Choose a different preset from the popover.
         await page.getByRole("button", { name: "This Month" }).click();
 
-        // The popover stays open after a preset click (it only closes on an
-        // outside click), leaving two "This Month" buttons — dismiss it first.
+        // Preset clicks leave the popover open (RMS-81); dismiss it so only
+        // the trigger button matches.
         await page.getByRole("heading", { name: "Dashboard" }).click();
 
-        // The trigger button now reflects the new preset, confirming the range
-        // state changed (which re-runs the metric fetch effects).
         await expect(
             page.getByRole("button", { name: "This Month" }),
         ).toBeVisible();
 
-        // Metrics remain rendered after the refetch (no crash / blank state).
+        // Metrics survive the refetch.
         await expect(
             page.getByText("Total Successful Trips", { exact: true }),
         ).toBeVisible();
     });
 
-    // Case 5-2: blocked — no polling/websocket, metrics don't update live
+    // Case 5-2: blocked — no polling/websocket (DD-08)
     test.fixme(
         "metrics update in real time after a delivery is completed (no manual refresh)",
         async () => {},
