@@ -8,6 +8,9 @@ import { defineConfig, devices } from '@playwright/test';
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+/** Saved manager session (localStorage tokens) shared by all browser projects. */
+export const STORAGE_STATE = 'playwright/.auth/manager.json';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -34,19 +37,28 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    /* Logs in once through the UI and saves the session for the browser projects. */
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
+      dependencies: ['setup'],
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'], storageState: STORAGE_STATE },
+      dependencies: ['setup'],
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'], storageState: STORAGE_STATE },
+      dependencies: ['setup'],
     },
 
     /* Test against mobile viewports. */

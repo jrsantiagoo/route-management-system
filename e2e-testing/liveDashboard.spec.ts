@@ -1,13 +1,11 @@
-// Test script 05-LiveDashboard — /dashboard after manager login.
+// Test script 05-LiveDashboard — /dashboard as a logged-in manager
+// (session comes from auth.setup.ts via storageState).
 // The app renders 5 of the spec's metrics (time metrics missing); 5-2 is fixme
 // since the dashboard only refetches on date-range change.
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 const BASE_URL = "http://localhost:3000";
-
-const MANAGER_EMAIL = process.env.TEST_MANAGER_EMAIL ?? "admin@gmail.com";
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? "admin";
 
 // The five metric labels the dashboard actually renders today.
 const EXISTING_METRICS = [
@@ -18,19 +16,11 @@ const EXISTING_METRICS = [
     "Average Fuel Usage per Order (L)",
 ];
 
-async function login(page: Page): Promise<void> {
-    await page.goto(BASE_URL);
-    await page.locator("#email").fill(MANAGER_EMAIL);
-    await page.locator("#password").fill(MANAGER_PASSWORD);
-    await page.getByRole("button", { name: "Sign In" }).click();
-    await page.waitForURL("**/dashboard", { timeout: 60000 });
-}
-
 test.describe("Live Dashboard", () => {
     test.setTimeout(60000);
 
     test.beforeEach(async ({ page }) => {
-        await login(page);
+        await page.goto(`${BASE_URL}/dashboard`);
     });
 
     // Case 5-1: Dashboard Load
@@ -74,6 +64,10 @@ test.describe("Live Dashboard", () => {
 
         // Choose a different preset from the popover.
         await page.getByRole("button", { name: "This Month" }).click();
+
+        // The popover stays open after a preset click (it only closes on an
+        // outside click), leaving two "This Month" buttons — dismiss it first.
+        await page.getByRole("heading", { name: "Dashboard" }).click();
 
         // The trigger button now reflects the new preset, confirming the range
         // state changed (which re-runs the metric fetch effects).

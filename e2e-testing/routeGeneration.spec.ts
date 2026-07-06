@@ -1,22 +1,10 @@
-// Test script 01-RouteGeneration — the Suggest Routes modal on /route-tool.
+// Test script 01-RouteGeneration — the Suggest Routes modal on /route-tool,
+// as a logged-in manager (session comes from auth.setup.ts via storageState).
 // 1-3 and 1-4 are fixme: per-driver stop distribution doesn't exist yet.
 
 import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = 'http://localhost:3000';
-
-// override with TEST_MANAGER_EMAIL / TEST_MANAGER_PASSWORD
-const MANAGER_EMAIL    = process.env.TEST_MANAGER_EMAIL    ?? 'admin@gmail.com';
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? 'admin';
-
-async function login(page: Page): Promise<void> {
-  await page.goto(BASE_URL);
-  await page.locator('#email').fill(MANAGER_EMAIL);
-  await page.locator('#password').fill(MANAGER_PASSWORD);
-  await page.getByRole('button', { name: 'Sign In' }).click();
-  await page.waitForURL('**/dashboard');
-  await page.goto(`${BASE_URL}/route-tool`);
-}
 
 async function openSuggestModal(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Suggest Routes' }).click();
@@ -24,9 +12,11 @@ async function openSuggestModal(page: Page): Promise<void> {
 }
 
 test.describe('Route Generation', () => {
+  // Generation waits on OSRM for up to 20s, so give tests headroom.
+  test.setTimeout(60_000);
 
   test.beforeEach(async ({ page }) => {
-    await login(page);
+    await page.goto(`${BASE_URL}/route-tool`);
     // Wait for the two default stops (DLSU → Rizal Park) to seed the route.
     await expect(page.getByText('De La Salle University')).toBeVisible();
     await expect(page.getByText('Rizal Park')).toBeVisible();

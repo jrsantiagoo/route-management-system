@@ -1,22 +1,12 @@
-import { test, expect, Page } from "@playwright/test";
+// Session comes from auth.setup.ts via storageState.
+import { test, expect } from "@playwright/test";
 
 const BASE_URL = "http://localhost:3000";
-
-const MANAGER_EMAIL = process.env.TEST_MANAGER_EMAIL ?? "admin@gmail.com";
-const MANAGER_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? "admin";
-
-async function login(page: Page): Promise<void> {
-    await page.goto(BASE_URL);
-    await page.locator("#email").fill(MANAGER_EMAIL);
-    await page.locator("#password").fill(MANAGER_PASSWORD);
-    await page.getByRole("button", { name: "Sign In" }).click();
-    await page.waitForURL("**/dashboard", { timeout: 60000 });
-}
 
 test.describe("Report Generation", () => {
     test.setTimeout(60000);
     test.beforeEach(async ({ page }) => {
-        await login(page);
+        await page.goto(`${BASE_URL}/dashboard`);
     });
 
     test("displays all required metrics on the dashboard without downloading PDF", async ({
@@ -47,23 +37,13 @@ test.describe("Report Generation", () => {
         expect(filename).toContain("Route Management Statistics");
     });
 
-    test.fixme("generates a daily PDF report with correct metrics and date", async ({
-        page,
-    }) => {});
+    test.fixme("generates a daily PDF report with correct metrics and date", async () => {});
 
-    test.fixme("generates a weekly PDF report with aggregated metrics and correct date range", async ({
-        page,
-    }) => {});
+    test.fixme("generates a weekly PDF report with aggregated metrics and correct date range", async () => {});
 
-    test.fixme("generates a report explicitly showing zero values when no trips are completed", async ({
-        page,
-    }) => {});
+    test.fixme("generates a report explicitly showing zero values when no trips are completed", async () => {});
 
-    test.fixme("reflects only completed trips in metrics and lists incomplete trips separately", async ({
-        page,
-    }) => {});
+    test.fixme("reflects only completed trips in metrics and lists incomplete trips separately", async () => {});
 
-    test.fixme("upper management can download the PDF report successfully", async ({
-        page,
-    }) => {});
+    test.fixme("upper management can download the PDF report successfully", async () => {});
 });
