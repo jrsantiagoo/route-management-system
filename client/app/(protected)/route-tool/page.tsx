@@ -129,17 +129,23 @@ export default function RoutingTool() {
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <div
-                style={{
-                    position: "relative",
-                    zIndex: 0,
-                    margin: "-1.75rem -2rem -2rem -2rem",
-                    height: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    background: "var(--background)",
+        <div
+            style={{
+                position: "relative",
+                zIndex: 0,
+                margin: "-1.75rem -2rem -2rem -2rem",
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                background: "var(--background)",
+            }}
+        >
+            <RouteToolbar
+                isEditMode={isEditMode}
+                onToggleEdit={() => {
+                    setIsEditMode((v) => !v);
+                    setPreviewStop(null);
                 }}
                 onSuggestRoutes={() => setIsSuggestOpen(true)}
                 onSave={() => setIsSaveOpen(true)}
@@ -158,45 +164,16 @@ export default function RoutingTool() {
                     segments={segments}
                     totalDistanceKm={totalDistanceKm}
                     totalDurationMinutes={totalDurationMinutes}
-            >
-                <RouteToolbar
                     isEditMode={isEditMode}
-                    onToggleEdit={() => {
-                        setIsEditMode((v) => !v);
-                        setPreviewStop(null);
-                    }}
-                    onSuggestRoutes={() => setIsSuggestOpen(true)}
-                    onSave={handleSave}
+                    isLoading={isLoadingRoute}
+                    routeError={routeError}
+                    onReorder={handleReorder}
+                    onRemoveStop={handleRemoveStop}
+                    onAddStop={handleAddStop}
+                    onPreview={setPreviewStop}
                 />
-
-                <div
-                    style={{
-                        flex: 1,
-                        position: "relative",
-                        overflow: "hidden",
-                    }}
-                >
-                    <RouteMap
-                        stops={stops}
-                        polyline={polyline}
-                        previewStop={previewStop}
-                    />
-
-                    <RouteOrderingPanel
-                        stops={stops}
-                        segments={segments}
-                        totalDistanceKm={totalDistanceKm}
-                        totalDurationMinutes={totalDurationMinutes}
-                        isEditMode={isEditMode}
-                        isLoading={isLoadingRoute}
-                        routeError={routeError}
-                        onReorder={handleReorder}
-                        onRemoveStop={handleRemoveStop}
-                        onAddStop={handleAddStop}
-                        onPreview={setPreviewStop}
-                    />
-                </div>
             </div>
+
             {isSuggestOpen && (
                 <SuggestRoutesModal
                     onClose={() => setIsSuggestOpen(false)}

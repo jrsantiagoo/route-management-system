@@ -18,7 +18,6 @@ export default function ProfilePage() {
             <ProfileCard
                 username={placeholderAcc.username}
                 email={placeholderAcc.email}
-                avatarUrl=""
             />
 
             <ChangePasswordCard />
