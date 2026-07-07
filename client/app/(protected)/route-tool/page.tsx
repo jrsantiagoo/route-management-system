@@ -102,6 +102,9 @@ export default function RoutingTool() {
     }
 
     function handleConfirmSave(name: string) {
+        // Never save an empty route, even if the handler is triggered another way.
+        if (stops.length === 0) return;
+
         // Guard against a name added in another tab between opening and saving.
         if (isRouteNameTaken(name, routeIdRef.current)) return;
 
@@ -144,6 +147,7 @@ export default function RoutingTool() {
                 }}
                 onSuggestRoutes={() => setIsSuggestOpen(true)}
                 onSave={() => setIsSaveOpen(true)}
+                canSave={stops.length > 0}
             />
 
             <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
