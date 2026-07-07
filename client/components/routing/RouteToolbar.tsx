@@ -54,7 +54,7 @@ export default function RouteToolbar({
                 alignItems: "center",
                 gap: "8px",
                 padding: "8px 16px",
-                background: dark ? DARK.toolbarBg : "#fff",
+                background: dark ? DARK.toolbarBg : "var(--background)",
                 borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
                 minHeight: "48px",
                 flexShrink: 0,

@@ -3,14 +3,9 @@ import { User } from "lucide-react";
 interface ProfileCardProps {
     username: string;
     email: string;
-    avatarUrl: string;
 }
 
-export default function ProfileCard({
-    username,
-    email,
-    avatarUrl,
-}: ProfileCardProps) {
+export default function ProfileCard({ username, email }: ProfileCardProps) {
     const initials = `${username.charAt(0)}`.toUpperCase();
 
     return (
@@ -26,17 +21,9 @@ export default function ProfileCard({
             <div className="flex items-center gap-6 pl-7 pb-7 pt-5">
                 {/* Displays user's profile avatar */}
                 <div className="shrink-0 w-25 h-25 rounded-full bg-primary flex items-center justify-center overflow-hidden">
-                    {avatarUrl ? (
-                        <img
-                            src={avatarUrl}
-                            alt={`${username}`}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <span className="text-2xl font-bold text-primary-foreground">
-                            {initials}
-                        </span>
-                    )}
+                    <span className="text-2xl font-bold text-primary-foreground">
+                        {initials}
+                    </span>
                 </div>
 
                 {/* Displays User Information */}
@@ -45,13 +32,6 @@ export default function ProfileCard({
                         {username}
                     </h2>
                     <p className="text-sm text-muted-foreground">{email}</p>
-                    <button
-                        className="flex items-center mt-1.5 px-4 py-1 text-sm font-semibold text-primary-foreground 
-                        bg-primary rounded-lg hover:bg-secondary transition w-fit
-                        border border-border"
-                    >
-                        Upload New Picture
-                    </button>
                 </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/sidebar";
-import Topbar from "@/components/topbar";
+import Sidebar from "@/components/ui/sidebar";
+import Topbar from "@/components/ui/topbar";
 
 let cachedCollapsed: boolean | null = null;
 
