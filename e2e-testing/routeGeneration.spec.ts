@@ -44,7 +44,6 @@ test.describe('Route Generation', () => {
 
     await expect(page.getByText('Route A – Fastest')).toHaveCount(0);
 
-    // Spec copy differs: "No stops provided. Please upload a stop list." (DD-02)
     await expect(
       page.getByText(/no routes available for this week/i)
     ).toBeVisible({ timeout: 10_000 });
