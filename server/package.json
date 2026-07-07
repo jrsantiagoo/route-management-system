@@ -9,6 +9,7 @@
         "test:unit": "vitest run tests/unit",
         "test:integration": "vitest run tests/integration",
         "start": "node src/server.js",
+        "seed:test": "node prisma/seed-test.js",
         "dev": "nodemon src/server.js",
         "postinstall": "prisma generate"
     },
