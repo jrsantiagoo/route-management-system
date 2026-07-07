@@ -1,6 +1,7 @@
 // Test script 02-ManualRouteEditing — routing tool at /route-tool.
 // 2-3 is fixme (no driver concept, DD-03); 2-5 asserts the missing
-// last-stop guard and fails until it ships (BR-01/RMS-79).
+// last-stop guard and fails until it ships (BR-01/RMS-79); 2-4 asserts
+// persistence after reload and fails until saved routes load back (BR-07/RMS-83).
 
 import { test, expect, Page } from '@playwright/test';
 
@@ -39,14 +40,28 @@ test.describe('Manual Route Editing', () => {
     await expect(page.getByText('Rizal Park')).toBeHidden();
   });
 
-  // Case 2-4: Save Edited Route
-  test('Save an edited route is a success', async ({ page }: { page: Page }) => {
+  // Case 2-4: Save Edited Route — save reports success, but the tool re-seeds
+  // from DEFAULT_STOPS on every mount and never loads a saved route back, so
+  // the persistence assertion fails by design until BR-07/RMS-83 is fixed.
+  test('Save an edited route and persist it across reload', async ({ page }: { page: Page }) => {
     await page.getByRole('button', { name: 'Edit' }).click();
     await page.getByRole('button', { name: /Add a stop/ }).click();
     await page.getByRole('button', { name: /SM Mall of Asia/ }).click();
     await expect(page.getByText('SM Mall of Asia')).toBeVisible();
-
     await page.getByRole('button', { name: 'Done Editing' }).click();
+
+    // the real save path: toolbar save icon → name modal → Save Route
+    // (exact: true keeps the two save buttons apart — aria-label "Save route"
+    // on the toolbar vs. the modal's "Save Route")
+    await page.getByRole('button', { name: 'Save route', exact: true }).click();
+    const routeName = `QA e2e save ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    await page.locator('#route-name').fill(routeName);
+    await page.getByRole('button', { name: 'Save Route', exact: true }).click();
+    await expect(page.getByText('Route saved successfully.')).toBeVisible();
+
+    // the edit must survive a refresh (test script 02, case 2-4 Expected)
+    await page.reload();
+    await expect(page.getByText('SM Mall of Asia')).toBeVisible();
   });
 
   // Case 2-3: blocked — the map editor has no driver concept yet
