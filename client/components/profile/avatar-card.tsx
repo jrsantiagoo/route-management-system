@@ -10,14 +10,6 @@ export default function ProfileCard({ username, email }: ProfileCardProps) {
 
     return (
         <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border shadow-lg shadow-primary">
-            <div className="flex items-center gap-2 pt-7 pl-7 text-lg font-semibold">
-                <User size={21} className="text-primary-foreground" />
-                Profile Picture
-            </div>
-            <p className="pl-7 text-sm text-muted-foreground">
-                Update your profile picture
-            </p>
-
             <div className="flex items-center gap-6 pl-7 pb-7 pt-5">
                 {/* Displays user's profile avatar */}
                 <div className="shrink-0 w-25 h-25 rounded-full bg-primary flex items-center justify-center overflow-hidden">
