@@ -109,7 +109,6 @@ export default function RoutingTool() {
         const vehicleType = recommendVehicle(stops.length);
         const plan: RoutePlan = {
             id_: routeIdRef.current,
-            id: routeIdRef.current,
             name,
             stops,
             segments,
