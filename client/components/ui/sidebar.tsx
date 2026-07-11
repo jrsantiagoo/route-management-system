@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import {
     LayoutDashboard,
     Map,
@@ -14,6 +14,7 @@ import {
 interface SidebarProps {
     collapsed: boolean;
     onToggle: () => void;
+    noTransition?: boolean;
 }
 
 const navLinks = [
@@ -22,15 +23,19 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
 ];
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({
+    collapsed,
+    onToggle,
+    noTransition,
+}: SidebarProps) {
     const pathname = usePathname();
 
     return (
         <div
             className={`fixed top-0 left-0 h-screen z-30
                 ${collapsed ? "w-20" : "w-64"} 
-                bg-background border-r border-border
-                font-semibold transition-all duration-300`}
+                bg-background border-r border-border font-semibold 
+                ${noTransition ? "transition-none" : "transition-all duration-300"}`}
         >
             {/* Route Management Tool Version Text */}
             <div

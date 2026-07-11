@@ -13,20 +13,23 @@ export default function protectedLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [collapsed, setCollapsed] = usePersistedState(
+    const [collapsed, setCollapsed, ready] = usePersistedState(
         "sidebar_collapsed",
         false,
     );
 
+    // Render with collapsed state, before reading localStorage to avoid flash
+    const effectiveCollapsed = ready ? collapsed : true;
+
     return (
         <div>
             <Sidebar
-                collapsed={collapsed}
+                collapsed={effectiveCollapsed}
                 onToggle={() => setCollapsed((c) => !c)}
             />
-            <Topbar sidebarCollapsed={collapsed} />
+            <Topbar sidebarCollapsed={effectiveCollapsed} />
             <main
-                className={`${collapsed ? "ml-20" : "ml-64"}
+                className={`${effectiveCollapsed ? "ml-20" : "ml-64"}
                     min-h-screen p-8 pt-23 bg-background text-foreground 
                     transition-[margin-left] duration-300`}
             >
