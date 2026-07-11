@@ -103,13 +103,15 @@ export default function RoutingTool() {
     }
 
     async function handleConfirmSave(name: string) {
+        // Never save an empty route, even if the handler is triggered another way.
+        if (stops.length === 0) return;
+
         // Guard against a name added in another tab between opening and saving.
         if (isRouteNameTaken(name, routeIdRef.current)) return;
 
         const vehicleType = recommendVehicle(stops.length);
         const plan: RoutePlan = {
             id_: routeIdRef.current,
-            id: routeIdRef.current,
             name,
             stops,
             segments,
@@ -137,57 +139,51 @@ export default function RoutingTool() {
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <div
-                style={{
-                    position: "relative",
-                    zIndex: 0,
-                    margin: "-1.75rem -2rem -2rem -2rem",
-                    height: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    background: "var(--background)",
+        <div
+            style={{
+                position: "relative",
+                zIndex: 0,
+                margin: "-1.75rem -2rem -2rem -2rem",
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                background: "var(--background)",
+            }}
+        >
+            <RouteToolbar
+                isEditMode={isEditMode}
+                onToggleEdit={() => {
+                    setIsEditMode((v) => !v);
+                    setPreviewStop(null);
                 }}
-            >
-                <RouteToolbar
-                    isEditMode={isEditMode}
-                    onToggleEdit={() => {
-                        setIsEditMode((v) => !v);
-                        setPreviewStop(null);
-                    }}
-                    onSuggestRoutes={() => setIsSuggestOpen(true)}
-                    onSave={() => setIsSaveOpen(true)}
+                onSuggestRoutes={() => setIsSuggestOpen(true)}
+                onSave={() => setIsSaveOpen(true)}
+                canSave={stops.length > 0}
+            />
+
+            <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+                <RouteMap
+                    stops={stops}
+                    polyline={polyline}
+                    previewStop={previewStop}
                 />
 
-                <div
-                    style={{
-                        flex: 1,
-                        position: "relative",
-                        overflow: "hidden",
-                    }}
-                >
-                    <RouteMap
-                        stops={stops}
-                        polyline={polyline}
-                        previewStop={previewStop}
-                    />
-
-                    <RouteOrderingPanel
-                        stops={stops}
-                        segments={segments}
-                        totalDistanceKm={totalDistanceKm}
-                        totalDurationMinutes={totalDurationMinutes}
-                        isEditMode={isEditMode}
-                        isLoading={isLoadingRoute}
-                        routeError={routeError}
-                        onReorder={handleReorder}
-                        onRemoveStop={handleRemoveStop}
-                        onAddStop={handleAddStop}
-                        onPreview={setPreviewStop}
-                    />
-                </div>
+                <RouteOrderingPanel
+                    stops={stops}
+                    segments={segments}
+                    totalDistanceKm={totalDistanceKm}
+                    totalDurationMinutes={totalDurationMinutes}
+                    isEditMode={isEditMode}
+                    isLoading={isLoadingRoute}
+                    routeError={routeError}
+                    onReorder={handleReorder}
+                    onRemoveStop={handleRemoveStop}
+                    onAddStop={handleAddStop}
+                    onPreview={setPreviewStop}
+                />
             </div>
+
             {isSuggestOpen && (
                 <SuggestRoutesModal
                     onClose={() => setIsSuggestOpen(false)}

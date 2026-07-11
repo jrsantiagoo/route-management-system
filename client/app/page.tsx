@@ -127,7 +127,7 @@ export default function loginPage() {
                             <span className="bg-linear-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent">
                                 Simplify
                             </span>{" "}
-                            Every Route.
+                            every route.
                         </h2>
                         <p className="mt-4 max-w-xs text-sm text-slate-400">
                             Plan stops, compare route options, and organize
@@ -179,7 +179,7 @@ export default function loginPage() {
                     </button>
 
                     <h1 className="text-3xl font-bold text-foreground">
-                        Welcome Back
+                        Welcome back
                     </h1>
                     <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                         Please enter your credentials to access your dashboard.
