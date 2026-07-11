@@ -194,7 +194,7 @@ export default function Dashboard() {
                 <div className="flex flex-col justify-center">
                     <h1 className="text-2xl font-bold">Dashboard</h1>
                     <p className="text-md text-muted-foreground">
-                        Performance metrics and Analytics
+                        Performance metrics and analytics
                     </p>
                 </div>
 
