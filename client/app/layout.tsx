@@ -18,6 +18,20 @@ export const metadata: Metadata = {
     description: "",
 };
 
+// Prevents Flash of Wrong Theme
+// Reads the saved theme from localStorage and applies it
+// before browser is painted
+const themeScript = `
+    (function() {
+        try {
+            var theme = localStorage.getItem("theme");
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        } catch (e) {}
+    })();
+`;
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -26,9 +40,11 @@ export default function RootLayout({
     return (
         <html
             lang="en"
+            suppressHydrationWarning
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
+                <script dangerouslySetInnerHTML={{ __html: themeScript }} />
                 <ThemeProvider>{children}</ThemeProvider>
             </body>
         </html>
