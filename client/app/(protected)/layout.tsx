@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePersistedState } from "@/lib/hooks/use-persisted-state";
 import Sidebar from "@/components/ui/sidebar";
 import Topbar from "@/components/ui/topbar";
 
@@ -12,20 +13,10 @@ export default function protectedLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [collapsed, setCollapsed] = useState(() => {
-        if (cachedCollapsed !== null) return cachedCollapsed;
-        return false;
-    });
-
-    useEffect(() => {
-        const saved = localStorage.getItem("sidebar_collapsed");
-        if (saved) setCollapsed(JSON.parse(saved));
-    }, []);
-
-    useEffect(() => {
-        cachedCollapsed = collapsed;
-        localStorage.setItem("sidebar_collapsed", JSON.stringify(collapsed));
-    }, [collapsed]);
+    const [collapsed, setCollapsed] = usePersistedState(
+        "sidebar_collapsed",
+        false,
+    );
 
     return (
         <div>
