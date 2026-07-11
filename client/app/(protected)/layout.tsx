@@ -17,21 +17,25 @@ export default function protectedLayout({
         "sidebar_collapsed",
         false,
     );
+    const [noTransition, setNoTransition] = useState(true);
 
-    // Render with collapsed state, before reading localStorage to avoid flash
-    const effectiveCollapsed = ready ? collapsed : true;
+    // Disables CCS transition when first rendered
+    // removes sidebar flash when page reloads
+    useEffect(() => {
+        requestAnimationFrame(() => setNoTransition(false));
+    }, []);
 
     return (
         <div>
             <Sidebar
-                collapsed={effectiveCollapsed}
+                collapsed={collapsed}
                 onToggle={() => setCollapsed((c) => !c)}
             />
-            <Topbar sidebarCollapsed={effectiveCollapsed} />
+            <Topbar sidebarCollapsed={collapsed} />
             <main
-                className={`${effectiveCollapsed ? "ml-20" : "ml-64"}
+                className={`${collapsed ? "ml-20" : "ml-64"}
                     min-h-screen p-8 pt-23 bg-background text-foreground 
-                    transition-[margin-left] duration-300`}
+                    ${noTransition ? "transition-none" : "transition-[margin-left] duration-300"}`}
             >
                 {children}
             </main>
