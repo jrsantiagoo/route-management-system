@@ -68,7 +68,7 @@ export default function Assignment() {
                 <div className="flex flex-col justify-center">
                     <h1 className="text-2xl font-bold">Route Assignment</h1>
                     <p className="text-md text-muted-foreground">
-                        Assign Routes and Plan Trips
+                        Assign routes and plan trips
                     </p>
                 </div>
             </div>

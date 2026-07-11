@@ -149,6 +149,26 @@ function PanelZoomControl() {
     );
 }
 
+// Observes the map container for size changes and tells leaflet to
+// recalculate its dimensions
+function MapResizeHandler() {
+    const map = useMap();
+
+    useEffect(() => {
+        const container = map.getContainer();
+
+        // Forces leaflet to recalculate and re-render tiles when
+        // map container changes size
+        const observer = new ResizeObserver(() => {
+            map.invalidateSize();
+        });
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [map]);
+
+    return null;
+}
+
 interface RouteMapInnerProps {
     stops: Stop[];
     polyline: [number, number][];
@@ -247,6 +267,7 @@ export default function RouteMapInner({
 
             <FitBoundsController stops={stops} polyline={polyline} />
             <PanelZoomControl />
+            <MapResizeHandler />
         </MapContainer>
     );
 }
