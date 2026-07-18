@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronUp,
-    ChevronDown,
-    Search,
-    User,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import type { Trip } from "@/lib/routing/types";

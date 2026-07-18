@@ -36,6 +36,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [scheduledFilter, setScheduledFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
 
+    // Needed for filtering options
     const routeOptions = [
         ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
     ] as string[];
