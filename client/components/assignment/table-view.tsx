@@ -110,6 +110,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+            {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <h3 className="-mt-4 text-base font-semibold text-foreground">
                     All Assignments
