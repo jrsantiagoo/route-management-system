@@ -7,7 +7,7 @@ import {
     MapPinned,
     Route,
     Search,
-    Trash2,
+    ArchiveIcon,
     User,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
@@ -270,7 +270,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                         className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
                                         title="Delete assignment"
                                     >
-                                        <Trash2 size={14} />
+                                        <ArchiveIcon size={14} />
                                     </button>
                                 </td>
                             </tr>
