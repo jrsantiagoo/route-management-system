@@ -167,7 +167,7 @@ export default function CalendarView({
                         />
                         <input
                             type="text"
-                            placeholder="Search by routes or drivers..."
+                            placeholder="Search drivers..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 

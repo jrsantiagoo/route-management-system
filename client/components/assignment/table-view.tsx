@@ -9,6 +9,7 @@ import {
     Search,
     ArchiveIcon,
     User,
+    Fuel,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
@@ -92,6 +93,8 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 return t.purpose ?? "";
             case "destination":
                 return t.destination ?? "";
+            case "fuelConsumed":
+                return "";
             case "scheduled_date":
                 return t.scheduled_date ?? "";
             case "created_at":
@@ -208,6 +211,17 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 Destination
                             </SortableHeader>
                             <SortableHeader
+                                sortKey="fuelConsumed"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Fuel
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Fuel Consumed
+                            </SortableHeader>
+                            <SortableHeader
                                 sortKey="scheduled_date"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -259,6 +273,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {t.destination || "—"}
                                 </td>
+                                <td className="px-3 py-2">—</td>
                                 <td className="px-3 py-2">
                                     {formatDate(t.scheduled_date)}
                                 </td>
