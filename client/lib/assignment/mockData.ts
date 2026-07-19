@@ -22,7 +22,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 7.5,
         fuelConsumed: 14.2,
         distanceTraveled: 92.3,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-002",
@@ -32,7 +32,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 6.0,
         fuelConsumed: 11.8,
         distanceTraveled: 78.6,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-003",
@@ -42,7 +42,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 2.0,
         fuelConsumed: 3.4,
         distanceTraveled: 40.6,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-004",
@@ -52,7 +52,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 7.8,
         fuelConsumed: 23.4,
         distanceTraveled: 176.6,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-005",
@@ -62,7 +62,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 4.9,
         fuelConsumed: 7.4,
         distanceTraveled: 55.8,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-006",
@@ -72,7 +72,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 7.4,
         fuelConsumed: 12.6,
         distanceTraveled: 82.9,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-007",
@@ -82,7 +82,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 8.0,
         fuelConsumed: 0.0,
         distanceTraveled: 99999,
-        status: "Fully Utilized",
+        status: "FULLY UTILIZED",
     },
     {
         id_: "DRV-008",
@@ -92,7 +92,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 6.8,
         fuelConsumed: 13.1,
         distanceTraveled: 88.4,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-009",
@@ -102,7 +102,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 5.2,
         fuelConsumed: 9.5,
         distanceTraveled: 61.3,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-010",
@@ -112,7 +112,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 3.5,
         fuelConsumed: 6.2,
         distanceTraveled: 42.7,
-        status: "Inactive",
+        status: "INACTIVE",
     },
     {
         id_: "DRV-011",
@@ -122,7 +122,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 1.2,
         fuelConsumed: 2.1,
         distanceTraveled: 15.8,
-        status: "On Break",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-012",
@@ -132,7 +132,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 7.1,
         fuelConsumed: 14.8,
         distanceTraveled: 95.2,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-013",
@@ -142,7 +142,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 4.6,
         fuelConsumed: 8.3,
         distanceTraveled: 58.9,
-        status: "Active",
+        status: "ACTIVE",
     },
     {
         id_: "DRV-014",
@@ -152,7 +152,7 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 9.0,
         fuelConsumed: 18.7,
         distanceTraveled: 120.5,
-        status: "Fully Utilized",
+        status: "FULLY UTILIZED",
     },
     {
         id_: "DRV-015",
@@ -162,6 +162,6 @@ export const mockDriverDayData: DriverDayInfo[] = [
         activeHours: 6.3,
         fuelConsumed: 11.0,
         distanceTraveled: 74.6,
-        status: "Active",
+        status: "ACTIVE",
     },
 ];
