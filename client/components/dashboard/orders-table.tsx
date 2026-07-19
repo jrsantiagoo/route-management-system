@@ -82,7 +82,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                 return o.client;
             case "destination":
                 return o.destination ?? "";
-            case "orderedOn":
+            case "dateOrdered":
                 return o.ordered_on;
             case "deliverBy":
                 return o.delivered_by ?? "";
@@ -197,7 +197,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                                 Destination
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="orderedOn"
+                                sortKey="dateOrdered"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                                 className="bg-card"
@@ -206,7 +206,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Ordered On
+                                Date Ordered
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="deliverBy"

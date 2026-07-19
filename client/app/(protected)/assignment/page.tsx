@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { CalendarDays, List } from "lucide-react";
+import { CalendarDays, List, User } from "lucide-react";
 import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
 import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
 import { getDrivers } from "@/lib/api/drivers";
@@ -10,9 +10,13 @@ import { getRoutes } from "@/lib/api/routes";
 import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
+import DriverView from "@/components/assignment/driver-view";
+import { mockDriverDayData } from "@/lib/assignment/mockData";
 
 export default function Assignment() {
-    const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
+    const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
+        "calendar",
+    );
     const [trips, setTrips] = useState<Trip[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
@@ -106,18 +110,33 @@ export default function Assignment() {
                         <List size={16} />
                         Table
                     </button>
+                    <button
+                        onClick={() => setViewMode("driver")}
+                        className={`flex items-center gap-2 px-3.5 py-1 text-sm font-semibold rounded-md transition 
+                            ${
+                                viewMode === "driver"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                            }`}
+                    >
+                        <User size={16} />
+                        Driver
+                    </button>
                 </div>
             </div>
 
-            {viewMode === "calendar" ? (
+            {/* Displays views one-by-one */}
+            {viewMode === "calendar" && (
                 <CalendarView
                     trips={trips}
                     drivers={drivers}
                     onDeleted={handleDeleteTrip}
                 />
-            ) : (
+            )}
+            {viewMode === "table" && (
                 <TableView trips={trips} onDeleted={handleDeleteTrip} />
             )}
+            {viewMode === "driver" && <DriverView items={mockDriverDayData} />}
         </div>
     );
 }

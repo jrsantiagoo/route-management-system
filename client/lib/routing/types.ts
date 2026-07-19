@@ -11,6 +11,7 @@ export interface Stop {
 export interface Driver {
     id_: string;
     driver_id: string;
+    name?: string;
     contact_number?: string;
     license_number?: string;
 }

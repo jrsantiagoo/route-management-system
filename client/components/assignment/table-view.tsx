@@ -7,8 +7,9 @@ import {
     MapPinned,
     Route,
     Search,
-    Trash2,
+    ArchiveIcon,
     User,
+    Fuel,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
@@ -36,6 +37,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [scheduledFilter, setScheduledFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
 
+    // Needed for filtering options
     const routeOptions = [
         ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
     ] as string[];
@@ -91,6 +93,8 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 return t.purpose ?? "";
             case "destination":
                 return t.destination ?? "";
+            case "fuelConsumed":
+                return "";
             case "scheduled_date":
                 return t.scheduled_date ?? "";
             case "created_at":
@@ -109,6 +113,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+            {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <h3 className="-mt-4 text-base font-semibold text-foreground">
                     All Assignments
@@ -206,6 +211,17 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 Destination
                             </SortableHeader>
                             <SortableHeader
+                                sortKey="fuelConsumed"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Fuel
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Fuel Consumed
+                            </SortableHeader>
+                            <SortableHeader
                                 sortKey="scheduled_date"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -257,6 +273,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {t.destination || "—"}
                                 </td>
+                                <td className="px-3 py-2">—</td>
                                 <td className="px-3 py-2">
                                     {formatDate(t.scheduled_date)}
                                 </td>
@@ -270,7 +287,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                         className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
                                         title="Delete assignment"
                                     >
-                                        <Trash2 size={14} />
+                                        <ArchiveIcon size={14} />
                                     </button>
                                 </td>
                             </tr>

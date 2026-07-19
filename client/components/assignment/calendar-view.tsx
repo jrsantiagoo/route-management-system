@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronUp,
-    ChevronDown,
-    Search,
-    User,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import type { Trip } from "@/lib/routing/types";
@@ -174,7 +167,7 @@ export default function CalendarView({
                         />
                         <input
                             type="text"
-                            placeholder="Search by routes or drivers..."
+                            placeholder="Search drivers..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
@@ -237,7 +230,12 @@ export default function CalendarView({
                         {sortedDrivers.map((driver) => (
                             <tr key={driver.id_}>
                                 <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
-                                    {driver.driver_id}
+                                    <div className="font-medium">
+                                        {driver.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {driver.driver_id}
+                                    </div>
                                 </td>
                                 {DAYS.map((day) => {
                                     const assignments =
