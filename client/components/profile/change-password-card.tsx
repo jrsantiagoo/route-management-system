@@ -8,7 +8,9 @@ export default function ChangePasswordCard() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -57,7 +59,7 @@ export default function ChangePasswordCard() {
                     <div className="relative">
                         <input
                             id="current-password"
-                            type={showPassword ? "text" : "password"}
+                            type={showCurrentPassword ? "text" : "password"}
                             placeholder="Enter current password"
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
@@ -66,13 +68,17 @@ export default function ChangePasswordCard() {
                         />
                         <button
                             type="button"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() =>
+                                setShowCurrentPassword(!showCurrentPassword)
+                            }
                             aria-label={
-                                showPassword ? "Hide password" : "Show password"
+                                showCurrentPassword
+                                    ? "Hide password"
+                                    : "Show password"
                             }
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                         >
-                            {showPassword ? (
+                            {showCurrentPassword ? (
                                 <EyeOff
                                     size={18}
                                     className="hover:text-muted-foreground"
@@ -98,7 +104,7 @@ export default function ChangePasswordCard() {
                     <div className="relative">
                         <input
                             id="new-password"
-                            type={showPassword ? "text" : "password"}
+                            type={showNewPassword ? "text" : "password"}
                             placeholder="Enter new password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
@@ -107,13 +113,15 @@ export default function ChangePasswordCard() {
                         />
                         <button
                             type="button"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() => setShowNewPassword(!showNewPassword)}
                             aria-label={
-                                showPassword ? "Hide password" : "Show password"
+                                showNewPassword
+                                    ? "Hide password"
+                                    : "Show password"
                             }
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                         >
-                            {showPassword ? (
+                            {showNewPassword ? (
                                 <EyeOff
                                     size={18}
                                     className="hover:text-muted-foreground"
@@ -139,7 +147,7 @@ export default function ChangePasswordCard() {
                     <div className="relative">
                         <input
                             id="confirm-password"
-                            type={showPassword ? "text" : "password"}
+                            type={showConfirmPassword ? "text" : "password"}
                             placeholder="Confirm new password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -148,13 +156,17 @@ export default function ChangePasswordCard() {
                         />
                         <button
                             type="button"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                            }
                             aria-label={
-                                showPassword ? "Hide password" : "Show password"
+                                showConfirmPassword
+                                    ? "Hide password"
+                                    : "Show password"
                             }
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                         >
-                            {showPassword ? (
+                            {showConfirmPassword ? (
                                 <EyeOff
                                     size={18}
                                     className="hover:text-muted-foreground"
