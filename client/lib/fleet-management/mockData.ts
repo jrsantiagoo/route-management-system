@@ -61,7 +61,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1006",
         weightCapacity: 600,
-        status: "MAINTENANCE",
+        status: "STANDBY",
     },
     {
         vehicleId_: "VH-007",
@@ -115,7 +115,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1012",
         weightCapacity: 1600,
-        status: "MAINTENANCE",
+        status: "ACTIVE",
     },
     {
         vehicleId_: "VH-013",

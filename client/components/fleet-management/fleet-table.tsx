@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import {
-    CalendarClock,
-    Clock,
-    MapPinned,
-    Route,
-    Search,
-    ArchiveIcon,
-    User,
-    Fuel,
-} from "lucide-react";
+import { Search, ArchiveIcon, User, Fuel, Van, Weight } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
@@ -85,9 +76,10 @@ export default function FleetTable({ vehicles }: VehicleProps) {
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="-mt-4 text-base font-semibold text-foreground">
-                    Vehicle Fleet
-                </h3>
+                <div className="flex items-center gap-2 text-base font-semibold">
+                    <Van size={21} className="text-primary-foreground" />
+                    <h3 className="mt-1 text-foreground">Vehicle Fleet</h3>
+                </div>
 
                 {/* Filtered Search */}
                 <div className="relative">
@@ -145,7 +137,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 onToggle={toggleSort}
                                 className="rounded-tl-lg"
                             >
-                                <Route
+                                <Van
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
@@ -155,9 +147,8 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 sortKey="vehicle_type"
                                 sortState={sortState}
                                 onToggle={toggleSort}
-                                className="rounded-tl-lg"
                             >
-                                <Route
+                                <Van
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
@@ -178,13 +169,12 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 sortKey="weight_capacity"
                                 sortState={sortState}
                                 onToggle={toggleSort}
-                                className="rounded-tl-lg"
                             >
-                                <Route
+                                <Weight
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Weight
+                                Weight Capacity
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"

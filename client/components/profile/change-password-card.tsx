@@ -37,7 +37,7 @@ export default function ChangePasswordCard() {
         <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border shadow-xl shadow-primary">
             <div className="flex items-center gap-2 pt-7 pl-7 text-lg font-semibold">
                 <Lock size={21} className="text-primary-foreground" />
-                Change Password
+                <h3 className="mt-1 text-foreground">Change Password</h3>
             </div>
             <p className="pl-7 text-sm text-muted-foreground">
                 Update your password
