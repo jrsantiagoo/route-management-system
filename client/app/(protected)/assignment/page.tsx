@@ -84,7 +84,7 @@ export default function Assignment() {
                     onCreated={handleCreateTrip}
                 />
 
-                {/* Enables Calendar/Table view toggle */}
+                {/* Enables Calendar/Table/Driver views toggle */}
                 <div className="flex items-center rounded-lg border border-border bg-card p-px">
                     <button
                         onClick={() => setViewMode("calendar")}
