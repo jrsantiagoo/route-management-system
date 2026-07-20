@@ -1,7 +1,8 @@
 export interface Vehicle {
-    vehicleId_: string;
+    id_: String;
     lastDriver: string;
     driverId: string;
+    vehicleId_: string;
     vehicleType: string;
     plateNumber: string;
     weightCapacity: number;
@@ -10,6 +11,7 @@ export interface Vehicle {
 
 export const mockVehicleData: Vehicle[] = [
     {
+        id_: "VH-001",
         vehicleId_: "VH-001",
         lastDriver: "Juan Dela Cruz",
         driverId: "DRV-001",
@@ -19,6 +21,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ON ROUTE",
     },
     {
+        id_: "VH-002",
         vehicleId_: "VH-002",
         lastDriver: "Leon S. Kennedy",
         driverId: "DRV-002",
@@ -28,6 +31,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "STANDBY",
     },
     {
+        id_: "VH-003",
         vehicleId_: "VH-003",
         lastDriver: "Chris Redfield",
         driverId: "DRV-003",
@@ -37,6 +41,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ON ROUTE",
     },
     {
+        id_: "VH-004",
         vehicleId_: "VH-004",
         lastDriver: "John Doe",
         driverId: "DRV-004",
@@ -46,6 +51,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "STANDBY",
     },
     {
+        id_: "VH-005",
         vehicleId_: "VH-005",
         lastDriver: "John Smith",
         driverId: "DRV-005",
@@ -55,6 +61,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "INACTIVE",
     },
     {
+        id_: "VH-006",
         vehicleId_: "VH-006",
         lastDriver: "Jane Doe",
         driverId: "DRV-006",
@@ -64,6 +71,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "STANDBY",
     },
     {
+        id_: "VH-007",
         vehicleId_: "VH-007",
         lastDriver: "Sisyphus",
         driverId: "DRV-007",
@@ -73,6 +81,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ON ROUTE",
     },
     {
+        id_: "VH-008",
         vehicleId_: "VH-008",
         lastDriver: "Jill Valentine",
         driverId: "DRV-008",
@@ -82,6 +91,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "STANDBY",
     },
     {
+        id_: "VH-009",
         vehicleId_: "VH-009",
         lastDriver: "Claire Redfield",
         driverId: "DRV-009",
@@ -91,6 +101,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ON ROUTE",
     },
     {
+        id_: "VH-010",
         vehicleId_: "VH-010",
         lastDriver: "Ethan Winters",
         driverId: "DRV-010",
@@ -100,6 +111,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "INACTIVE",
     },
     {
+        id_: "VH-011",
         vehicleId_: "VH-011",
         lastDriver: "Ada Wong",
         driverId: "DRV-011",
@@ -109,6 +121,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "STANDBY",
     },
     {
+        id_: "VH-012",
         vehicleId_: "VH-012",
         lastDriver: "Barry Burton",
         driverId: "DRV-012",
@@ -118,6 +131,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ACTIVE",
     },
     {
+        id_: "VH-013",
         vehicleId_: "VH-013",
         lastDriver: "Rebecca Chambers",
         driverId: "DRV-013",
@@ -127,6 +141,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "ON ROUTE",
     },
     {
+        id_: "VH-014",
         vehicleId_: "VH-014",
         lastDriver: "Albert Wesker",
         driverId: "DRV-014",
@@ -136,6 +151,7 @@ export const mockVehicleData: Vehicle[] = [
         status: "RESERVED",
     },
     {
+        id_: "VH-015",
         vehicleId_: "VH-015",
         lastDriver: "Mr. Bean",
         driverId: "DRV-015",

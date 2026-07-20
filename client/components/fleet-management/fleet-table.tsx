@@ -195,7 +195,12 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
                             >
                                 <td className="px-3 py-2 font-medium">
-                                    {v.plateNumber}
+                                    <div className="font-medium">
+                                        {v.plateNumber}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {v.vehicleId_}
+                                    </div>
                                 </td>
                                 <td className="px-3 py-2 font-medium">
                                     {v.vehicleType}
