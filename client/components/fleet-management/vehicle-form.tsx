@@ -21,8 +21,34 @@ export default function VehicleForm() {
     const [vehicleModel, setVehicleModel] = useState("");
     const [year, setYear] = useState("");
 
-    function handleCancel() {
+    const allFieldsFilled =
+        plateNumber &&
+        vehicleType &&
+        vehicleMaker &&
+        targetEfficiency &&
+        initOdometer &&
+        vehicleModel &&
+        year &&
+        Number(targetEfficiency) > 0 &&
+        Number(initOdometer) > 0;
+
+    const isTargetEffInvalid =
+        targetEfficiency && Number(targetEfficiency) <= 0;
+    const isInitOdometerInvalid = initOdometer && Number(initOdometer) <= 0;
+
+    function handleClose() {
+        setPlateNumber("");
+        setVehicleType("");
+        setVehicleMaker("");
+        setTargetEfficiency("");
+        setInitOdometer("");
+        setVehicleModel("");
+        setYear("");
         setOpen(false);
+    }
+
+    function handleCancel() {
+        handleClose();
     }
 
     return (
@@ -41,10 +67,10 @@ export default function VehicleForm() {
                 // Background Overlay
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-                    onClick={() => setOpen(false)}
+                    onClick={() => handleClose()}
                 >
                     <div
-                        className="mt-2 p-8 w-240 bg-card border border-border rounded-md shadow shadow-muted-foreground"
+                        className="mt-2 p-8 w-240 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header Text */}
@@ -66,7 +92,8 @@ export default function VehicleForm() {
                             <div className="grid grid-cols-3 gap-6 w-full">
                                 <div className="flex flex-col w- gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Plate Number
+                                        Plate Number{" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Car
@@ -89,7 +116,8 @@ export default function VehicleForm() {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Vehicle Brand
+                                        Vehicle Brand{" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Building2
@@ -112,7 +140,8 @@ export default function VehicleForm() {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Target Efficiency (km/L)
+                                        Target Efficiency (km/L){" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Fuel
@@ -122,6 +151,7 @@ export default function VehicleForm() {
                                         <input
                                             id="target-efficiency"
                                             type="number"
+                                            min="0"
                                             placeholder="Enter target efficiency"
                                             value={targetEfficiency}
                                             onChange={(e) =>
@@ -133,11 +163,18 @@ export default function VehicleForm() {
                                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                         ></input>
                                     </div>
+                                    {isTargetEffInvalid && (
+                                        <p className="text-xs text-red-500 mt-0.5">
+                                            Target efficiency must be greater
+                                            than 0
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Vehicle Type
+                                        Vehicle Type{" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Car
@@ -160,7 +197,8 @@ export default function VehicleForm() {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Vehicle Model
+                                        Vehicle Model{" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Car
@@ -183,7 +221,8 @@ export default function VehicleForm() {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Initial Odometer (L)
+                                        Initial Odometer (L){" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <Gauge
@@ -193,6 +232,7 @@ export default function VehicleForm() {
                                         <input
                                             id="initial-odometer"
                                             type="number"
+                                            min="0"
                                             placeholder="Enter distance"
                                             value={initOdometer}
                                             onChange={(e) =>
@@ -202,11 +242,18 @@ export default function VehicleForm() {
                                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                         ></input>
                                     </div>
+                                    {isInitOdometerInvalid && (
+                                        <p className="text-xs text-red-500 mt-0.5">
+                                            Initial odometer must be greater
+                                            than 0
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
-                                        Year
+                                        Year{" "}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <FormSelect
                                         value={year}
@@ -245,7 +292,13 @@ export default function VehicleForm() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-5 py-1.5 text-md rounded-md bg-primary text-primary-foreground hover:bg-secondary transition"
+                                    disabled={!allFieldsFilled}
+                                    className={`px-5 py-1.5 text-md rounded-md transition duration-350 
+                                        ${
+                                            allFieldsFilled
+                                                ? "bg-primary text-primary-foreground hover:bg-secondary"
+                                                : "bg-muted-foreground text-background cursor-not-allowed"
+                                        }`}
                                 >
                                     Add vehicle
                                 </button>
