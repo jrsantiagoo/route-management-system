@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiCall(endpoint: string, options: RequestInit = {}) {
@@ -42,8 +43,17 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
                 }
             } catch (err) {
                 console.error("Token refresh failed:", err);
+                redirectToLogin();
             }
+        } else {
+            redirectToLogin();
         }
     }
     return response;
+}
+
+function redirectToLogin() {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    window.location.href = "/";
 }
