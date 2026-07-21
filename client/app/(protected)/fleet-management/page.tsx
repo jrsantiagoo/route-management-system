@@ -1,6 +1,7 @@
 "use client";
 
 import FleetTable from "@/components/fleet-management/fleet-table";
+import VehicleForm from "@/components/fleet-management/vehicle-form";
 import { mockVehicleData } from "@/lib/fleet-management/mockData";
 
 export default function FleetManagement() {
@@ -16,6 +17,7 @@ export default function FleetManagement() {
                 </div>
             </div>
 
+            <VehicleForm />
             <FleetTable vehicles={mockVehicleData} />
         </div>
     );

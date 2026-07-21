@@ -4,11 +4,13 @@ import { useState, useCallback } from "react";
 import {
     Search,
     ArchiveIcon,
+    Eye,
+    SquarePen,
     User,
-    Fuel,
     Van,
     Weight,
     CircleGauge,
+    Ellipsis,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
