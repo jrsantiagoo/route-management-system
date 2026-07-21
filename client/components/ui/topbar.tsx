@@ -37,6 +37,8 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
         if (data.success) {
             const { firstname, lastname } = data.data;
             setName(`${firstname} ${lastname}`);
+        } else {
+            router.push("/");
         }
     }
 
