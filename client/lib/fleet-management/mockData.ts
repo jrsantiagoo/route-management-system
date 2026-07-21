@@ -18,7 +18,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1001",
         weightCapacity: 1500,
-        status: "ON ROUTE",
+        status: "EN ROUTE",
     },
     {
         id_: "VH-002",
@@ -38,7 +38,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1003",
         weightCapacity: 500,
-        status: "ON ROUTE",
+        status: "EN ROUTE",
     },
     {
         id_: "VH-004",
@@ -78,7 +78,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1007",
         weightCapacity: 2000,
-        status: "ON ROUTE",
+        status: "EN ROUTE",
     },
     {
         id_: "VH-008",
@@ -98,7 +98,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1009",
         weightCapacity: 120,
-        status: "ON ROUTE",
+        status: "EN ROUTE",
     },
     {
         id_: "VH-010",
@@ -138,7 +138,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1013",
         weightCapacity: 400,
-        status: "ON ROUTE",
+        status: "EN ROUTE",
     },
     {
         id_: "VH-014",
