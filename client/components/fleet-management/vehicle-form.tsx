@@ -19,7 +19,7 @@ export default function VehicleForm() {
     const [targetEfficiency, setTargetEfficiency] = useState("");
     const [initOdometer, setInitOdometer] = useState("");
     const [vehicleModel, setVehicleModel] = useState("");
-    const [year, setYear] = useState("");
+    const [selectedYear, setSelectedYear] = useState("");
 
     const allFieldsFilled =
         plateNumber &&
@@ -28,7 +28,7 @@ export default function VehicleForm() {
         targetEfficiency &&
         initOdometer &&
         vehicleModel &&
-        year &&
+        selectedYear &&
         Number(targetEfficiency) > 0 &&
         Number(initOdometer) > 0;
 
@@ -43,7 +43,7 @@ export default function VehicleForm() {
         setTargetEfficiency("");
         setInitOdometer("");
         setVehicleModel("");
-        setYear("");
+        setSelectedYear("");
         setOpen(false);
     }
 
@@ -69,6 +69,7 @@ export default function VehicleForm() {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
                     onClick={() => handleClose()}
                 >
+                    {/* Form Modal */}
                     <div
                         className="mt-2 p-8 w-240 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
                         onClick={(e) => e.stopPropagation()}
@@ -256,8 +257,8 @@ export default function VehicleForm() {
                                         <span className="text-red-500">*</span>
                                     </label>
                                     <FormSelect
-                                        value={year}
-                                        onChange={setYear}
+                                        value={selectedYear}
+                                        onChange={setSelectedYear}
                                         options={Array.from(
                                             {
                                                 length:
@@ -271,7 +272,7 @@ export default function VehicleForm() {
                                                         i,
                                                 ),
                                         )}
-                                        placeholder="Select a Year"
+                                        placeholder="Select a year"
                                         icon={
                                             <Calendar
                                                 size={19}
