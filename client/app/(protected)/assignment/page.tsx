@@ -7,11 +7,12 @@ import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
 import { getDrivers } from "@/lib/api/drivers";
 import { getRoutes } from "@/lib/api/routes";
 
-import AssignmentForm from "@/components/assignment/assignment-form";
+// import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
 import DriverView from "@/components/assignment/driver-view";
 import { mockDriverDayData } from "@/lib/assignment/mockData";
+import AssignmentForm from "@/components/assignment/assign-form";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -78,13 +79,18 @@ export default function Assignment() {
             </div>
 
             <div className="flex items-center justify-between">
+                {/* <AssignmentForm
+                    driverOptions={drivers}
+                    routeOptions={routes}
+                    onCreated={handleCreateTrip}
+                /> */}
                 <AssignmentForm
                     driverOptions={drivers}
                     routeOptions={routes}
                     onCreated={handleCreateTrip}
                 />
 
-                {/* Enables Calendar/Table view toggle */}
+                {/* Enables Calendar/Table/Driver views toggle */}
                 <div className="flex items-center rounded-lg border border-border bg-card p-px">
                     <button
                         onClick={() => setViewMode("calendar")}

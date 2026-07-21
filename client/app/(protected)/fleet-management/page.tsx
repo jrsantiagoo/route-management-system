@@ -1,6 +1,10 @@
 "use client";
 
-export default function Assignment() {
+import FleetTable from "@/components/fleet-management/fleet-table";
+import VehicleForm from "@/components/fleet-management/vehicle-form";
+import { mockVehicleData } from "@/lib/fleet-management/mockData";
+
+export default function FleetManagement() {
     return (
         <div className="flex flex-col gap-6">
             {/* Page Header */}
@@ -8,12 +12,13 @@ export default function Assignment() {
                 <div className="flex flex-col justify-center">
                     <h1 className="text-2xl font-bold">Fleet Management</h1>
                     <p className="text-md text-muted-foreground">
-                        Assign routes and plan trips
+                        Manage your fleet vehicles
                     </p>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between"></div>
+            <VehicleForm />
+            <FleetTable vehicles={mockVehicleData} />
         </div>
     );
 }

@@ -7,6 +7,7 @@ import {
     PackageSearch,
     Search,
     User,
+    ListOrdered,
 } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useSort } from "@/lib/hooks/useSort";
@@ -108,9 +109,17 @@ export default function OrdersTable({ orders }: OrderTableProps) {
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Header + search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-semibold text-foreground">
-                    Orders
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <ListOrdered
+                        size={21}
+                        className="text-primary-foreground"
+                    />
+                    <h3 className="text-base font-semibold text-foreground">
+                        Orders
+                    </h3>
+                </div>
+
+                {/* Filtered Search */}
                 <div className="relative">
                     <Search
                         size={14}

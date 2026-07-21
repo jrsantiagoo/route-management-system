@@ -48,9 +48,12 @@ export default function DriverView({ items }: DriverViewProps) {
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Table Header + Search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="-mt-4 text-base font-semibold text-foreground">
-                    Driver Capacity Overview
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <User size={21} className="text-primary-foreground" />
+                    <h3 className="mt-1 text-foreground">
+                        Driver Capacity Overview
+                    </h3>
+                </div>
 
                 {/* Filtered Search */}
                 <div className="relative">

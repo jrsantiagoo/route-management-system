@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
+import {
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Search,
+    User,
+} from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import type { Trip } from "@/lib/routing/types";
@@ -130,9 +136,11 @@ export default function CalendarView({
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Calendar View Header */}
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-semibold text-foreground">
-                    {weekLabel}
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <Calendar size={21} className="text-primary-foreground" />
+                    <h3 className="mt-1 text-foreground">{weekLabel}</h3>
+                </div>
+
                 <div className="flex items-center gap-1">
                     {/* Enables calendar to view previous week */}
                     <button
