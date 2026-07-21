@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Search, ArchiveIcon, User, Fuel, Van, Weight } from "lucide-react";
+import {
+    Search,
+    ArchiveIcon,
+    User,
+    Fuel,
+    Van,
+    Weight,
+    CircleGauge,
+} from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
@@ -60,6 +68,10 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                 return v.lastDriver;
             case "weight_capacity":
                 return v.weightCapacity.toString().padStart(5, "0");
+            case "target":
+                return v.target.toString().padStart(5, "0");
+            case "avg_performance":
+                return v.avg_performance?.toString().padStart(5, "0") ?? "";
             case "status":
                 return v.status;
             default:
@@ -163,7 +175,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Driver
+                                Last Driver
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="weight_capacity"
@@ -175,6 +187,24 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                     className="inline mr-0.5 -mt-0.5"
                                 />
                                 Weight Capacity
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="target"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <CircleGauge
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Target Mileage
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="avg_performance"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                Avg. Performance
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"
@@ -206,10 +236,20 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                     {v.vehicleType}
                                 </td>
                                 <td className="px-3 py-2">
-                                    {v.lastDriver || "Unassigned"}
+                                    {v.lastDriver == "" ? (
+                                        <div className="italic text-muted-foreground">
+                                            No assigned driver
+                                        </div>
+                                    ) : (
+                                        v.lastDriver
+                                    )}
                                 </td>
                                 <td className="px-3 py-2">
                                     {v.weightCapacity} kg
+                                </td>
+                                <td className="px-3 py-2">{v.target}</td>
+                                <td className="px-3 py-2">
+                                    {v.avg_performance ?? "—"}
                                 </td>
                                 <td className="px-3 py-2">{v.status}</td>
                                 <td className="pl-7 px-3 py-2">

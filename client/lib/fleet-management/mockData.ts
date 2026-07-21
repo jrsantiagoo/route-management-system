@@ -6,6 +6,8 @@ export interface Vehicle {
     vehicleType: string;
     plateNumber: string;
     weightCapacity: number;
+    target: number;
+    avg_performance?: number;
     status: string;
 }
 
@@ -18,6 +20,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1001",
         weightCapacity: 1500,
+        target: 1000,
         status: "EN ROUTE",
     },
     {
@@ -28,6 +31,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1002",
         weightCapacity: 100,
+        target: 1000,
         status: "STANDBY",
     },
     {
@@ -38,6 +42,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1003",
         weightCapacity: 500,
+        target: 1000,
         status: "EN ROUTE",
     },
     {
@@ -48,6 +53,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1004",
         weightCapacity: 1800,
+        target: 1000,
         status: "STANDBY",
     },
     {
@@ -58,6 +64,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1005",
         weightCapacity: 80,
+        target: 1000,
         status: "INACTIVE",
     },
     {
@@ -68,6 +75,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1006",
         weightCapacity: 600,
+        target: 1000,
         status: "STANDBY",
     },
     {
@@ -78,6 +86,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1007",
         weightCapacity: 2000,
+        target: 1000,
         status: "EN ROUTE",
     },
     {
@@ -88,6 +97,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1008",
         weightCapacity: 450,
+        target: 1000,
         status: "STANDBY",
     },
     {
@@ -98,6 +108,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1009",
         weightCapacity: 120,
+        target: 1000,
         status: "EN ROUTE",
     },
     {
@@ -108,6 +119,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1010",
         weightCapacity: 550,
+        target: 1000,
         status: "INACTIVE",
     },
     {
@@ -118,6 +130,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1011",
         weightCapacity: 90,
+        target: 1000,
         status: "STANDBY",
     },
     {
@@ -128,6 +141,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1012",
         weightCapacity: 1600,
+        target: 1000,
         status: "ACTIVE",
     },
     {
@@ -138,6 +152,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Car",
         plateNumber: "ABC-1013",
         weightCapacity: 400,
+        target: 1000,
         status: "EN ROUTE",
     },
     {
@@ -148,6 +163,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Van",
         plateNumber: "ABC-1014",
         weightCapacity: 1200,
+        target: 1000,
         status: "RESERVED",
     },
     {
@@ -158,6 +174,18 @@ export const mockVehicleData: Vehicle[] = [
         vehicleType: "Motorcycle",
         plateNumber: "ABC-1015",
         weightCapacity: 70,
+        target: 1000,
         status: "STANDBY",
+    },
+    {
+        id_: "VH-016",
+        vehicleId_: "VH-016",
+        lastDriver: "",
+        driverId: "",
+        vehicleType: "Car",
+        plateNumber: "ABC-1016",
+        weightCapacity: 400,
+        target: 1000,
+        status: "INACTIVE",
     },
 ];
