@@ -3,20 +3,23 @@
 import { useState, useCallback } from "react";
 import {
     CalendarClock,
+    ClipboardList,
     Clock,
     MapPinned,
     Route,
     Search,
-    Trash2,
+    ArchiveIcon,
     User,
+    Fuel,
+    Ellipsis,
 } from "lucide-react";
-import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 
 interface TableViewProps {
-    trips: MockTrip[];
+    trips: Trip[];
     onDeleted: (tripId: string) => void;
 }
 
@@ -34,7 +37,9 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [routeFilter, setRouteFilter] = useState("All");
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
+    const [statusFilter, setStatusFilter] = useState("All");
 
+    // Needed for filtering options
     const routeOptions = [
         ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
     ] as string[];
@@ -51,6 +56,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 .map((d) => formatDate(d)),
         ),
     ] as string[];
+    const statusOptions = [...new Set(trips.map((t) => t.status))];
 
     // Filter trips by route name or driver ID
     const filtered = trips.filter((t) => {
@@ -67,13 +73,19 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
         const matchesScheduled =
             scheduledFilter === "All" ||
             formatDate(t.scheduled_date) === scheduledFilter;
+        const matchesStatus =
+            statusFilter === "All" || t.status === statusFilter;
         return (
-            matchesSearch && matchesRoute && matchesDriver && matchesScheduled
+            matchesSearch &&
+            matchesRoute &&
+            matchesDriver &&
+            matchesScheduled &&
+            matchesStatus
         );
     });
 
     // Sort trips by the currently active column
-    const getTripVal = useCallback((t: MockTrip, key: string) => {
+    const getTripVal = useCallback((t: Trip, key: string) => {
         switch (key) {
             case "route":
                 return t.route?.name ?? "";
@@ -83,10 +95,14 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 return t.purpose ?? "";
             case "destination":
                 return t.destination ?? "";
+            case "fuelConsumed":
+                return "";
             case "scheduled_date":
                 return t.scheduled_date ?? "";
             case "created_at":
                 return t.created_at ?? "";
+            case "status":
+                return t.status;
             default:
                 return "";
         }
@@ -99,10 +115,15 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+            {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="-mt-4 text-base font-semibold text-foreground">
-                    All Assignments
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <ClipboardList
+                        size={21}
+                        className="text-primary-foreground"
+                    />
+                    <h3 className="mt-1 text-foreground">All Assignments</h3>
+                </div>
 
                 {/* Filtered Search */}
                 <div className="relative">
@@ -140,6 +161,12 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                     value={scheduledFilter}
                     options={scheduledOptions}
                     onChange={setScheduledFilter}
+                />
+                <FilterSelect
+                    label="All Statuses"
+                    value={statusFilter}
+                    options={statusOptions}
+                    onChange={setStatusFilter}
                 />
             </div>
 
@@ -190,6 +217,17 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 Destination
                             </SortableHeader>
                             <SortableHeader
+                                sortKey="fuelConsumed"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Fuel
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Fuel Consumed
+                            </SortableHeader>
+                            <SortableHeader
                                 sortKey="scheduled_date"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -211,6 +249,13 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 />
                                 Created At
                             </SortableHeader>
+                            <SortableHeader
+                                sortKey="status"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                Status
+                            </SortableHeader>
                             <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
                                 Actions
                             </th>
@@ -220,7 +265,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                         {sortedTrips.map((t) => (
                             <tr
                                 key={t.id_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2 font-medium">
                                     {t.route?.name || "—"}
@@ -234,19 +279,23 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {t.destination || "—"}
                                 </td>
+                                <td className="px-3 py-2">—</td>
                                 <td className="px-3 py-2">
                                     {formatDate(t.scheduled_date)}
                                 </td>
                                 <td className="px-3 py-2">
                                     {formatDate(t.created_at)}
                                 </td>
+                                <td className="px-3 py-2">{t.status}</td>
                                 <td className="pl-7 px-3 py-2">
                                     <button
-                                        onClick={() => onDeleted(t.id_)}
-                                        className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
-                                        title="Delete assignment"
+                                        // onClick={() => onDeleted(t.id_)}
+                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border
+                                            hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
+                                            cursor-pointer"
+                                        title="More actions"
                                     >
-                                        <Trash2 size={14} />
+                                        <Ellipsis size={16} />
                                     </button>
                                 </td>
                             </tr>

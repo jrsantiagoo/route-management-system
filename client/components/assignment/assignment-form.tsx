@@ -2,37 +2,30 @@
 
 import { useState, useRef, useEffect } from "react";
 import { CirclePlus, CircleMinus } from "lucide-react";
-import {
-    mockRoutes,
-    mockDrivers,
-    getRouteById,
-    getDriverById,
-} from "@/lib/assignment/mockData";
-import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip } from "@/lib/routing/types";
 import type { RoutePlan } from "@/lib/routing/types";
 import type { Driver } from "@/lib/routing/types";
 import FilterSelect from "../ui/filter-select";
+import { createTrip } from "@/lib/api/trips";
 
 interface AssignmentFormProps {
-    onCreated: (trip: MockTrip) => void;
+    routeOptions: RoutePlan[];
+    driverOptions: Driver[];
+    onCreated: (newTrip: Trip) => void;
 }
 
-export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
+export default function AssignmentForm({
+    routeOptions,
+    driverOptions,
+    onCreated,
+}: AssignmentFormProps) {
     const [open, setOpen] = useState(false);
-    const [routes, setRoutes] = useState<RoutePlan[]>([]);
-    const [drivers, setDrivers] = useState<Driver[]>([]);
     const [selectedRoute, setSelectedRoute] = useState("All");
     const [selectedDriver, setSelectedDriver] = useState("All");
-    const [date, setDate] = useState(() =>
-        new Date().toISOString().slice(0, 10),
+    const [date, setDate] = useState(
+        () => new Date().toISOString().split("T")[0],
     );
     const ref = useRef<HTMLDivElement>(null);
-
-    // Load mock data on mount
-    useEffect(() => {
-        setRoutes(mockRoutes);
-        setDrivers(mockDrivers);
-    }, []);
 
     // Close the panel when clicking outside
     useEffect(() => {
@@ -45,30 +38,28 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
     }, []);
 
     // Build a MockTrip from the selected form values and pass it up
-    function handleSubmit(e: React.SubmitEvent) {
-        if (selectedRoute === "All" || selectedDriver === "All") return;
+    async function handleSubmit(e: React.SubmitEvent) {
+        e.preventDefault();
+        if (selectedRoute === "All" || selectedDriver === "All" || !date)
+            return;
 
-        const route = mockRoutes.find((r) => r.name === selectedRoute);
-        const driver = mockDrivers.find((d) => d.driver_id === selectedDriver);
+        const route = routeOptions.find((r) => r.name === selectedRoute);
+        const driver = driverOptions.find(
+            (d) => d.driver_id === selectedDriver,
+        );
         if (!route || !driver) return;
 
-        const now = new Date();
-        const newTrip: MockTrip = {
-            id_: `trip-mock-${now.getTime()}`,
-            status: "PENDING",
-            tag_type: "ASSIGNED",
-            scheduled_date: `${date}T08:00:00Z`,
-            created_at: now.toISOString(),
-            purpose: "General Delivery",
-            destination: route.name,
-            driver_id_: driver.id_,
-            route_id_: route.id_,
-            route: { id_: route.id_, name: route.name },
-            agent_profile: { id_: driver.id_, driver_id: driver.driver_id },
-        };
+        let newTrip;
+        try {
+            const result = await createTrip(route.id_, driver.id_, date);
+            newTrip = result.data as Trip;
+        } catch (error) {
+            console.error("Failed to create trip: ", error);
+            return;
+        }
 
-        setOpen(false);
         onCreated(newTrip);
+        setOpen(false);
     }
 
     function handleCancel() {
@@ -103,7 +94,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                             <FilterSelect
                                 label="Select Route"
                                 value={selectedRoute}
-                                options={routes.map((r) => r.name)}
+                                options={routeOptions.map((r) => r.name)}
                                 onChange={setSelectedRoute}
                             />
                         </div>
@@ -115,7 +106,7 @@ export default function AssignmentForm({ onCreated }: AssignmentFormProps) {
                             <FilterSelect
                                 label="Select Driver"
                                 value={selectedDriver}
-                                options={drivers.map((r) => r.driver_id)}
+                                options={driverOptions.map((d) => d.driver_id)}
                                 onChange={setSelectedDriver}
                             />
                         </div>
