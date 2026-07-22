@@ -100,7 +100,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                         </span>
                         <ChevronDown
                             size={16}
-                            className={`text-muted-foreground transition ${open ? "rotate-180" : ""}`}
+                            className={`text-muted-foreground dark:group-hover:text-primary transition ${open ? "rotate-180" : ""}`}
                         />
                     </button>
 
