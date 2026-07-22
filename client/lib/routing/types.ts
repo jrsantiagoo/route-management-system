@@ -1,11 +1,18 @@
 export type VehicleType = "car" | "motorcycle";
 
+export type OrderPriority = "urgent" | "normal";
+
 export interface Stop {
     id: string;
     name: string;
     address: string;
     lat: number;
     lng: number;
+    // Orders delivered at this address. Set when the stop comes from an order
+    // location; left undefined for map/geocoded stops.
+    orderIds?: number[];
+    priority?: OrderPriority;
+    area?: string;
 }
 
 export interface Driver {
@@ -25,6 +32,7 @@ export interface RouteSegment {
 
 export interface RoutePlan {
     id_: string;
+    id: string;
     name: string;
     stops: Stop[];
     segments: RouteSegment[];
@@ -33,6 +41,7 @@ export interface RoutePlan {
     vehicleType: VehicleType;
     assignedWeek: string; // ISO Monday date string – set by the Assignment page
     createdAt: string; // ISO datetime string
+    archived?: boolean;
 }
 
 export interface Trip {

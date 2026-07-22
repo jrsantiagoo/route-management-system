@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Stop } from '@/lib/routing/types';
-import { MANILA_LOCATIONS } from '@/lib/routing/mockData';
+import { groupOrdersByLocation, orderLocationToStop, formatOrderLabel } from '@/lib/routing/orderData';
 import { GeocodingResult, searchLocation } from '@/lib/routing/geocodingService';
 import { useTheme } from '@/lib/theme-context';
 import { DARK } from './routeTheme';
@@ -71,14 +71,18 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
     if (abortRef.current) abortRef.current.abort();
   }
 
-  // ── Saved locations ──────────────────────────────────────────────────────
+  // ── Order locations ──────────────────────────────────────────────────────
 
+  const orderStops = groupOrdersByLocation().map(orderLocationToStop);
   const alreadyAdded = new Set(stops.map((s) => s.id));
-  const filteredSaved = MANILA_LOCATIONS.filter((loc) => {
+  const filteredSaved = orderStops.filter((loc) => {
     if (alreadyAdded.has(loc.id)) return false;
     if (!savedQuery.trim()) return true;
     const q = savedQuery.toLowerCase();
-    return loc.name.toLowerCase().includes(q) || loc.address.toLowerCase().includes(q);
+    return (
+      loc.name.toLowerCase().includes(q) ||
+      loc.address.toLowerCase().includes(q)
+    );
   });
 
   function handleSelectSaved(loc: Stop) {
@@ -206,7 +210,7 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                 type="text"
                 value={savedQuery}
                 onChange={(e) => setSavedQuery(e.target.value)}
-                placeholder="Search saved locations…"
+                placeholder="Search order locations…"
                 style={{
                   flex: 1,
                   border: 'none',
@@ -240,8 +244,8 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
               {filteredSaved.length === 0 ? (
                 <div style={{ padding: '10px', fontSize: '12px', color: dark ? DARK.textMuted : '#9ca3af' }}>
                   {savedQuery.trim()
-                    ? 'No matching saved locations.'
-                    : 'All saved locations are already added.'}
+                    ? 'No matching order locations.'
+                    : 'All order locations are already added.'}
                 </div>
               ) : (
                 filteredSaved.map((loc, i) => (
@@ -267,8 +271,33 @@ export default function AddStopPopover({ stops, onAddStop, onPreview }: AddStopP
                         (e.currentTarget as HTMLElement).style.background = 'none';
                       }}
                     >
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: dark ? DARK.text : '#111827' }}>
-                        {loc.name}
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          width: '100%',
+                        }}
+                      >
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: dark ? DARK.text : '#111827' }}>
+                          {loc.orderIds ? formatOrderLabel(loc.orderIds) : loc.name}
+                        </span>
+                        {loc.priority === 'urgent' && (
+                          <span
+                            style={{
+                              flexShrink: 0,
+                              fontSize: '9px',
+                              fontWeight: 600,
+                              color: dark ? '#fca5a5' : '#dc2626',
+                              background: dark ? 'rgba(239,68,68,0.15)' : '#fef2f2',
+                              border: `1px solid ${dark ? 'rgba(239,68,68,0.35)' : '#fecaca'}`,
+                              borderRadius: '9999px',
+                              padding: '1px 6px',
+                            }}
+                          >
+                            Urgent
+                          </span>
+                        )}
                       </span>
                       <span
                         style={{
