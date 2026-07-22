@@ -52,7 +52,7 @@ export default function FilterSelect({
                 <span>{value === "All" ? label : value}</span>
                 <ChevronDown
                     size={14}
-                    className={`transition dark:group-hover:text-primary
+                    className={`transition group-hover:text-foreground dark:group-hover:text-primary
                         ${open ? "rotate-180" : ""} 
                         ${isActive ? "text-foreground" : "text-muted-foreground"}`}
                 />
