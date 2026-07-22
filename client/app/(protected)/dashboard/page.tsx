@@ -24,6 +24,10 @@ import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import { getEfficiency } from "@/lib/api/efficiency";
 import type { Trip, Order } from "@/lib/routing/types";
+import {
+    getVehiclesNeedingFuel,
+    getVehiclesNeedingMaintenance,
+} from "@/lib/api/fleet";
 
 import { computeTrend } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
@@ -55,9 +59,11 @@ export default function Dashboard() {
     const monday = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate() - diff,
+        now.getDate() - diff
     );
-    const firstOfWeek = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    const firstOfWeek = `${monday.getFullYear()}-${String(
+        monday.getMonth() + 1
+    ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
 
     const [range, setRange] = useState<{
         start: string;
@@ -78,10 +84,13 @@ export default function Dashboard() {
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
+    const [vehiclesNeedingFuel, setVehiclesNeedingFuel] = useState<number>(0);
+    const [vehiclesNeedingMaintenance, setVehiclesNeedingMaintenance] =
+        useState<number>(0);
 
     useEffect(() => {
         getOrdersRange(range.start, range.end).then((res) =>
-            setOrders(res.data),
+            setOrders(res.data)
         );
         getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
     }, [range]);
@@ -89,6 +98,12 @@ export default function Dashboard() {
     // Derive stats from orders data
     const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
     const delivered = orders.filter((o) => o.status === "COMPLETED").length;
+    const unassignedCount = trips.filter(
+        (t) => t.tag_type === "OPEN" || !t.driver_id_
+    ).length;
+    const upcomingTrips = trips.filter(
+        (t) => t.scheduled_date && new Date(t.scheduled_date) > new Date()
+    ).length;
 
     // Fuel per Order
     const [fuelData, setFuelData] = useState<
@@ -102,7 +117,7 @@ export default function Dashboard() {
     const [efficiency, setEfficiency] = useState<number>(0);
     // For Efficiency Comparison
     const [previousEfficiency, setPreviousEfficiency] = useState<number | null>(
-        null,
+        null
     );
 
     function getComparisonRange(start: string, end: string) {
@@ -123,7 +138,7 @@ export default function Dashboard() {
                 (d: { date: string; fuelPerOrder: number }) => ({
                     day: d.date,
                     fuel: d.fuelPerOrder,
-                }),
+                })
             );
             setFuelData(computeTrend(mapped, "fuel"));
         });
@@ -146,17 +161,25 @@ export default function Dashboard() {
                 (d: { date: string; distancePerOrder: number }) => ({
                     day: d.date,
                     distance: d.distancePerOrder,
-                }),
+                })
             );
             setDistanceData(computeTrend(mapped, "distance"));
         });
     }, [range]);
 
+    useEffect(() => {
+        getVehiclesNeedingFuel().then((res) => {
+            if (res.success) setVehiclesNeedingFuel(res.data);
+        });
+        getVehiclesNeedingMaintenance().then((res) => {
+            if (res.success) setVehiclesNeedingMaintenance(res.data);
+        });
+    }, []);
+
     const efficiencyChange =
         previousEfficiency !== null && previousEfficiency !== 0
             ? Math.round(
-                  ((efficiency - previousEfficiency) / previousEfficiency) *
-                      100,
+                  ((efficiency - previousEfficiency) / previousEfficiency) * 100
               )
             : 0;
 
@@ -169,6 +192,7 @@ export default function Dashboard() {
     // Derive subtitle for each stat card
     const tripsSubtitle = `out of ${trips.length} total trips`;
     const deliveredSubtitle = `out of ${orders.length} total orders`;
+    //const unassignedSubtitle = `out of ${trips.length} total trips`;
     const efficiencySubtitle: React.ReactNode =
         comparisonLabel === undefined ? undefined : (
             <>
@@ -233,6 +257,24 @@ export default function Dashboard() {
                     title="Delivered Orders"
                     value={String(delivered)}
                     subtitle={deliveredSubtitle}
+                />
+                <StatCard
+                    title="Total Upcoming Trips"
+                    value={String(upcomingTrips)}
+                    subtitle={tripsSubtitle}
+                />
+                <StatCard
+                    title="Unassigned"
+                    value={String(unassignedCount)}
+                    subtitle={tripsSubtitle}
+                />
+                <StatCard
+                    title="Vehicles Needing Fuel"
+                    value={String(vehiclesNeedingFuel)}
+                />
+                <StatCard
+                    title="Vehicles Needing Maintenance"
+                    value={String(vehiclesNeedingMaintenance)}
                 />
             </div>
 
