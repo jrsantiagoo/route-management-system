@@ -224,7 +224,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                         {sortedVehicles.map((v) => (
                             <tr
                                 key={v.vehicleId_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2 font-medium">
                                     <div className="font-medium">
@@ -256,10 +256,12 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 <td className="px-3 py-2">{v.status}</td>
                                 <td className="pl-7 px-3 py-2">
                                     <button
-                                        className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
-                                        title="Delete assignment"
+                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border 
+                                            hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
+                                            cursor-pointer"
+                                        title="More actions"
                                     >
-                                        <ArchiveIcon size={14} />
+                                        <Ellipsis size={16} />
                                     </button>
                                 </td>
                             </tr>

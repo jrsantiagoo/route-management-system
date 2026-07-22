@@ -273,12 +273,7 @@ export default function VehicleForm() {
                                                 ),
                                         )}
                                         placeholder="Select a year"
-                                        icon={
-                                            <Calendar
-                                                size={19}
-                                                className="text-muted-foreground"
-                                            />
-                                        }
+                                        icon={<Calendar size={19} />}
                                     />
                                 </div>
                             </div>

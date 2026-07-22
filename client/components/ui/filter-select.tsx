@@ -39,19 +39,22 @@ export default function FilterSelect({
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={`
-                    flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs
-                    outline-none hover:bg-secondary dark:hover:text-primary transition
+                    flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs text-foreground
+                    outline-none focus:ring-1 focus:ring-primary-foreground 
+                    hover:bg-secondary dark:hover:text-primary transition group
                     ${
                         isActive
-                            ? "border-primary-foreground bg-primary dark:bg-primary-foreground/40 text-foreground"
-                            : "border-gray-300 text-foreground dark:bg-card"
+                            ? "border-primary-foreground bg-primary dark:bg-primary-foreground/40"
+                            : "border-gray-300 dark:bg-card"
                     }
                 `}
             >
                 <span>{value === "All" ? label : value}</span>
                 <ChevronDown
                     size={14}
-                    className={`transition ${open ? "rotate-180" : ""} ${isActive ? "text-foreground" : "text-muted-foreground"}`}
+                    className={`transition dark:group-hover:text-primary
+                        ${open ? "rotate-180" : ""} 
+                        ${isActive ? "text-foreground" : "text-muted-foreground"}`}
                 />
             </button>
 

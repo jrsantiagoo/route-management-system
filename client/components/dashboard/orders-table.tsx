@@ -271,7 +271,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                         {sortedOrders.map((o) => (
                             <tr
                                 key={o.id_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground transition hover:bg-muted-foreground/15"
                             >
                                 <td className="px-3 py-2 font-medium ">
                                     {o.order_id}

@@ -21,6 +21,7 @@ export default function FormSelect({
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
+    // Close on click outside
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -36,24 +37,29 @@ export default function FormSelect({
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 w-full bg-background border border-border 
-                    rounded-lg px-3 py-2 text-sm text-foreground 
+                className="flex items-center gap-2 w-full rounded-lg border border-border 
+                    px-3 py-2 text-sm text-foreground bg-background
                     focus:outline-none focus:ring-2 focus:ring-primary-foreground
-                    hover:bg-secondary dark:hover:text-primary transition"
+                    hover:bg-secondary dark:hover:text-primary transition group"
             >
                 {icon && (
-                    <span className="shrink-0 text-muted-foreground">
+                    <span
+                        className="shrink-0 text-muted-foreground group-hover:text-foreground
+                            dark:group-hover:text-primary"
+                    >
                         {icon}
                     </span>
                 )}
                 <span
-                    className={`flex-1 text-left ${!value ? "text-muted-foreground" : ""}`}
+                    className={`flex-1 text-left 
+                        ${!value ? "text-muted-foreground group-hover:text-foreground dark:group-hover:text-primary" : ""}`}
                 >
                     {value || placeholder}
                 </span>
                 <ChevronDown
                     size={14}
-                    className={`shrink-0 text-muted-foreground transition 
+                    className={`shrink-0 text-muted-foreground group-hover:text-foreground 
+                        dark:group-hover:text-primary transition 
                         ${open ? "rotate-180" : ""}`}
                 />
             </button>

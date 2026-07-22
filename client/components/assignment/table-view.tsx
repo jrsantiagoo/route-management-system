@@ -11,6 +11,7 @@ import {
     ArchiveIcon,
     User,
     Fuel,
+    Ellipsis,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
@@ -264,7 +265,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                         {sortedTrips.map((t) => (
                             <tr
                                 key={t.id_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2 font-medium">
                                     {t.route?.name || "—"}
@@ -288,11 +289,13 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">{t.status}</td>
                                 <td className="pl-7 px-3 py-2">
                                     <button
-                                        onClick={() => onDeleted(t.id_)}
-                                        className="p-1 rounded-md text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition"
-                                        title="Delete assignment"
+                                        // onClick={() => onDeleted(t.id_)}
+                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border
+                                            hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
+                                            cursor-pointer"
+                                        title="More actions"
                                     >
-                                        <ArchiveIcon size={14} />
+                                        <Ellipsis size={16} />
                                     </button>
                                 </td>
                             </tr>

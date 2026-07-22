@@ -134,7 +134,7 @@ export default function DriverView({ items }: DriverViewProps) {
                         {sortedItems.map((d) => (
                             <tr
                                 key={d.id_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2">
                                     <div className="font-medium">
