@@ -42,3 +42,11 @@ export function deleteRoute(id: string): void {
     const remaining = loadSavedRoutes().filter((r) => r.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
 }
+
+export function setRouteArchived(id: string, archived: boolean): void {
+    if (typeof window === "undefined") return;
+    const all = loadSavedRoutes().map((r) =>
+        r.id === id ? { ...r, archived } : r,
+    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}

@@ -8,6 +8,9 @@ interface SaveRouteModalProps {
     onClose: () => void;
     onSave: (name: string) => void;
     existingNames: string[];
+    title?: string;
+    confirmLabel?: string;
+    initialName?: string;
 }
 
 const DUPLICATE_MESSAGE =
@@ -18,10 +21,13 @@ export default function SaveRouteModal({
     onClose,
     onSave,
     existingNames,
+    title = "Save Route",
+    confirmLabel = "Save Route",
+    initialName = "",
 }: SaveRouteModalProps) {
     const { theme } = useTheme();
     const dark = theme === "dark";
-    const [name, setName] = useState("");
+    const [name, setName] = useState(initialName);
     const [touched, setTouched] = useState(false);
 
     const trimmed = name.trim();
@@ -94,7 +100,7 @@ export default function SaveRouteModal({
                             color: dark ? DARK.text : "#111827",
                         }}
                     >
-                        Save Route
+                        {title}
                     </h2>
                     <button
                         onClick={onClose}
@@ -216,7 +222,7 @@ export default function SaveRouteModal({
                             opacity: canSave ? 1 : 0.7,
                         }}
                     >
-                        Save Route
+                        {confirmLabel}
                     </button>
                 </div>
             </div>
