@@ -262,8 +262,28 @@ export default function Dashboard() {
 
     // Enables PDF Download of summary
     const handleDownload = useCallback(() => {
-        generatePDF(totalTrips, efficiency, delivered);
-    }, [totalTrips, efficiency, delivered]);
+        generatePDF(
+            upcomingTrips,
+            unassignedCount,
+            vehiclesNeedingFuel,
+            vehiclesNeedingMaintenance,
+            totalTrips,
+            efficiency,
+            delivered,
+            distanceData,
+            fuelData,
+        );
+    }, [
+        upcomingTrips,
+        unassignedCount,
+        vehiclesNeedingFuel,
+        vehiclesNeedingMaintenance,
+        totalTrips,
+        efficiency,
+        delivered,
+        distanceData,
+        fuelData,
+    ]);
 
     return (
         <div className="flex flex-col gap-6">
