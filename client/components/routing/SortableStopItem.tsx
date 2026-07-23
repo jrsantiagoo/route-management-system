@@ -2,6 +2,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Stop } from "@/lib/routing/types";
+import { formatOrderLabel } from "@/lib/routing/orderData";
 import { useTheme } from "@/lib/theme-context";
 import { DARK } from "./routeTheme";
 
@@ -80,6 +81,10 @@ export default function SortableStopItem({
         : ROLE_STYLES[role].border;
     const badgeContent = badge ?? String(stopNumber);
     const isEndpoint = role === "start" || role === "end";
+    const hasOrders = !!stop.orderIds && stop.orderIds.length > 0;
+    const title = hasOrders ? formatOrderLabel(stop.orderIds!) : stop.name;
+    const showAddress = hasOrders || !isEndpoint;
+    const isUrgent = stop.priority === "urgent";
 
     return (
         <div ref={setNodeRef} style={style}>
@@ -190,17 +195,44 @@ export default function SortableStopItem({
                     )}
                     <div
                         style={{
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            color: dark ? DARK.text : "#111827",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            minWidth: 0,
                         }}
                     >
-                        {stop.name}
+                        <span
+                            style={{
+                                fontSize: "13px",
+                                fontWeight: hasOrders ? 700 : 500,
+                                color: dark ? DARK.text : "#111827",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                        >
+                            {title}
+                        </span>
+                        {isUrgent && (
+                            <span
+                                style={{
+                                    flexShrink: 0,
+                                    fontSize: "9px",
+                                    fontWeight: 600,
+                                    color: dark ? "#fca5a5" : "#dc2626",
+                                    background: dark
+                                        ? "rgba(239,68,68,0.15)"
+                                        : "#fef2f2",
+                                    border: `1px solid ${dark ? "rgba(239,68,68,0.35)" : "#fecaca"}`,
+                                    borderRadius: "9999px",
+                                    padding: "1px 6px",
+                                }}
+                            >
+                                Urgent
+                            </span>
+                        )}
                     </div>
-                    {!isEndpoint && (
+                    {showAddress && stop.address && (
                         <div
                             style={{
                                 fontSize: "11px",

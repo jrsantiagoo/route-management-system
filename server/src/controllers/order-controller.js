@@ -9,6 +9,17 @@ export async function getAllOrders(req, res) {
     }
 }
 
+export async function getOrdersRange(req, res) {
+    try {
+        const { startDate, endDate } = req.body;
+
+        const orders = await orderService.getOrdersRange(startDate, endDate);
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export async function getOrderById(req, res) {
     try {
         const { orderId } = req.params;
@@ -34,8 +45,8 @@ export async function createOrder(req, res) {
         const { client, destination, orderedOn, packageContent } = req.body;
 
         if (!client || !destination || !packageContent) {
-            res.status(400).json({
-                message: "Fields inclomplete",
+            return res.status(400).json({
+                message: "Fields incomplete",
             });
         }
 

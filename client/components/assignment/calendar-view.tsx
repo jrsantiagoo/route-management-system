@@ -2,20 +2,19 @@
 
 import { useState, useCallback } from "react";
 import {
+    Calendar,
     ChevronLeft,
     ChevronRight,
-    ChevronUp,
-    ChevronDown,
     Search,
     User,
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
-import type { MockTrip } from "@/lib/assignment/mockData";
+import type { Trip } from "@/lib/routing/types";
 import type { Driver } from "@/lib/routing/types";
 
 interface CalendarViewProps {
-    trips: MockTrip[];
+    trips: Trip[];
     drivers: Driver[];
     onDeleted: (tripId: string) => void;
 }
@@ -59,7 +58,7 @@ export default function CalendarView({
     // Filter trips that fall within the current week
     const weekTrips = trips.filter((t) => {
         if (!t.scheduled_date || !t.driver_id_ || !t.route) return false;
-        const d = t.scheduled_date.slice(0, 10);
+        const d = t.scheduled_date.split("T")[0];
         return d >= weekStartStr && d <= weekEndStr;
     });
 
@@ -69,14 +68,15 @@ export default function CalendarView({
         Record<string, { tripId: string; routeName: string }[]>
     > = {};
     for (const trip of weekTrips) {
-        const driverKey = trip.agent_profile?.driver_id || trip.driver_id_;
+        const driverKey =
+            trip.agent_profile?.driver_id || trip.driver_id_ || "";
         const dayIndex = new Date(trip.scheduled_date).getDay();
         const dayName = DAYS[(dayIndex + 6) % 7];
         if (!grid[driverKey]) grid[driverKey] = {};
         if (!grid[driverKey][dayName]) grid[driverKey][dayName] = [];
         grid[driverKey][dayName].push({
             tripId: trip.id_,
-            routeName: trip.route.name,
+            routeName: trip.route.name || "",
         });
     }
 
@@ -136,9 +136,11 @@ export default function CalendarView({
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Calendar View Header */}
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-semibold text-foreground">
-                    {weekLabel}
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <Calendar size={21} className="text-primary-foreground" />
+                    <h3 className="mt-1 text-foreground">{weekLabel}</h3>
+                </div>
+
                 <div className="flex items-center gap-1">
                     {/* Enables calendar to view previous week */}
                     <button
@@ -173,7 +175,7 @@ export default function CalendarView({
                         />
                         <input
                             type="text"
-                            placeholder="Search by routes or drivers..."
+                            placeholder="Search drivers..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
@@ -236,7 +238,12 @@ export default function CalendarView({
                         {sortedDrivers.map((driver) => (
                             <tr key={driver.id_}>
                                 <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
-                                    {driver.driver_id}
+                                    <div className="font-medium">
+                                        {driver.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {driver.driver_id}
+                                    </div>
                                 </td>
                                 {DAYS.map((day) => {
                                     const assignments =

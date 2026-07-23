@@ -11,6 +11,25 @@ export function formatDuration(minutes: number): string {
     return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
+// "July 07, 2026, 2:22PM"
+export function formatDateTime(iso: string): string {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const date = d.toLocaleDateString("en-US", {
+        month: "long",
+        day: "2-digit",
+        year: "numeric",
+    });
+    const time = d
+        .toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        .replace(/\s/g, "");
+    return `${date}, ${time}`;
+}
+
 export function formatWeek(isoMonday: string): string {
     const [y, mo, d] = isoMonday.split("-").map(Number);
     const start = new Date(y, mo - 1, d);

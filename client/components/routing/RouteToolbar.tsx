@@ -8,6 +8,7 @@ interface RouteToolbarProps {
     onToggleEdit: () => void;
     onSuggestRoutes: () => void;
     onSave: () => void;
+    canSave: boolean;
 }
 
 export default function RouteToolbar({
@@ -15,6 +16,7 @@ export default function RouteToolbar({
     onToggleEdit,
     onSuggestRoutes,
     onSave,
+    canSave,
 }: RouteToolbarProps) {
     const { theme } = useTheme();
     const dark = theme === "dark";
@@ -94,15 +96,28 @@ export default function RouteToolbar({
             </button>
 
             <button
-                onClick={onSave}
-                title="Save route"
-                onMouseEnter={hoverIn}
-                onMouseLeave={(e) => hoverOut(e)}
+                onClick={() => {
+                    if (canSave) onSave();
+                }}
+                disabled={!canSave}
+                title={canSave ? "Save route" : "Add a stop to save"}
+                onMouseEnter={(e) => {
+                    if (canSave) hoverIn(e);
+                }}
+                onMouseLeave={(e) => {
+                    if (canSave) hoverOut(e);
+                }}
                 style={{
                     ...baseBtn,
                     padding: "6px 10px",
                     display: "flex",
                     alignItems: "center",
+                    ...(canSave
+                        ? {}
+                        : {
+                              opacity: 0.5,
+                              cursor: "not-allowed",
+                          }),
                 }}
                 aria-label="Save route"
             >
