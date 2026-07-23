@@ -7,6 +7,7 @@ import {
     PackageSearch,
     Search,
     User,
+    ListOrdered,
 } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useSort } from "@/lib/hooks/useSort";
@@ -82,7 +83,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                 return o.client;
             case "destination":
                 return o.destination ?? "";
-            case "orderedOn":
+            case "dateOrdered":
                 return o.ordered_on;
             case "deliverBy":
                 return o.delivered_by ?? "";
@@ -108,9 +109,17 @@ export default function OrdersTable({ orders }: OrderTableProps) {
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Header + search */}
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-semibold text-foreground">
-                    Orders
-                </h3>
+                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                    <ListOrdered
+                        size={21}
+                        className="text-primary-foreground"
+                    />
+                    <h3 className="text-base font-semibold text-foreground">
+                        Orders
+                    </h3>
+                </div>
+
+                {/* Filtered Search */}
                 <div className="relative">
                     <Search
                         size={14}
@@ -197,7 +206,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                                 Destination
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="orderedOn"
+                                sortKey="dateOrdered"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                                 className="bg-card"
@@ -206,7 +215,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Ordered On
+                                Date Ordered
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="deliverBy"
@@ -262,7 +271,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                         {sortedOrders.map((o) => (
                             <tr
                                 key={o.id_}
-                                className="border-t border-border text-foreground transition hover:bg-secondary dark:hover:text-primary"
+                                className="border-t border-border text-foreground transition hover:bg-muted-foreground/15"
                             >
                                 <td className="px-3 py-2 font-medium ">
                                     {o.order_id}

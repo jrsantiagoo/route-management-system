@@ -2,44 +2,35 @@
 
 import { useState, useCallback } from "react";
 import {
-    CalendarClock,
-    ClipboardList,
-    Clock,
-    MapPinned,
-    Route,
     Search,
     ArchiveIcon,
+    Eye,
+    SquarePen,
     User,
-    Fuel,
+    Van,
+    Weight,
+    CircleGauge,
     Ellipsis,
 } from "lucide-react";
-import type { Trip } from "@/lib/routing/types";
+import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 
-interface TableViewProps {
-    trips: Trip[];
-    onDeleted: (tripId: string) => void;
+interface VehicleProps {
+    vehicles: Vehicle[];
+    // onDeleted: (tripId: string) => void;
 }
 
-function formatDate(iso: string) {
-    if (!iso) return "—";
-    return new Date(iso).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-}
-
-export default function TableView({ trips, onDeleted }: TableViewProps) {
+export default function FleetTable({ vehicles }: VehicleProps) {
     const [search, setSearch] = useState("");
-    const [routeFilter, setRouteFilter] = useState("All");
-    const [driverFilter, setDriverFilter] = useState("All");
-    const [scheduledFilter, setScheduledFilter] = useState("All");
-    const [statusFilter, setStatusFilter] = useState("All");
+    // const [routeFilter, setRouteFilter] = useState("All");
+    // const [driverFilter, setDriverFilter] = useState("All");
+    // const [scheduledFilter, setScheduledFilter] = useState("All");
+    // const [statusFilter, setStatusFilter] = useState("All");
 
     // Needed for filtering options
+    /*
     const routeOptions = [
         ...new Set(trips.map((t) => t.route?.name).filter(Boolean)),
     ] as string[];
@@ -56,73 +47,52 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 .map((d) => formatDate(d)),
         ),
     ] as string[];
-    const statusOptions = [...new Set(trips.map((t) => t.status))];
+    const statusOptions = [...new Set(trips.map((t) => t.status))]; */
 
     // Filter trips by route name or driver ID
-    const filtered = trips.filter((t) => {
+    const filtered = vehicles.filter((v) => {
         const q = search.toLowerCase();
         const matchesSearch =
-            t.route?.name?.toLowerCase().includes(q) ||
-            t.agent_profile?.driver_id?.toLowerCase().includes(q) ||
+            v.plateNumber?.toLowerCase().includes(q) ||
+            v.vehicleType?.toLowerCase().includes(q) ||
             false;
-        const matchesRoute =
-            routeFilter === "All" || t.route?.name === routeFilter;
-        const matchesDriver =
-            driverFilter === "All" ||
-            t.agent_profile?.driver_id === driverFilter;
-        const matchesScheduled =
-            scheduledFilter === "All" ||
-            formatDate(t.scheduled_date) === scheduledFilter;
-        const matchesStatus =
-            statusFilter === "All" || t.status === statusFilter;
-        return (
-            matchesSearch &&
-            matchesRoute &&
-            matchesDriver &&
-            matchesScheduled &&
-            matchesStatus
-        );
+        return matchesSearch;
     });
 
     // Sort trips by the currently active column
-    const getTripVal = useCallback((t: Trip, key: string) => {
+    const getVehicleVal = useCallback((v: Vehicle, key: string) => {
         switch (key) {
-            case "route":
-                return t.route?.name ?? "";
-            case "driver":
-                return t.agent_profile?.driver_id ?? "";
-            case "purpose":
-                return t.purpose ?? "";
-            case "destination":
-                return t.destination ?? "";
-            case "fuelConsumed":
-                return "";
-            case "scheduled_date":
-                return t.scheduled_date ?? "";
-            case "created_at":
-                return t.created_at ?? "";
+            case "vehicle_plate":
+                return v.plateNumber;
+            case "vehicle_type":
+                return v.vehicleType;
+            case "last_driver":
+                return v.lastDriver;
+            case "weight_capacity":
+                return v.weightCapacity.toString().padStart(5, "0");
+            case "target":
+                return v.target.toString().padStart(5, "0");
+            case "avg_performance":
+                return v.avg_performance?.toString().padStart(5, "0") ?? "";
             case "status":
-                return t.status;
+                return v.status;
             default:
                 return "";
         }
     }, []);
     const {
-        sorted: sortedTrips,
+        sorted: sortedVehicles,
         state: sortState,
         toggle: toggleSort,
-    } = useSort(filtered, getTripVal);
+    } = useSort(filtered, getVehicleVal);
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
-                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
-                    <ClipboardList
-                        size={21}
-                        className="text-primary-foreground"
-                    />
-                    <h3 className="mt-1 text-foreground">All Assignments</h3>
+                <div className="flex items-center gap-2 text-base font-semibold">
+                    <Van size={21} className="text-primary-foreground" />
+                    <h3 className="mt-1 text-foreground">Vehicle Fleet</h3>
                 </div>
 
                 {/* Filtered Search */}
@@ -133,7 +103,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                     />
                     <input
                         type="text"
-                        placeholder="Search by routes or drivers..."
+                        placeholder="Search by vehicle..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
@@ -143,7 +113,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
             </div>
 
             {/* Filter Options */}
-            <div className="-mt-4 mb-3 flex flex-wrap gap-2">
+            {/* <div className="-mt-4 mb-3 flex flex-wrap gap-2">
                 <FilterSelect
                     label="All Routes"
                     value={routeFilter}
@@ -168,7 +138,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                     options={statusOptions}
                     onChange={setStatusFilter}
                 />
-            </div>
+            </div> */}
 
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
@@ -176,19 +146,30 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                     <thead className="sticky top-0 bg-card">
                         <tr>
                             <SortableHeader
-                                sortKey="route"
+                                sortKey="vehicle_plate"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                                 className="rounded-tl-lg"
                             >
-                                <Route
+                                <Van
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Route
+                                Vehicles
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="driver"
+                                sortKey="vehicle_type"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Van
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Vehicle Type
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="last_driver"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -196,58 +177,36 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Driver
+                                Last Driver
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="purpose"
+                                sortKey="weight_capacity"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
-                                Purpose
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="destination"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <MapPinned
+                                <Weight
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Destination
+                                Weight Capacity
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="fuelConsumed"
+                                sortKey="target"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
-                                <Fuel
+                                <CircleGauge
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Fuel Consumed
+                                Target Mileage
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="scheduled_date"
+                                sortKey="avg_performance"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
-                                <CalendarClock
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Scheduled Date
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="created_at"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <Clock
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Created At
+                                Avg. Performance
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"
@@ -262,35 +221,42 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedTrips.map((t) => (
+                        {sortedVehicles.map((v) => (
                             <tr
-                                key={t.id_}
+                                key={v.vehicleId_}
                                 className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2 font-medium">
-                                    {t.route?.name || "—"}
+                                    <div className="font-medium">
+                                        {v.plateNumber}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {v.vehicleId_}
+                                    </div>
+                                </td>
+                                <td className="px-3 py-2 font-medium">
+                                    {v.vehicleType}
                                 </td>
                                 <td className="px-3 py-2">
-                                    {t.agent_profile?.driver_id || "Unassigned"}
+                                    {v.lastDriver == "" ? (
+                                        <div className="italic text-muted-foreground">
+                                            No assigned driver
+                                        </div>
+                                    ) : (
+                                        v.lastDriver
+                                    )}
                                 </td>
                                 <td className="px-3 py-2">
-                                    {t.purpose || "—"}
+                                    {v.weightCapacity} kg
                                 </td>
+                                <td className="px-3 py-2">{v.target}</td>
                                 <td className="px-3 py-2">
-                                    {t.destination || "—"}
+                                    {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-3 py-2">—</td>
-                                <td className="px-3 py-2">
-                                    {formatDate(t.scheduled_date)}
-                                </td>
-                                <td className="px-3 py-2">
-                                    {formatDate(t.created_at)}
-                                </td>
-                                <td className="px-3 py-2">{t.status}</td>
+                                <td className="px-3 py-2">{v.status}</td>
                                 <td className="pl-7 px-3 py-2">
                                     <button
-                                        // onClick={() => onDeleted(t.id_)}
-                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border
+                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
                                         title="More actions"
@@ -306,7 +272,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                     colSpan={7}
                                     className="px-3 py-8 text-center text-foreground"
                                 >
-                                    No assignments found.
+                                    No vehicles found.
                                 </td>
                             </tr>
                         )}

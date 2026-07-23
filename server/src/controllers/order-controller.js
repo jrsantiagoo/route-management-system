@@ -45,8 +45,8 @@ export async function createOrder(req, res) {
         const { client, destination, orderedOn, packageContent } = req.body;
 
         if (!client || !destination || !packageContent) {
-            res.status(400).json({
-                message: "Fields inclomplete",
+            return res.status(400).json({
+                message: "Fields incomplete",
             });
         }
 
