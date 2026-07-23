@@ -1,80 +1,118 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from '@playwright/test';
 
-// Test script 05-LiveDashboard — /dashboard metrics and date-range picker.
-// 5-2 is fixme (DD-08); the three time metrics of 5-3 are missing (DD-07).
+const METRICS = [
+  'Total Successful Trips',
+  'Efficiency',
+  'Delivered Orders',
+  'Average Distance per Order (km)',
+  'Average Fuel Usage per Order (L)',
+] as const;
 
-const BASE_URL = "http://localhost:3000";
+async function openDateRange(page: Page) {
+  await page
+    .locator('button')
+    .filter({ hasText: /^(Today|This Week|This Month|This Year|All Time)$/ })
+    .first()
+    .click();
+  await expect(page.getByRole('heading', { name: 'Date Range' })).toBeVisible();
+}
 
-// The five metric labels the dashboard renders today.
-const EXISTING_METRICS = [
-    "Total Successful Trips",
-    "Efficiency",
-    "Delivered Orders",
-    "Average Distance per Order (km)",
-    "Average Fuel Usage per Order (L)",
-];
+async function dismissPopover(page: Page) {
+  await page.getByRole('heading', { name: 'Dashboard' }).click();
+  await expect(page.getByRole('heading', { name: 'Date Range' })).toBeHidden();
+}
 
-test.describe("Live Dashboard", () => {
-    test.setTimeout(60000);
+test.describe('Live Dashboard', () => {
+  test.setTimeout(60_000);
 
-    test.beforeEach(async ({ page }) => {
-        await page.goto(`${BASE_URL}/dashboard`);
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/dashboard');
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({
+      timeout: 30_000,
     });
+  });
 
-    // Case 5-1: Dashboard Load
-    test("dashboard loads with title and metric panels visible", async ({
-        page,
-    }) => {
-        await expect(
-            page.getByRole("heading", { name: "Dashboard" }),
-        ).toBeVisible();
+  test('5-1 the dashboard loads with its title, controls and every metric panel', async ({
+    page,
+  }) => {
+    await expect(page.getByText('Performance metrics and analytics')).toBeVisible();
 
-        for (const label of EXISTING_METRICS) {
-            await expect(page.getByText(label, { exact: true })).toBeVisible();
-        }
+    for (const label of METRICS) {
+      await expect(page.getByText(label, { exact: true })).toBeVisible();
+    }
 
-        await expect(page.getByRole("button", { name: "This Week" })).toBeVisible();
-        await expect(
-            page.getByRole("button", { name: "Full Summary" }),
-        ).toBeVisible();
-    });
+    await expect(page.getByRole('button', { name: 'Full Summary' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Date Range' })).toHaveCount(0);
+  });
 
-    // Case 5-3: All Required Metrics Displayed
-    test("displays all currently-implemented dashboard metrics", async ({
-        page,
-    }) => {
-        for (const label of EXISTING_METRICS) {
-            await expect(page.getByText(label, { exact: true })).toBeVisible();
-        }
+  test('5-3 every stat card renders a numeric value', async ({ page }) => {
+    const values = page.locator('p.text-3xl');
+    await expect(values).toHaveCount(3);
 
-        // TODO once the DD-07 time metrics ship:
-        // await expect(page.getByText("Total Trip Time")).toBeVisible();
-        // await expect(page.getByText("Average time per stop")).toBeVisible();
-    });
+    for (let i = 0; i < 3; i += 1) {
+      await expect(values.nth(i)).toHaveText(/\d/);
+    }
 
-    test("switching the date-range preset updates the active range label", async ({
-        page,
-    }) => {
-        await page.getByRole("button", { name: "This Week" }).click();
-        await page.getByRole("button", { name: "This Month" }).click();
+  });
 
-        // Preset clicks leave the popover open (RMS-81); dismiss it so only
-        // the trigger button matches.
-        await page.getByRole("heading", { name: "Dashboard" }).click();
+  test('5-4 the efficiency card shows a period-over-period comparison', async ({ page }) => {
+    await expect(page.getByText(/compared to (yesterday|last week|last month|last year)/)).toBeVisible();
+  });
 
-        await expect(
-            page.getByRole("button", { name: "This Month" }),
-        ).toBeVisible();
+  test('5-5 the comparison subtitle is hidden when the range has no comparable period', async ({
+    page,
+  }) => {
+    await openDateRange(page);
+    await page.getByRole('button', { name: 'All Time', exact: true }).click();
+    await dismissPopover(page);
 
-        // Metrics survive the refetch.
-        await expect(
-            page.getByText("Total Successful Trips", { exact: true }),
-        ).toBeVisible();
-    });
+    await expect(page.getByText(/compared to/)).toHaveCount(0);
+    await expect(page.getByText('Efficiency', { exact: true })).toBeVisible();
+  });
 
-    // Case 5-2: blocked — no polling/websocket (DD-08)
-    test.fixme(
-        "metrics update in real time after a delivery is completed (no manual refresh)",
-        async () => {},
-    );
+  test('5-6 switching the date-range preset updates the active range label', async ({ page }) => {
+    await openDateRange(page);
+    await page.getByRole('button', { name: 'This Month', exact: true }).click();
+    await dismissPopover(page);
+
+    await expect(
+      page
+        .locator('button')
+        .filter({ hasText: /^This Month$/ })
+        .first(),
+    ).toBeVisible();
+    await expect(page.getByText('Total Successful Trips', { exact: true })).toBeVisible();
+  });
+
+  test('5-7 both analytics charts render with their legends', async ({ page }) => {
+    await expect(page.getByText('Average Distance per Order (km)', { exact: true })).toBeVisible();
+    await expect(page.getByText('Average Fuel Usage per Order (L)', { exact: true })).toBeVisible();
+    await expect(page.locator('.recharts-responsive-container')).toHaveCount(2);
+    await expect(page.getByText('Trend (3-day avg)').first()).toBeVisible();
+  });
+
+  test('5-8 the orders table renders on the dashboard', async ({ page }) => {
+    await expect(page.locator('table')).toBeVisible();
+  });
+
+  test('5-9 the date-range popover closes when clicking outside it', async ({ page }) => {
+    await openDateRange(page);
+    await page.getByRole('heading', { name: 'Dashboard' }).click();
+    await expect(page.getByRole('heading', { name: 'Date Range' })).toBeHidden();
+  });
+
+  test('5-10 selecting a preset closes the date-range popover', async ({ page }) => {
+    await openDateRange(page);
+    await page.getByRole('button', { name: 'Today', exact: true }).click();
+
+    await expect(
+      page.getByRole('heading', { name: 'Date Range' }),
+      'preset selection leaves the popover open (RMS-81)',
+    ).toBeHidden({ timeout: 5_000 });
+  });
+
+  test.fixme(
+    '5-2 metrics update in real time after a delivery is completed (no manual refresh)',
+    async () => {},
+  );
 });
