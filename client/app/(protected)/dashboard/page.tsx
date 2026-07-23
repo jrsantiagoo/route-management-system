@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     ComposedChart,
     Bar,
@@ -12,7 +13,7 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import DateRangePicker, {
     type Preset,
 } from "@/components/dashboard/date-range-picker";
@@ -134,7 +135,7 @@ export default function Dashboard() {
 
     function mergePrevTrend<T extends { trend: number }>(
         current: T[],
-        previous: T[],
+        previous: T[]
     ): (T & { prevTrend?: number })[] {
         return current.map((point, i) => ({
             ...point,
@@ -144,8 +145,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchCurrentAndComparison() {
-            const isComparison =
-                presetComparison[range.preset] !== undefined;
+            const isComparison = presetComparison[range.preset] !== undefined;
             const compRange = isComparison
                 ? getComparisonRange(range.start, range.end)
                 : null;
@@ -159,13 +159,13 @@ export default function Dashboard() {
                 (d: { date: string; fuelPerOrder: number }) => ({
                     day: d.date,
                     fuel: d.fuelPerOrder,
-                }),
+                })
             );
             const distMapped = (distRes.data ?? []).map(
                 (d: { date: string; distancePerOrder: number }) => ({
                     day: d.date,
                     distance: d.distancePerOrder,
-                }),
+                })
             );
 
             if (compRange) {
@@ -178,26 +178,26 @@ export default function Dashboard() {
                     (d: { date: string; fuelPerOrder: number }) => ({
                         day: d.date,
                         fuel: d.fuelPerOrder,
-                    }),
+                    })
                 );
                 const prevDistMapped = (prevDistRes.data ?? []).map(
                     (d: { date: string; distancePerOrder: number }) => ({
                         day: d.date,
                         distance: d.distancePerOrder,
-                    }),
+                    })
                 );
 
                 setFuelData(
                     mergePrevTrend(
                         computeTrend(fuelMapped, "fuel"),
-                        computeTrend(prevFuelMapped, "fuel"),
-                    ),
+                        computeTrend(prevFuelMapped, "fuel")
+                    )
                 );
                 setDistanceData(
                     mergePrevTrend(
                         computeTrend(distMapped, "distance"),
-                        computeTrend(prevDistMapped, "distance"),
-                    ),
+                        computeTrend(prevDistMapped, "distance")
+                    )
                 );
             } else {
                 setFuelData(computeTrend(fuelMapped, "fuel"));
@@ -260,6 +260,8 @@ export default function Dashboard() {
             </>
         );
 
+    const router = useRouter();
+
     // Enables PDF Download of summary
     const handleDownload = useCallback(() => {
         generatePDF(
@@ -271,7 +273,7 @@ export default function Dashboard() {
             efficiency,
             delivered,
             distanceData,
-            fuelData,
+            fuelData
         );
     }, [
         upcomingTrips,
@@ -287,6 +289,23 @@ export default function Dashboard() {
 
     return (
         <div className="flex flex-col gap-6">
+            {/* Unassigned alert banner */}
+            {unassignedCount > 0 && (
+                <button
+                    onClick={() => router.push("/assignment")}
+                    className="flex items-center gap-3 rounded-lg bg-red-50 px-5 py-3 text-left text-sm font-semibold text-red-800 shadow-sm ring-1 ring-red-200 transition hover:bg-red-100 dark:bg-red-950 dark:text-red-200 dark:ring-red-800 dark:hover:bg-red-900"
+                >
+                    <AlertTriangle
+                        size={20}
+                        className="shrink-0 text-red-500"
+                    />
+                    <span>
+                        {unassignedCount} unassigned trip
+                        {unassignedCount === 1 ? "" : "s"} — click to assign
+                    </span>
+                </button>
+            )}
+
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">
                 <div className="flex flex-col justify-center">
@@ -317,13 +336,8 @@ export default function Dashboard() {
             {/* Key Statistics */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <StatCard
-                    title="Total Upcoming Trips"
+                    title="Upcoming Trips"
                     value={String(upcomingTrips)}
-                    subtitle={tripsSubtitle}
-                />
-                <StatCard
-                    title="Unassigned"
-                    value={String(unassignedCount)}
                     subtitle={tripsSubtitle}
                 />
                 <StatCard
@@ -335,7 +349,7 @@ export default function Dashboard() {
                     value={String(vehiclesNeedingMaintenance)}
                 />
                 <StatCard
-                    title="Total Successful Trips"
+                    title="Successful Trips"
                     value={String(totalTrips)}
                     subtitle={tripsSubtitle}
                 />
@@ -346,7 +360,7 @@ export default function Dashboard() {
                     subtitle={efficiencySubtitle}
                 />
                 <StatCard
-                    title="Delivered Orders"
+                    title="Completed Orders"
                     value={String(delivered)}
                     subtitle={deliveredSubtitle}
                 />
@@ -393,7 +407,9 @@ export default function Dashboard() {
                                     strokeWidth={2}
                                     strokeDasharray="6 3"
                                     dot={false}
-                                    name={`Trend (${comparisonLabel ?? "previous period"})`}
+                                    name={`Trend (${
+                                        comparisonLabel ?? "previous period"
+                                    })`}
                                 />
                             )}
                         </ComposedChart>
@@ -439,7 +455,9 @@ export default function Dashboard() {
                                     strokeWidth={2}
                                     strokeDasharray="6 3"
                                     dot={false}
-                                    name={`Trend (${comparisonLabel ?? "previous period"})`}
+                                    name={`Trend (${
+                                        comparisonLabel ?? "previous period"
+                                    })`}
                                 />
                             )}
                         </ComposedChart>
