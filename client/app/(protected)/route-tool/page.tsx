@@ -52,15 +52,11 @@ export default function RouteCreationPage() {
         setEditingRoute(null);
     }
 
-    function handleSaved() {
+    function handleSaved(message: string) {
         const wasEditing = !!editingRoute;
         reload();
         closeModal();
-        setToast(
-            wasEditing
-                ? "Route updated successfully."
-                : "Successfully Created Route",
-        );
+        setToast(message || (wasEditing ? "Route updated." : "Route saved."));
     }
 
     function handleArchive(route: RoutePlan) {
@@ -85,7 +81,7 @@ export default function RouteCreationPage() {
 
     // Names of other routes — lets an edited route keep its own name.
     const existingNames = savedRoutes
-        .filter((r) => r.id !== editingRoute?.id)
+        .filter((r) => r.id_ !== editingRoute?.id_)
         .map((r) => r.name);
 
     const text = dark ? DARK.text : "#111827";

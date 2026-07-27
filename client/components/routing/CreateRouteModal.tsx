@@ -17,6 +17,7 @@ import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { DARK } from "./routeTheme";
+import { createRoute } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -115,7 +116,7 @@ export default function CreateRouteModal({
         setIsSuggestOpen(false);
     }
 
-    function handleConfirmSave(name: string) {
+    async function handleConfirmSave(name: string) {
         if (!canSave) return;
         // Guard against a name added in another tab between opening and saving.
         if (isRouteNameTaken(name, routeIdRef.current)) return;
@@ -129,13 +130,22 @@ export default function CreateRouteModal({
             totalDistanceKm,
             totalDurationMinutes,
             vehicleType: recommendVehicle(stops.length),
-            assignedWeek: editingRoute?.assignedWeek ?? "",
+            //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
             archived: editingRoute?.archived ?? false,
         };
-        saveRoute(plan);
+
+        try {
+            const res = await createRoute(plan);
+            if (res.success) {
+                onSaved("Route saved successfully.");
+            } else {
+                onSaved(res.message || "Failed to save route.");
+            }
+        } catch {
+            onSaved("Failed to save route to server. Saved locally.");
+        }
         setIsSaveOpen(false);
-        onSaved(name);
     }
 
     return (
