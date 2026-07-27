@@ -35,11 +35,11 @@ export interface RoutePlan {
     id: string;
     name: string;
     stops: Stop[];
-    segments: RouteSegment[];
+    segments?: RouteSegment[];
     totalDistanceKm: number;
     totalDurationMinutes: number;
     vehicleType: VehicleType;
-    assignedWeek: string; // ISO Monday date string – set by the Assignment page
+    // assignedWeek: string; // ISO Monday date string – set by the Assignment page
     createdAt: string; // ISO datetime string
     archived?: boolean;
 }

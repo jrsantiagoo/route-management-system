@@ -13,6 +13,7 @@ import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
 import Toast from "@/components/routing/Toast";
+import * as routeApi from "@/lib/api/routes";
 
 export default function RouteCreationPage() {
     const { theme } = useTheme();
@@ -25,7 +26,9 @@ export default function RouteCreationPage() {
     const [toast, setToast] = useState<string | null>(null);
 
     const reload = useCallback(() => {
-        setSavedRoutes(loadSavedRoutes());
+        routeApi.getRoutes().then((res) => {
+            setSavedRoutes(res.data);
+        });
     }, []);
 
     // Read localStorage after mount so the server and first client render match.
