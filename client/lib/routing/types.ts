@@ -3,7 +3,7 @@ export type VehicleType = "car" | "motorcycle";
 export type OrderPriority = "urgent" | "normal";
 
 export interface Stop {
-    id: string;
+    id_: string;
     name: string;
     address: string;
     lat: number;

@@ -15,3 +15,17 @@ export async function createRoute(route: RoutePlan) {
     });
     return response.json();
 }
+
+export async function archiveRoute(route: RoutePlan) {
+    const response = await apiCall(`/api/routes/archive/${route.id_}`, {
+        method: "PATCH",
+    });
+    return response.json();
+}
+
+export async function unarchiveRoute(route: RoutePlan) {
+    const response = await apiCall(`/api/routes/unarchive/${route.id_}`, {
+        method: "PATCH",
+    });
+    return response.json();
+}

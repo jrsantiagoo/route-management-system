@@ -30,7 +30,7 @@ function stopDisplay(stop: RoutePlan["stops"][number]): string {
 }
 
 function isArchived(route: RoutePlan): boolean {
-    return route.archivedAt !== undefined;
+    return route.archivedAt !== null;
 }
 
 export default function SavedRoutesTable({
@@ -576,7 +576,7 @@ function RouteRow({
                         >
                             {route.stops.map((stop, i) => (
                                 <li
-                                    key={stop.id}
+                                    key={stop.id_}
                                     style={{
                                         display: "flex",
                                         alignItems: "flex-start",

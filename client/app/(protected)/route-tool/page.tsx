@@ -25,10 +25,19 @@ export default function RouteCreationPage() {
     const [deleteTarget, setDeleteTarget] = useState<RoutePlan | null>(null);
     const [toast, setToast] = useState<string | null>(null);
 
-    const reload = useCallback(() => {
-        routeApi.getRoutes().then((res) => {
-            setSavedRoutes(res.data);
-        });
+    const reload = useCallback(async () => {
+        try {
+            const res = await routeApi.getRoutes();
+            if (res.success) {
+                setSavedRoutes(res.data);
+            } else {
+                console.error("Failed to load routes:", res);
+                setToast("Could not load routes from server.");
+            }
+        } catch (err) {
+            console.error("Failed to load routes:", err);
+            setToast("Could not reach the server.");
+        }
     }, []);
 
     // Read localStorage after mount so the server and first client render match.
@@ -59,16 +68,36 @@ export default function RouteCreationPage() {
         setToast(message || (wasEditing ? "Route updated." : "Route saved."));
     }
 
-    function handleArchive(route: RoutePlan) {
-        setRouteArchived(route.id_, true);
-        reload();
-        setToast("Route archived.");
+    async function handleArchive(route: RoutePlan) {
+        try {
+            const res = await routeApi.archiveRoute(route);
+            if (res.success) {
+                reload();
+                setToast("Route archived.");
+            } else {
+                console.error("Failed to archive route:", res);
+                alert("Failed to archive route.");
+            }
+        } catch (err) {
+            console.error("Failed to archive route:", err);
+            alert("Could not reach the server.");
+        }
     }
 
-    function handleUnarchive(route: RoutePlan) {
-        setRouteArchived(route.id_, false);
-        reload();
-        setToast("Route restored.");
+    async function handleUnarchive(route: RoutePlan) {
+        try {
+            const res = await routeApi.unarchiveRoute(route);
+            if (res.success) {
+                reload();
+                setToast("Route unarchived.");
+            } else {
+                console.error("Failed to unarchive route:", res);
+                alert("Failed to unarchive route.");
+            }
+        } catch (err) {
+            console.error("Failed to unarchive route:", err);
+            alert("Could not reach the server.");
+        }
     }
 
     function confirmDelete() {

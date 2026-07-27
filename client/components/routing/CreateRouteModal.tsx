@@ -260,7 +260,7 @@ export default function CreateRouteModal({
                         routeError={routeError}
                         onReorder={setStops}
                         onRemoveStop={(id) =>
-                            setStops((prev) => prev.filter((s) => s.id !== id))
+                            setStops((prev) => prev.filter((s) => s.id_ !== id))
                         }
                         onAddStop={handleAddStop}
                         onPreview={setPreviewStop}
