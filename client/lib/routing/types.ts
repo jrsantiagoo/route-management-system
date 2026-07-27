@@ -32,7 +32,6 @@ export interface RouteSegment {
 
 export interface RoutePlan {
     id_: string;
-    id: string;
     name: string;
     stops: Stop[];
     segments?: RouteSegment[];

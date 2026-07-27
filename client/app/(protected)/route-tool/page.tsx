@@ -60,20 +60,20 @@ export default function RouteCreationPage() {
     }
 
     function handleArchive(route: RoutePlan) {
-        setRouteArchived(route.id, true);
+        setRouteArchived(route.id_, true);
         reload();
         setToast("Route archived.");
     }
 
     function handleUnarchive(route: RoutePlan) {
-        setRouteArchived(route.id, false);
+        setRouteArchived(route.id_, false);
         reload();
         setToast("Route restored.");
     }
 
     function confirmDelete() {
         if (!deleteTarget) return;
-        deleteRoute(deleteTarget.id);
+        deleteRoute(deleteTarget.id_);
         setDeleteTarget(null);
         reload();
         setToast("Route deleted.");

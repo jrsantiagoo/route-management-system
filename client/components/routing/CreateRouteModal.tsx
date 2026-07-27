@@ -55,7 +55,7 @@ export default function CreateRouteModal({
     const [isSuggestOpen, setIsSuggestOpen] = useState(false);
     const [isSaveOpen, setIsSaveOpen] = useState(false);
 
-    const routeIdRef = useRef(editingRoute?.id ?? generateRouteId());
+    const routeIdRef = useRef(editingRoute?.id_ ?? generateRouteId());
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const canSave = stops.length >= 2;
@@ -123,7 +123,6 @@ export default function CreateRouteModal({
 
         const plan: RoutePlan = {
             id_: routeIdRef.current,
-            id: routeIdRef.current,
             name,
             stops,
             segments,

@@ -17,7 +17,7 @@ export function loadSavedRoutes(): RoutePlan[] {
 export function isRouteNameTaken(name: string, excludeId?: string): boolean {
     const target = name.trim().toLowerCase();
     return loadSavedRoutes().some(
-        (r) => r.id !== excludeId && r.name.trim().toLowerCase() === target,
+        (r) => r.id_ !== excludeId && r.name.trim().toLowerCase() === target,
     );
 }
 
@@ -25,7 +25,7 @@ export function saveRoute(plan: RoutePlan): void {
     if (typeof window === "undefined") return;
     try {
         const all = loadSavedRoutes();
-        const idx = all.findIndex((r) => r.id === plan.id);
+        const idx = all.findIndex((r) => r.id_ === plan.id_);
         if (idx >= 0) {
             all[idx] = plan;
         } else {
@@ -39,14 +39,14 @@ export function saveRoute(plan: RoutePlan): void {
 
 export function deleteRoute(id: string): void {
     if (typeof window === "undefined") return;
-    const remaining = loadSavedRoutes().filter((r) => r.id !== id);
+    const remaining = loadSavedRoutes().filter((r) => r.id_ !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
 }
 
 export function setRouteArchived(id: string, archived: boolean): void {
     if (typeof window === "undefined") return;
     const all = loadSavedRoutes().map((r) =>
-        r.id === id ? { ...r, archived } : r,
+        r.id_ === id ? { ...r, archived } : r,
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 }
