@@ -40,7 +40,7 @@ export interface RoutePlan {
     vehicleType: VehicleType;
     // assignedWeek: string; // ISO Monday date string – set by the Assignment page
     createdAt: string; // ISO datetime string
-    archived?: boolean;
+    archivedAt?: string;
 }
 
 export interface Trip {

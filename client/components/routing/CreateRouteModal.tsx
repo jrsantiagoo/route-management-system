@@ -131,7 +131,7 @@ export default function CreateRouteModal({
             vehicleType: recommendVehicle(stops.length),
             //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
-            archived: editingRoute?.archived ?? false,
+            archivedAt: editingRoute?.archivedAt ?? undefined,
         };
 
         try {

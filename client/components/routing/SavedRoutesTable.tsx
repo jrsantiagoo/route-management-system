@@ -29,6 +29,10 @@ function stopDisplay(stop: RoutePlan["stops"][number]): string {
         : stop.name;
 }
 
+function isArchived(route: RoutePlan): boolean {
+    return route.archivedAt !== undefined;
+}
+
 export default function SavedRoutesTable({
     routes,
     onEdit,
@@ -47,7 +51,7 @@ export default function SavedRoutesTable({
 
     const filtered = useMemo(() => {
         const inView = routes.filter((r) =>
-            view === "archived" ? r.archived : !r.archived,
+            view === "archived" ? isArchived(r) : !isArchived(r),
         );
         const q = query.trim().toLowerCase();
         if (!q) return inView;
