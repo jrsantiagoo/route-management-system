@@ -8,5 +8,6 @@ const router = Router();
 router.get("/", authenticate, vehicleController.getVehicles);
 router.get("/:id", authenticate, vehicleController.getVehicleById);
 router.post("/", authenticate, vehicleController.createVehicle);
+router.put("/:id", authenticate, vehicleController.updateVehicle);
 
 export default router;

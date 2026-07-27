@@ -28,3 +28,14 @@ export async function createVehicle(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function updateVehicle(req, res) {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+        const result = await vehicleService.updateVehicle(id, data);
+        res.json({ success: true, data: result });        
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
