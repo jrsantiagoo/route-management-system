@@ -56,7 +56,6 @@ export async function createVehicle(vehicle) {
     });
 }
 
-
 // --- UPDATE VEHICLE ---
 export async function updateVehicle(vehicleId, updatedVehicle) {
     const vehicle = await prisma.vehicle.findUnique({
@@ -96,6 +95,25 @@ export async function updateVehicle(vehicleId, updatedVehicle) {
             make_id_: updatedVehicle.make_id_ ?? null,
             model_id_: updatedVehicle.model_id_ ?? null,
         },
+        include: {
+            vehicle_make: true,
+            vehicle_model: true,
+        },
+    });
+}
+
+// --- DELETE VEHICLE --- 
+export async function deleteVehicle(vehicleId){
+    const vehicle = await prisma.vehicle.findUnique({
+        where: { id_ : vehicleId },
+        include: { vehicle_make: true, vehicle_model: true },
+    });
+
+    if (!vehicle) throw new Error("Vehicle not found");
+
+    return prisma.vehicle.update({
+        where: { id_: vehicleId },
+        data: { deleted_at: new Date() },
         include: {
             vehicle_make: true,
             vehicle_model: true,

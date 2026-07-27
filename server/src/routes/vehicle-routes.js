@@ -9,5 +9,6 @@ router.get("/", authenticate, vehicleController.getVehicles);
 router.get("/:id", authenticate, vehicleController.getVehicleById);
 router.post("/", authenticate, vehicleController.createVehicle);
 router.put("/:id", authenticate, vehicleController.updateVehicle);
+router.delete("/:id", authenticate, vehicleController.deleteVehicle);
 
 export default router;

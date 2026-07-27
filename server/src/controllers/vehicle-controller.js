@@ -39,3 +39,14 @@ export async function updateVehicle(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function deleteVehicle(req, res) {
+    try{
+        const { id } = req.params;
+
+        const result = await vehicleService.deleteVehicle(id);
+        res.json({ success: true, data: result });   
+    } catch (error) {
+        res.status(400).json({ message: error.message})
+    }
+}
