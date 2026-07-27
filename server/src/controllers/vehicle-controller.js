@@ -18,3 +18,13 @@ export async function getVehicleById(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function createVehicle(req, res) {
+    try {
+        const vehicle = req.body;
+        const newVehicle = await vehicleService.createVehicle(vehicle);
+        res.json({ success: true, data: newVehicle });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
