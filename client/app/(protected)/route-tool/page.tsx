@@ -13,6 +13,7 @@ import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
 import Toast from "@/components/routing/Toast";
+import * as routeApi from "@/lib/api/routes";
 
 export default function RouteCreationPage() {
     const { theme } = useTheme();
@@ -24,8 +25,19 @@ export default function RouteCreationPage() {
     const [deleteTarget, setDeleteTarget] = useState<RoutePlan | null>(null);
     const [toast, setToast] = useState<string | null>(null);
 
-    const reload = useCallback(() => {
-        setSavedRoutes(loadSavedRoutes());
+    const reload = useCallback(async () => {
+        try {
+            const res = await routeApi.getRoutes();
+            if (res.success) {
+                setSavedRoutes(res.data);
+            } else {
+                console.error("Failed to load routes:", res);
+                setToast("Could not load routes from server.");
+            }
+        } catch (err) {
+            console.error("Failed to load routes:", err);
+            setToast("Could not reach the server.");
+        }
     }, []);
 
     // Read localStorage after mount so the server and first client render match.
@@ -49,32 +61,48 @@ export default function RouteCreationPage() {
         setEditingRoute(null);
     }
 
-    function handleSaved() {
+    function handleSaved(message: string) {
         const wasEditing = !!editingRoute;
         reload();
         closeModal();
-        setToast(
-            wasEditing
-                ? "Route updated successfully."
-                : "Successfully Created Route",
-        );
+        setToast(message || (wasEditing ? "Route updated." : "Route saved."));
     }
 
-    function handleArchive(route: RoutePlan) {
-        setRouteArchived(route.id, true);
-        reload();
-        setToast("Route archived.");
+    async function handleArchive(route: RoutePlan) {
+        try {
+            const res = await routeApi.archiveRoute(route);
+            if (res.success) {
+                reload();
+                setToast("Route archived.");
+            } else {
+                console.error("Failed to archive route:", res);
+                alert("Failed to archive route.");
+            }
+        } catch (err) {
+            console.error("Failed to archive route:", err);
+            alert("Could not reach the server.");
+        }
     }
 
-    function handleUnarchive(route: RoutePlan) {
-        setRouteArchived(route.id, false);
-        reload();
-        setToast("Route restored.");
+    async function handleUnarchive(route: RoutePlan) {
+        try {
+            const res = await routeApi.unarchiveRoute(route);
+            if (res.success) {
+                reload();
+                setToast("Route unarchived.");
+            } else {
+                console.error("Failed to unarchive route:", res);
+                alert("Failed to unarchive route.");
+            }
+        } catch (err) {
+            console.error("Failed to unarchive route:", err);
+            alert("Could not reach the server.");
+        }
     }
 
     function confirmDelete() {
         if (!deleteTarget) return;
-        deleteRoute(deleteTarget.id);
+        deleteRoute(deleteTarget.id_);
         setDeleteTarget(null);
         reload();
         setToast("Route deleted.");
@@ -82,7 +110,7 @@ export default function RouteCreationPage() {
 
     // Names of other routes — lets an edited route keep its own name.
     const existingNames = savedRoutes
-        .filter((r) => r.id !== editingRoute?.id)
+        .filter((r) => r.id_ !== editingRoute?.id_)
         .map((r) => r.name);
 
     const text = dark ? DARK.text : "#111827";
