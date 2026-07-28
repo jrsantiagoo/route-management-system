@@ -132,7 +132,6 @@ test.describe('Assignment Form', () => {
     await openForm(page);
     await expect(
       page.getByRole('button', { name: PLACEHOLDERS.purpose, exact: true }),
-      'reopening should show a clean form',
     ).toBeVisible();
   });
 
@@ -154,7 +153,6 @@ test.describe('Assignment Form', () => {
     await openSelect(page, PLACEHOLDERS.vehicle);
     await expect(
       page.getByRole('button', { name: routes[0].name, exact: true }),
-      'route names must not appear in the vehicle dropdown (RMS-89)',
     ).toHaveCount(0);
   });
 
@@ -206,7 +204,6 @@ test.describe('Assignment Form', () => {
     const request = await requestBody;
     expect(
       request.postData() ?? '',
-      'notes is collected in state but never sent to createTrip (RMS-90)',
     ).toContain('QA notes probe');
   });
 
@@ -243,7 +240,6 @@ test.describe('Assignment Form', () => {
 
     await expect(
       page.getByRole('button', { name: routeName, exact: true }),
-      'saved routes never reach the backend, so Assignment cannot see them (RMS-91)',
     ).toBeVisible({ timeout: 10_000 });
   });
 

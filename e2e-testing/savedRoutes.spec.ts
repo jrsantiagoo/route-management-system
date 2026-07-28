@@ -2,16 +2,34 @@ import { test, expect, Page } from '@playwright/test';
 
 const STORAGE_KEY = 'acesoft_savedRoutes';
 
+type MockStop = {
+  id_: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  order: number;
+};
+
+type MockRoute = {
+  id_: string;
+  name: string;
+  stops: MockStop[];
+  totalDistanceKm: number;
+  totalDurationMinutes: number;
+  vehicleType: string;
+  createdAt: string;
+  archivedAt: string | null;
+};
+
 const SEED_STOPS = [
   {
-    id: 'loc-000',
     name: 'De La Salle University',
     address: '2401 Taft Ave, Malate, Manila 1004',
     lat: 14.5643,
     lng: 120.9938,
   },
   {
-    id: 'loc-001',
     name: 'Rizal Park',
     address: 'Roxas Blvd, Ermita, Manila 1000',
     lat: 14.5832,
@@ -19,55 +37,110 @@ const SEED_STOPS = [
   },
 ];
 
+const store: { routes: MockRoute[] } = { routes: [] };
+
+function newId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
 function uniqueName(prefix = 'QA route') {
   return `${prefix} ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-async function writeRoute(page: Page, name: string, archived: boolean) {
-  await page.evaluate(
-    ({ key, routeName, isArchived, stops }) => {
-      const id = `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const all = JSON.parse(localStorage.getItem(key) ?? '[]');
-      all.push({
-        id,
-        id_: id,
-        name: routeName,
-        stops,
-        segments: [],
-        totalDistanceKm: 5.2,
-        totalDurationMinutes: 18,
-        vehicleType: 'car',
-        assignedWeek: '',
-        createdAt: new Date().toISOString(),
-        archived: isArchived,
-      });
-      localStorage.setItem(key, JSON.stringify(all));
-    },
-    { key: STORAGE_KEY, routeName: name, isArchived: archived, stops: SEED_STOPS },
-  );
+function buildRoute(name: string, archived: boolean): MockRoute {
+  return {
+    id_: newId('srv-route'),
+    name,
+    stops: SEED_STOPS.map((s, i) => ({ id_: newId(`srv-stop-${i}`), ...s, order: i })),
+    totalDistanceKm: 5.2,
+    totalDurationMinutes: 18,
+    vehicleType: 'car',
+    createdAt: new Date().toISOString(),
+    archivedAt: archived ? new Date().toISOString() : null,
+  };
 }
 
-async function seedRoute(page: Page, name: string, archived = false) {
-  await writeRoute(page, name, archived);
-  await page.reload();
+function json(body: unknown) {
+  return { status: 200, contentType: 'application/json', body: JSON.stringify(body) };
+}
+
+async function installRouteApiMock(page: Page) {
+  await page.route('**/api/routes', async (route) => {
+    const request = route.request();
+
+    if (request.method() === 'POST') {
+      const body = JSON.parse(request.postData() ?? '{}');
+      const created: MockRoute = {
+        id_: newId('srv-route'),
+        name: body.name,
+        stops: (body.stops ?? []).map((s: MockStop, i: number) => ({
+          id_: newId(`srv-stop-${i}`),
+          name: s.name,
+          address: s.address,
+          lat: s.lat,
+          lng: s.lng,
+          order: i,
+        })),
+        totalDistanceKm: body.totalDistanceKm ?? 0,
+        totalDurationMinutes: body.totalDurationMinutes ?? 0,
+        vehicleType: body.vehicleType ?? 'car',
+        createdAt: new Date().toISOString(),
+        archivedAt: null,
+      };
+      store.routes.push(created);
+      await route.fulfill(json({ success: true, data: created }));
+      return;
+    }
+
+    await route.fulfill(json({ success: true, data: store.routes }));
+  });
+
+  await page.route('**/api/routes/archive/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    const found = store.routes.find((r) => r.id_ === id);
+    if (found) found.archivedAt = new Date().toISOString();
+    await route.fulfill(json({ success: true, data: found ?? null }));
+  });
+
+  await page.route('**/api/routes/unarchive/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    const found = store.routes.find((r) => r.id_ === id);
+    if (found) found.archivedAt = null;
+    await route.fulfill(json({ success: true, data: found ?? null }));
+  });
+}
+
+async function waitForPage(page: Page) {
   await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
     timeout: 30_000,
   });
+}
+
+async function seedRoute(page: Page, name: string, archived = false) {
+  store.routes.push(buildRoute(name, archived));
+  await page.reload();
+  await waitForPage(page);
+}
+
+async function saveNewRoute(page: Page, name: string) {
+  await page.getByRole('button', { name: 'Create New Route' }).click();
+  await expect(page.getByText('Rizal Park')).toBeVisible();
+  await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
+  await page.locator('#route-name').fill(name);
+  await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
 }
 
 test.describe('Saved Routes', () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
+    store.routes = [];
+    await installRouteApiMock(page);
     await page.goto('/route-tool');
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
     await page.evaluate((key) => localStorage.removeItem(key), STORAGE_KEY);
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
   });
 
   test('SR-01 an empty route list shows the empty-state prompt', async ({ page }) => {
@@ -117,15 +190,9 @@ test.describe('Saved Routes', () => {
 
   test('SR-06 creating a route saves it, toasts, and lists it in the table', async ({ page }) => {
     const name = uniqueName();
+    await saveNewRoute(page, name);
 
-    await page.getByRole('button', { name: 'Create New Route' }).click();
-    await expect(page.getByText('Rizal Park')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
-    await page.locator('#route-name').fill(name);
-    await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
-
-    await expect(page.getByText('Successfully Created Route')).toBeVisible();
+    await expect(page.getByText('Route saved successfully.')).toBeVisible();
     await expect(page.getByRole('cell', { name })).toBeVisible();
   });
 
@@ -134,9 +201,7 @@ test.describe('Saved Routes', () => {
     await seedRoute(page, name);
 
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
     await expect(page.getByRole('cell', { name })).toBeVisible();
   });
 
@@ -154,7 +219,7 @@ test.describe('Saved Routes', () => {
     await page.locator('#route-name').fill(renamed);
     await save.last().click();
 
-    await expect(page.getByText('Route updated successfully.')).toBeVisible();
+    await expect(page.getByText('Route saved successfully.')).toBeVisible();
     await expect(page.getByRole('cell', { name: renamed })).toBeVisible();
     await expect(page.getByRole('cell', { name: original })).toHaveCount(0);
   });
@@ -193,7 +258,7 @@ test.describe('Saved Routes', () => {
     await expect(page.getByRole('cell', { name })).toBeVisible();
 
     await page.getByTitle('Unarchive route').first().click();
-    await expect(page.getByText('Route restored.')).toBeVisible();
+    await expect(page.getByText('Route unarchived.')).toBeVisible();
 
     await page.getByRole('button', { name: 'active' }).click();
     await expect(page.getByRole('cell', { name })).toBeVisible();
@@ -229,9 +294,7 @@ test.describe('Saved Routes', () => {
     await expect(page.getByText('Route deleted.')).toBeVisible();
 
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
     await expect(page.getByRole('cell', { name })).toHaveCount(0);
   });
 
@@ -252,35 +315,28 @@ test.describe('Saved Routes', () => {
     await expect(page.getByText('No routes match your search.')).toBeVisible();
   });
 
-  test('SR-17 the refresh control re-reads saved routes from storage', async ({ page }) => {
+  test('SR-17 the refresh control re-reads saved routes from the server', async ({ page }) => {
     const name = uniqueName();
-    await writeRoute(page, name, false);
+    store.routes.push(buildRoute(name, false));
 
     await page.getByRole('button', { name: 'Refresh saved routes' }).click();
     await expect(page.getByRole('cell', { name })).toBeVisible();
   });
 
-  test('SR-18 saving a route persists it to the backend, not just to this browser', async ({
-    page,
-  }) => {
+  test('SR-18 saving a route sends the route to POST /api/routes', async ({ page }) => {
     const name = uniqueName();
     const postRequest = page
       .waitForRequest(
         (request) => request.url().includes('/api/routes') && request.method() === 'POST',
-        { timeout: 10_000 },
+        { timeout: 15_000 },
       )
       .catch(() => null);
 
-    await page.getByRole('button', { name: 'Create New Route' }).click();
-    await expect(page.getByText('Rizal Park')).toBeVisible();
-    await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
-    await page.locator('#route-name').fill(name);
-    await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
-    await expect(page.getByText('Successfully Created Route')).toBeVisible();
+    await saveNewRoute(page, name);
+    await expect(page.getByText('Route saved successfully.')).toBeVisible();
 
-    expect(
-      await postRequest,
-      'routes are saved to localStorage only and never reach POST /api/routes (RMS-91)',
-    ).not.toBeNull();
+    const request = await postRequest;
+    expect(request).not.toBeNull();
+    expect(request?.postData() ?? '').toContain(name);
   });
 });

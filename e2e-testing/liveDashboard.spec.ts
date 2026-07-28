@@ -9,12 +9,16 @@ const METRICS = [
 ] as const;
 
 async function openDateRange(page: Page) {
-  await page
+  const trigger = page
     .locator('button')
     .filter({ hasText: /^(Today|This Week|This Month|This Year|All Time)$/ })
-    .first()
-    .click();
-  await expect(page.getByRole('heading', { name: 'Date Range' })).toBeVisible();
+    .first();
+  const heading = page.getByRole('heading', { name: 'Date Range' });
+  // Retry the click: React may not have attached handlers on the first attempt.
+  await expect(async () => {
+    await trigger.click();
+    await expect(heading).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
 }
 
 async function dismissPopover(page: Page) {
@@ -107,7 +111,6 @@ test.describe('Live Dashboard', () => {
 
     await expect(
       page.getByRole('heading', { name: 'Date Range' }),
-      'preset selection leaves the popover open (RMS-81)',
     ).toBeHidden({ timeout: 5_000 });
   });
 

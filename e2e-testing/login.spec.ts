@@ -156,7 +156,6 @@ test.describe('Login', () => {
     await expect(link).toBeVisible();
     await expect(
       link,
-      'href="#" is a dead link — no password recovery flow exists (RMS-84)',
     ).not.toHaveAttribute('href', '#');
   });
 });

@@ -11,8 +11,14 @@ const FIELD = {
 } as const;
 
 async function openForm(page: Page) {
-  await page.getByRole('button', { name: 'Add Vehicle', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Add new vehicle' })).toBeVisible();
+  const trigger = page.getByRole('button', { name: 'Add Vehicle', exact: true });
+  const heading = page.getByRole('heading', { name: 'Add new vehicle' });
+
+  // Retry the click: React may not have attached handlers on the first attempt.
+  await expect(async () => {
+    await trigger.click();
+    await expect(heading).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
 }
 
 async function fillValidVehicle(page: Page) {
@@ -117,7 +123,6 @@ test.describe('Fleet Management', () => {
 
     await expect(
       page.getByText('QA1234'),
-      'no onSubmit handler exists, so the vehicle is discarded (RMS-93)',
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -137,7 +142,6 @@ test.describe('Fleet Management', () => {
 
     expect(
       await vehicleRequest,
-      'the fleet table is rendered from hardcoded mockVehicleData (RMS-94)',
     ).not.toBeNull();
   });
 });

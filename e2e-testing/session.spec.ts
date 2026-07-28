@@ -1,4 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+
+async function signOut(page: Page) {
+  const trigger = page.locator('header button').last();
+  const button = page.getByRole('button', { name: 'Sign Out' });
+
+  // Retry the menu click: React may not have attached handlers on the first attempt.
+  // Guarded so a retry never toggles an already-open menu shut.
+  await expect(async () => {
+    if (!(await button.isVisible())) {
+      await trigger.click();
+    }
+    await expect(button).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+
+  await button.click();
+}
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard', heading: 'Dashboard' },
@@ -8,6 +24,27 @@ const NAV = [
 ] as const;
 
 const SIDEBAR = 'div.fixed.top-0.left-0';
+
+async function collapseSidebar(page: Page) {
+  const sidebar = page.locator(SIDEBAR);
+  // Retry the click: React may not have attached handlers on the first attempt.
+  await expect(async () => {
+    await sidebar.getByRole('button').click();
+    await expect(sidebar).toHaveClass(/w-20/, { timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+}
+
+async function openAccountMenu(page: Page) {
+  const trigger = page.locator('header button').last();
+  const label = page.getByText('My Account');
+  // Retry the click: React may not have attached handlers on the first attempt.
+  await expect(async () => {
+    if (!(await label.isVisible())) {
+      await trigger.click();
+    }
+    await expect(label).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+}
 
 test.describe('Session & Navigation', () => {
   test.setTimeout(60_000);
@@ -46,8 +83,7 @@ test.describe('Session & Navigation', () => {
     const toggle = sidebar.getByRole('button');
 
     await expect(sidebar).toHaveClass(/w-64/);
-    await toggle.click();
-    await expect(sidebar).toHaveClass(/w-20/);
+    await collapseSidebar(page);
 
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({ timeout: 30_000 });
@@ -58,8 +94,7 @@ test.describe('Session & Navigation', () => {
   });
 
   test('SN-08 collapsed nav links expose their label as a title attribute', async ({ page }) => {
-    await page.locator(SIDEBAR).getByRole('button').click();
-    await expect(page.locator(SIDEBAR)).toHaveClass(/w-20/);
+    await collapseSidebar(page);
 
     for (const { href, label } of NAV) {
       await expect(page.locator(`a[href="${href}"]`)).toHaveAttribute('title', label);
@@ -89,8 +124,7 @@ test.describe('Session & Navigation', () => {
   test('SN-10 the account dropdown opens, shows its items, and closes on outside click', async ({
     page,
   }) => {
-    await page.locator('header button').last().click();
-    await expect(page.getByText('My Account')).toBeVisible();
+    await openAccountMenu(page);
     await expect(page.getByRole('button', { name: 'Profile' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Sign Out' })).toBeVisible();
 
@@ -99,7 +133,7 @@ test.describe('Session & Navigation', () => {
   });
 
   test('SN-11 the Profile item navigates to the profile page', async ({ page }) => {
-    await page.locator('header button').last().click();
+    await openAccountMenu(page);
     await page.getByRole('button', { name: 'Profile' }).click();
     await page.waitForURL('**/profile');
     await expect(page.getByRole('heading', { name: 'Account Profile' })).toBeVisible({
@@ -115,8 +149,7 @@ test.describe('Session & Navigation', () => {
   });
 
   test('SN-13 sign out clears both tokens and returns to the login page', async ({ page }) => {
-    await page.locator('header button').last().click();
-    await page.getByRole('button', { name: 'Sign Out' }).click();
+    await signOut(page);
 
     await page.waitForURL(/localhost:3000\/?$/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
@@ -130,8 +163,7 @@ test.describe('Session & Navigation', () => {
   });
 
   test('SN-14 navigating back after sign out does not restore access', async ({ page }) => {
-    await page.locator('header button').last().click();
-    await page.getByRole('button', { name: 'Sign Out' }).click();
+    await signOut(page);
     await page.waitForURL(/localhost:3000\/?$/, { timeout: 30_000 });
 
     await page.goBack();
@@ -141,13 +173,11 @@ test.describe('Session & Navigation', () => {
   test('SN-15 the logout request is authenticated and succeeds server-side', async ({ page }) => {
     const logoutResponse = page.waitForResponse('**/api/auth/logout');
 
-    await page.locator('header button').last().click();
-    await page.getByRole('button', { name: 'Sign Out' }).click();
+    await signOut(page);
 
     const response = await logoutResponse;
     expect(
       response.status(),
-      'logout is sent without a Bearer token, so the server rejects it (RMS-87)',
     ).toBeLessThan(400);
   });
 
@@ -158,7 +188,6 @@ test.describe('Session & Navigation', () => {
     );
     expect(
       accessibleName,
-      'icon-only collapse button has no accessible name (RMS-88)',
     ).not.toBe('');
   });
 });

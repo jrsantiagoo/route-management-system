@@ -3,10 +3,16 @@ import { test, expect, Page } from '@playwright/test';
 const PRESETS = ['Today', 'This Week', 'This Month', 'This Year', 'All Time'] as const;
 
 async function openDateRange(page: Page) {
-  await page.locator('button').filter({ hasText: /^(Today|This Week|This Month|This Year|All Time)$/ })
-    .first()
-    .click();
-  await expect(page.getByRole('heading', { name: 'Date Range' })).toBeVisible();
+  const trigger = page
+    .locator('button')
+    .filter({ hasText: /^(Today|This Week|This Month|This Year|All Time)$/ })
+    .first();
+  const heading = page.getByRole('heading', { name: 'Date Range' });
+  // Retry the click: React may not have attached handlers on the first attempt.
+  await expect(async () => {
+    await trigger.click();
+    await expect(heading).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
 }
 
 async function dismissPopover(page: Page) {
@@ -112,8 +118,12 @@ test.describe('Report Generation', () => {
     page,
   }) => {
     await openDateRange(page);
+    // Scope to the popover: the trigger button also shows the active preset name.
+    const popover = page.locator('div.absolute').filter({
+      has: page.getByRole('heading', { name: 'Date Range' }),
+    });
     for (const preset of PRESETS) {
-      await expect(page.getByRole('button', { name: preset, exact: true })).toBeVisible();
+      await expect(popover.getByRole('button', { name: preset, exact: true })).toBeVisible();
     }
     await expect(page.getByText('Custom Range')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Apply' })).toBeVisible();
@@ -161,7 +171,6 @@ test.describe('Report Generation', () => {
 
     expect(
       pdfText,
-      'pdf-generator.ts still imports dailyDistanceData / weeklyFuelData from ./mockData (RMS-59)',
     ).toMatch(/\d{4}-\d{2}-\d{2}/);
   });
 

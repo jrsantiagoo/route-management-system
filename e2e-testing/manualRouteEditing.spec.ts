@@ -2,6 +2,88 @@ import { test, expect, Page } from '@playwright/test';
 
 const METRIC_PATTERN = /\d+(?:\.\d+)?\s*(?:km|m)\s*·/;
 
+type MockStop = {
+  id_: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  order: number;
+};
+
+type MockRoute = {
+  id_: string;
+  name: string;
+  stops: MockStop[];
+  totalDistanceKm: number;
+  totalDurationMinutes: number;
+  vehicleType: string;
+  createdAt: string;
+  archivedAt: string | null;
+};
+
+const store: { routes: MockRoute[] } = { routes: [] };
+
+function newId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function json(body: unknown) {
+  return { status: 200, contentType: 'application/json', body: JSON.stringify(body) };
+}
+
+async function installRouteApiMock(page: Page) {
+  await page.route('**/api/routes', async (route) => {
+    const request = route.request();
+
+    if (request.method() === 'POST') {
+      const body = JSON.parse(request.postData() ?? '{}');
+      const created: MockRoute = {
+        id_: newId('srv-route'),
+        name: body.name,
+        stops: (body.stops ?? []).map((s: MockStop, i: number) => ({
+          id_: newId(`srv-stop-${i}`),
+          name: s.name,
+          address: s.address,
+          lat: s.lat,
+          lng: s.lng,
+          order: i,
+        })),
+        totalDistanceKm: body.totalDistanceKm ?? 0,
+        totalDurationMinutes: body.totalDurationMinutes ?? 0,
+        vehicleType: body.vehicleType ?? 'car',
+        createdAt: new Date().toISOString(),
+        archivedAt: null,
+      };
+      store.routes.push(created);
+      await route.fulfill(json({ success: true, data: created }));
+      return;
+    }
+
+    await route.fulfill(json({ success: true, data: store.routes }));
+  });
+
+  await page.route('**/api/routes/archive/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    const found = store.routes.find((r) => r.id_ === id);
+    if (found) found.archivedAt = new Date().toISOString();
+    await route.fulfill(json({ success: true, data: found ?? null }));
+  });
+
+  await page.route('**/api/routes/unarchive/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    const found = store.routes.find((r) => r.id_ === id);
+    if (found) found.archivedAt = null;
+    await route.fulfill(json({ success: true, data: found ?? null }));
+  });
+}
+
+async function waitForPage(page: Page) {
+  await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
+    timeout: 30_000,
+  });
+}
+
 async function openEditor(page: Page) {
   await page.getByRole('button', { name: 'Create New Route' }).click();
   await expect(page.getByRole('heading', { name: 'Create Route' })).toBeVisible();
@@ -19,15 +101,13 @@ test.describe('Manual Route Editing', () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
+    store.routes = [];
+    await installRouteApiMock(page);
     await page.goto('/route-tool');
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
     await page.evaluate(() => localStorage.removeItem('acesoft_savedRoutes'));
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
   });
 
   test('2-1 adds a delivery stop and recalculates the route metrics', async ({ page }) => {
@@ -52,10 +132,7 @@ test.describe('Manual Route Editing', () => {
     const stopText = await panel.innerText();
 
     expect(stopText.indexOf('Makati CBD')).toBeGreaterThan(-1);
-    expect(
-      stopText.indexOf('Makati CBD'),
-      'handleAddStop splices before the last stop',
-    ).toBeLessThan(stopText.indexOf('Rizal Park'));
+    expect(stopText.indexOf('Makati CBD')).toBeLessThan(stopText.indexOf('Rizal Park'));
   });
 
   test('2-2 removes a stop and updates the route', async ({ page }) => {
@@ -73,12 +150,10 @@ test.describe('Manual Route Editing', () => {
     await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
     await page.locator('#route-name').fill(routeName);
     await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
-    await expect(page.getByText('Successfully Created Route')).toBeVisible();
+    await expect(page.getByText('Route saved successfully.')).toBeVisible();
 
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Route Creation' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await waitForPage(page);
     await expect(page.getByRole('cell', { name: routeName })).toBeVisible();
 
     await page.getByTitle('Edit route').first().click();
@@ -148,9 +223,6 @@ test.describe('Manual Route Editing', () => {
     await expect(page.getByText('Rizal Park')).toBeHidden();
 
     await page.getByRole('button', { name: 'Remove De La Salle University' }).click();
-    await expect(
-      page.getByText('De La Salle University'),
-      'removing the only remaining stop should be rejected (RMS-79)',
-    ).toBeVisible();
+    await expect(page.getByText('De La Salle University')).toBeVisible();
   });
 });
