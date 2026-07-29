@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import FleetTable from "@/components/fleet-management/fleet-table";
 import VehicleForm from "@/components/fleet-management/vehicle-form";
+import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
 import { mockVehicleData } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/fleet-management/mockData";
 
 export default function FleetManagement() {
+    const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
+
     return (
         <div className="flex flex-col gap-6">
             {/* Page Header */}
@@ -18,7 +23,15 @@ export default function FleetManagement() {
             </div>
 
             <VehicleForm />
-            <FleetTable vehicles={mockVehicleData} />
+            <FleetTable vehicles={mockVehicleData} onEdit={setEditTarget} />
+
+            {editTarget && (
+                <VehicleFormModal
+                    initialData={editTarget}
+                    onClose={() => setEditTarget(null)}
+                    onSave={() => setEditTarget(null)}
+                />
+            )}
         </div>
     );
 }
