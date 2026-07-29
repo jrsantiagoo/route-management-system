@@ -24,10 +24,11 @@ import StatusBadge from "@/components/ui/status-badge";
 interface VehicleProps {
     vehicles: Vehicle[];
     onEdit?: (vehicle: Vehicle) => void;
+    onView?: (vehicle: Vehicle) => void;
     // onDeleted: (tripId: string) => void;
 }
 
-export default function FleetTable({ vehicles, onEdit }: VehicleProps) {
+export default function FleetTable({ vehicles, onEdit, onView }: VehicleProps) {
     const [search, setSearch] = useState("");
     const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");
@@ -261,7 +262,9 @@ export default function FleetTable({ vehicles, onEdit }: VehicleProps) {
                                 <td className="px-3 py-2">
                                     {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-3 py-2"><StatusBadge status={v.status} /></td>
+                                <td className="px-3 py-2">
+                                    <StatusBadge status={v.status} />
+                                </td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
                                         onClick={() =>
@@ -286,8 +289,10 @@ export default function FleetTable({ vehicles, onEdit }: VehicleProps) {
                                                 {
                                                     label: "View",
                                                     icon: <Eye size={15} />,
-                                                    onClick: () =>
-                                                        setActiveMenu(null),
+                                                    onClick: () => {
+                                                        onView?.(v);
+                                                        setActiveMenu(null);
+                                                    },
                                                 },
                                                 {
                                                     label: "Edit",
@@ -297,12 +302,6 @@ export default function FleetTable({ vehicles, onEdit }: VehicleProps) {
                                                         setActiveMenu(null);
                                                     },
                                                 },
-                                                // {
-                                                //     label: "Deactivate",
-                                                //     icon: <Power size={15} />,
-                                                //     onClick: () =>
-                                                //         setActiveMenu(null),
-                                                // },
                                                 {
                                                     label: "Archive",
                                                     icon: (

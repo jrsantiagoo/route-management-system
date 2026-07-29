@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Calendar, Car, Fuel, Gauge } from "lucide-react";
+import { Building2, Calendar, Car, Fuel, Gauge, X } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
@@ -18,16 +18,24 @@ export default function VehicleFormModal({
 }: VehicleFormModalProps) {
     const isEdit = !!initialData;
 
-    const [plateNumber, setPlateNumber] = useState(initialData?.plateNumber ?? "");
-    const [vehicleType, setVehicleType] = useState(initialData?.vehicleType ?? "");
-    const [vehicleMaker, setVehicleMaker] = useState(initialData?.vehicleMaker ?? "");
+    const [plateNumber, setPlateNumber] = useState(
+        initialData?.plateNumber ?? "",
+    );
+    const [vehicleType, setVehicleType] = useState(
+        initialData?.vehicleType ?? "",
+    );
+    const [vehicleMaker, setVehicleMaker] = useState(
+        initialData?.vehicleMaker ?? "",
+    );
     const [targetEfficiency, setTargetEfficiency] = useState(
         initialData?.target ? String(initialData.target) : "",
     );
     const [initOdometer, setInitOdometer] = useState(
         initialData?.initOdometer ? String(initialData.initOdometer) : "",
     );
-    const [vehicleModel, setVehicleModel] = useState(initialData?.vehicleModel ?? "");
+    const [vehicleModel, setVehicleModel] = useState(
+        initialData?.vehicleModel ?? "",
+    );
     const [selectedYear, setSelectedYear] = useState(
         initialData?.year ? String(initialData.year) : "",
     );
@@ -58,7 +66,7 @@ export default function VehicleFormModal({
         onClose();
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
         onSave({
             plateNumber,
@@ -72,14 +80,26 @@ export default function VehicleFormModal({
     }
 
     return (
+        // Background Overlay
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             onClick={() => handleClose()}
         >
+            {/* Form Modal */}
             <div
-                className="mt-2 p-8 w-240 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
+                className="relative mt-2 p-8 w-240 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* Close button */}
+                <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                    title="Close"
+                >
+                    <X size={20} />
+                </button>
+
+                {/* Header Text */}
                 <div>
                     <h2 className="text-2xl font-semibold text-foreground mb-3">
                         {isEdit ? "Edit vehicle" : "Add new vehicle"}
@@ -91,7 +111,11 @@ export default function VehicleFormModal({
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col mt-4 gap-3">
+                {/* Form Details */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col mt-4 gap-3"
+                >
                     <div className="grid grid-cols-3 gap-6 w-full">
                         <div className="flex flex-col w- gap-1">
                             <label className="text-md font-semibold text-foreground">
@@ -251,8 +275,7 @@ export default function VehicleFormModal({
 
                         <div className="flex flex-col gap-1">
                             <label className="text-md font-semibold text-foreground">
-                                Year{" "}
-                                <span className="text-red-500">*</span>
+                                Year <span className="text-red-500">*</span>
                             </label>
                             <FormSelect
                                 value={selectedYear}
@@ -260,14 +283,10 @@ export default function VehicleFormModal({
                                 options={Array.from(
                                     {
                                         length:
-                                            new Date().getFullYear() -
-                                            1991 +
-                                            1,
+                                            new Date().getFullYear() - 1991 + 1,
                                     },
                                     (_, i) =>
-                                        String(
-                                            new Date().getFullYear() - i,
-                                        ),
+                                        String(new Date().getFullYear() - i),
                                 )}
                                 placeholder="Select a year"
                                 icon={<Calendar size={19} />}
