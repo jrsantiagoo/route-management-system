@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, CirclePlus, Route, User, Van } from "lucide-react";
+import { CalendarDays, Plus, Route, User, Van } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import { Driver, RoutePlan, Trip } from "@/lib/routing/types";
@@ -27,9 +27,11 @@ export default function AssignmentForm({
         () => new Date().toISOString().split("T")[0],
     );
 
+    // Used to help identify if all required fields are filled
     const allFieldsFilled =
         selectedRoute && selectedPurpose && selectedDriver && date;
 
+    // Ensures inputs aren't saved when form closes
     function handleClose() {
         setOpen(false);
         setSelectedRoute("");
@@ -74,7 +76,7 @@ export default function AssignmentForm({
                 className="flex items-center -mt-2 gap-2 px-3.5 py-1.5 text-sm font-semibold rounded-lg border border-border bg-card 
                     text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300"
             >
-                <CirclePlus size={16} />
+                <Plus size={16} />
                 New Assignment
             </button>
 

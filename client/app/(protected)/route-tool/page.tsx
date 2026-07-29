@@ -12,8 +12,7 @@ import { DARK } from "@/components/routing/routeTheme";
 import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
-import Toast from "@/components/routing/Toast";
-import * as routeApi from "@/lib/api/routes";
+import Toast from "@/components/ui/toast";
 
 export default function RouteCreationPage() {
     const { theme } = useTheme();

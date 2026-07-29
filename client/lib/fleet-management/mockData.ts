@@ -9,6 +9,10 @@ export interface Vehicle {
     target: number;
     avg_performance?: number;
     status: string;
+    vehicleMaker: string;
+    vehicleModel: string;
+    initOdometer: number;
+    year: number;
 }
 
 export const mockVehicleData: Vehicle[] = [
@@ -22,6 +26,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 1500,
         target: 1000,
         status: "EN ROUTE",
+        vehicleMaker: "Toyota",
+        vehicleModel: "Hiace",
+        initOdometer: 15234,
+        year: 2022,
     },
     {
         id_: "VH-002",
@@ -33,6 +41,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 100,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Honda",
+        vehicleModel: "Click 125",
+        initOdometer: 8921,
+        year: 2023,
     },
     {
         id_: "VH-003",
@@ -44,6 +56,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 500,
         target: 1000,
         status: "EN ROUTE",
+        vehicleMaker: "Toyota",
+        vehicleModel: "Vios",
+        initOdometer: 24100,
+        year: 2021,
     },
     {
         id_: "VH-004",
@@ -55,6 +71,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 1800,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Nissan",
+        vehicleModel: "Urvan",
+        initOdometer: 18765,
+        year: 2022,
     },
     {
         id_: "VH-005",
@@ -66,6 +86,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 80,
         target: 1000,
         status: "INACTIVE",
+        vehicleMaker: "Yamaha",
+        vehicleModel: "NMAX",
+        initOdometer: 31200,
+        year: 2020,
     },
     {
         id_: "VH-006",
@@ -77,6 +101,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 600,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Honda",
+        vehicleModel: "Civic",
+        initOdometer: 9800,
+        year: 2023,
     },
     {
         id_: "VH-007",
@@ -88,6 +116,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 2000,
         target: 1000,
         status: "EN ROUTE",
+        vehicleMaker: "Toyota",
+        vehicleModel: "Hilux",
+        initOdometer: 45000,
+        year: 2019,
     },
     {
         id_: "VH-008",
@@ -99,6 +131,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 450,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Mitsubishi",
+        vehicleModel: "Mirage",
+        initOdometer: 5600,
+        year: 2024,
     },
     {
         id_: "VH-009",
@@ -110,6 +146,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 120,
         target: 1000,
         status: "EN ROUTE",
+        vehicleMaker: "Suzuki",
+        vehicleModel: "Raider 150",
+        initOdometer: 12500,
+        year: 2021,
     },
     {
         id_: "VH-010",
@@ -121,6 +161,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 550,
         target: 1000,
         status: "INACTIVE",
+        vehicleMaker: "Ford",
+        vehicleModel: "Escape",
+        initOdometer: 67000,
+        year: 2018,
     },
     {
         id_: "VH-011",
@@ -132,6 +176,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 90,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Honda",
+        vehicleModel: "PCX 160",
+        initOdometer: 4100,
+        year: 2024,
     },
     {
         id_: "VH-012",
@@ -143,6 +191,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 1600,
         target: 1000,
         status: "ACTIVE",
+        vehicleMaker: "Toyota",
+        vehicleModel: "Innova",
+        initOdometer: 28000,
+        year: 2020,
     },
     {
         id_: "VH-013",
@@ -154,6 +206,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 400,
         target: 1000,
         status: "EN ROUTE",
+        vehicleMaker: "Hyundai",
+        vehicleModel: "Accent",
+        initOdometer: 18200,
+        year: 2022,
     },
     {
         id_: "VH-014",
@@ -165,6 +221,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 1200,
         target: 1000,
         status: "RESERVED",
+        vehicleMaker: "Nissan",
+        vehicleModel: "NV350",
+        initOdometer: 7500,
+        year: 2023,
     },
     {
         id_: "VH-015",
@@ -176,6 +236,10 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 70,
         target: 1000,
         status: "STANDBY",
+        vehicleMaker: "Yamaha",
+        vehicleModel: "Mio Sporty",
+        initOdometer: 22000,
+        year: 2019,
     },
     {
         id_: "VH-016",
@@ -187,5 +251,9 @@ export const mockVehicleData: Vehicle[] = [
         weightCapacity: 400,
         target: 1000,
         status: "INACTIVE",
+        vehicleMaker: "Toyota",
+        vehicleModel: "Wigo",
+        initOdometer: 5000,
+        year: 2024,
     },
 ];
