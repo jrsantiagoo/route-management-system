@@ -37,15 +37,19 @@ export async function logout() {
     return response.json();
 }
 
-export async function changePassword(oldPassword: string, newPassword: string, confirmPassword: string) {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API_URL}/api/auth/change-password`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
-  });
-  return response.json();
+export async function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+) {
+    const token = localStorage.getItem("access_token");
+    const response = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
+    });
+    return response.json();
 }

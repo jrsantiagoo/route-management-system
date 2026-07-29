@@ -165,7 +165,7 @@ export function formatOrderLabel(orderIds: number[]): string {
 
 export function orderLocationToStop(loc: OrderLocation): Stop {
     return {
-        id: loc.id,
+        id_: loc.id,
         name: formatOrderLabel(loc.orderIds),
         address: loc.address,
         lat: loc.lat,
@@ -187,7 +187,10 @@ interface KnownArea {
 
 // Order matters: districts/business areas first, parent cities last.
 const KNOWN_AREAS: KnownArea[] = [
-    { label: "BGC", keywords: ["bgc", "bonifacio global city", "fort bonifacio"] },
+    {
+        label: "BGC",
+        keywords: ["bgc", "bonifacio global city", "fort bonifacio"],
+    },
     { label: "Makati", keywords: ["makati"] },
     { label: "Ortigas", keywords: ["ortigas"] },
     { label: "Eastwood", keywords: ["eastwood"] },

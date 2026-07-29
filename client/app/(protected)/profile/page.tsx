@@ -27,6 +27,8 @@ export default function ProfilePage() {
             const { firstname, lastname } = data.data;
             setUsername(`${firstname} ${lastname}`);
             setEmail(data.data.email);
+        } else {
+            router.push("/");
         }
     }
 
