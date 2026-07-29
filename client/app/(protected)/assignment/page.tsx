@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Toast from "@/components/ui/toast";
 import { CalendarDays, List, User } from "lucide-react";
 import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
 import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
@@ -22,6 +23,7 @@ export default function Assignment() {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
     const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState<string | null>(null);
 
     useEffect(() => {
         async function loadData() {
@@ -46,6 +48,7 @@ export default function Assignment() {
     // Add a newly created trip to the shared trips list
     const handleCreateTrip = useCallback((newTrip: Trip) => {
         setTrips((prev) => [...prev, newTrip]);
+        setToast("Assignment created successfully.");
     }, []);
 
     // Remove a trip by ID from the shared trips list
@@ -53,6 +56,7 @@ export default function Assignment() {
         try {
             setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
             await deleteTrip(tripId);
+            setToast("Assignment deleted.");
         } catch (error) {
             console.error("Failed to delete trip:", error);
         }
@@ -143,6 +147,14 @@ export default function Assignment() {
                 <TableView trips={trips} onDeleted={handleDeleteTrip} />
             )}
             {viewMode === "driver" && <DriverView items={mockDriverDayData} />}
+
+            {toast && (
+                <Toast
+                    message={toast}
+                    position="top-right"
+                    onDismiss={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

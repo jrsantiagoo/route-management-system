@@ -4,7 +4,11 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import VehicleFormModal from "./vehicle-form-modal";
 
-export default function VehicleForm() {
+interface VehicleFormProps {
+    onSaved?: () => void;
+}
+
+export default function VehicleForm({ onSaved }: VehicleFormProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -22,7 +26,10 @@ export default function VehicleForm() {
             {open && (
                 <VehicleFormModal
                     onClose={() => setOpen(false)}
-                    onSave={() => setOpen(false)}
+                    onSave={() => {
+                        setOpen(false);
+                        onSaved?.();
+                    }}
                 />
             )}
         </div>

@@ -5,12 +5,14 @@ import FleetTable from "@/components/fleet-management/fleet-table";
 import VehicleForm from "@/components/fleet-management/vehicle-form";
 import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
 import VehicleDetailsModal from "@/components/fleet-management/vehicle-details";
+import Toast from "@/components/ui/toast";
 import { mockVehicleData } from "@/lib/fleet-management/mockData";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 
 export default function FleetManagement() {
     const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
     const [viewTarget, setViewTarget] = useState<Vehicle | null>(null);
+    const [toast, setToast] = useState<string | null>(null);
 
     return (
         <div className="flex flex-col gap-6">
@@ -24,14 +26,24 @@ export default function FleetManagement() {
                 </div>
             </div>
 
-            <VehicleForm />
-            <FleetTable vehicles={mockVehicleData} onEdit={setEditTarget} onView={setViewTarget} />
+            <VehicleForm
+                onSaved={() => setToast("Vehicle added successfully.")}
+            />
+            <FleetTable
+                vehicles={mockVehicleData}
+                onEdit={setEditTarget}
+                onView={setViewTarget}
+                onArchive={() => setToast("Vehicle archived.")}
+            />
 
             {editTarget && (
                 <VehicleFormModal
                     initialData={editTarget}
                     onClose={() => setEditTarget(null)}
-                    onSave={() => setEditTarget(null)}
+                    onSave={() => {
+                        setEditTarget(null);
+                        setToast("Vehicle updated successfully.");
+                    }}
                 />
             )}
 
@@ -39,6 +51,14 @@ export default function FleetManagement() {
                 <VehicleDetailsModal
                     initialData={viewTarget}
                     onClose={() => setViewTarget(null)}
+                />
+            )}
+
+            {toast && (
+                <Toast
+                    message={toast}
+                    position="top-right"
+                    onDismiss={() => setToast(null)}
                 />
             )}
         </div>

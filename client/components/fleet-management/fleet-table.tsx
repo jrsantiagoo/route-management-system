@@ -25,10 +25,11 @@ interface VehicleProps {
     vehicles: Vehicle[];
     onEdit?: (vehicle: Vehicle) => void;
     onView?: (vehicle: Vehicle) => void;
+    onArchive?: (vehicle: Vehicle) => void;
     // onDeleted: (tripId: string) => void;
 }
 
-export default function FleetTable({ vehicles, onEdit, onView }: VehicleProps) {
+export default function FleetTable({ vehicles, onEdit, onView, onArchive }: VehicleProps) {
     const [search, setSearch] = useState("");
     const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");
@@ -309,8 +310,10 @@ export default function FleetTable({ vehicles, onEdit, onView }: VehicleProps) {
                                                             size={15}
                                                         />
                                                     ),
-                                                    onClick: () =>
-                                                        setActiveMenu(null),
+                                                    onClick: () => {
+                                                        onArchive?.(v);
+                                                        setActiveMenu(null);
+                                                    },
                                                     variant: "danger",
                                                 },
                                             ]}
