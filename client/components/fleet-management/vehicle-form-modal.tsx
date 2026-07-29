@@ -1,6 +1,14 @@
 "use client";
 
-import { Building2, Calendar, Car, Fuel, Gauge, X } from "lucide-react";
+import {
+    Activity,
+    Building2,
+    Calendar,
+    Car,
+    Fuel,
+    Gauge,
+    X,
+} from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
@@ -39,7 +47,9 @@ export default function VehicleFormModal({
     const [selectedYear, setSelectedYear] = useState(
         initialData?.year ? String(initialData.year) : "",
     );
+    const [status, setStatus] = useState(initialData?.status ?? "");
 
+    // Used to help identify if all required fields are filled
     const allFieldsFilled =
         plateNumber &&
         vehicleType &&
@@ -51,10 +61,12 @@ export default function VehicleFormModal({
         Number(targetEfficiency) > 0 &&
         Number(initOdometer) > 0;
 
+    // Used to help check if target efficiency & odometer values are valid
     const isTargetEffInvalid =
         targetEfficiency && Number(targetEfficiency) <= 0;
     const isInitOdometerInvalid = initOdometer && Number(initOdometer) <= 0;
 
+    // Ensures inputs aren't saved when form closes
     function handleClose() {
         setPlateNumber("");
         setVehicleType("");
@@ -63,6 +75,7 @@ export default function VehicleFormModal({
         setInitOdometer("");
         setVehicleModel("");
         setSelectedYear("");
+        setStatus("");
         onClose();
     }
 
@@ -76,6 +89,7 @@ export default function VehicleFormModal({
             vehicleModel,
             initOdometer: Number(initOdometer),
             year: Number(selectedYear),
+            ...(isEdit && { status }),
         });
     }
 
@@ -93,7 +107,8 @@ export default function VehicleFormModal({
                 {/* Close button */}
                 <button
                     onClick={handleClose}
-                    className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                    className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary 
+                        hover:text-foreground dark:hover:text-primary transition"
                     title="Close"
                 >
                     <X size={20} />
@@ -292,6 +307,28 @@ export default function VehicleFormModal({
                                 icon={<Calendar size={19} />}
                             />
                         </div>
+
+                        {isEdit && (
+                            <div className="flex flex-col gap-1">
+                                <label className="text-md font-semibold text-foreground">
+                                    Status{" "}
+                                    <span className="text-red-500">*</span>
+                                </label>
+                                <FormSelect
+                                    value={status}
+                                    onChange={setStatus}
+                                    options={[
+                                        "EN ROUTE",
+                                        "STANDBY",
+                                        "ACTIVE",
+                                        "INACTIVE",
+                                        "RESERVED",
+                                    ]}
+                                    placeholder="Select status"
+                                    icon={<Activity size={19} />}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex font-semibold justify-end gap-2 mt-3.5">
