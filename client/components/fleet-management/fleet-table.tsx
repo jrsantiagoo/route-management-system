@@ -19,6 +19,7 @@ import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
+import StatusBadge from "@/components/ui/status-badge";
 
 interface VehicleProps {
     vehicles: Vehicle[];
@@ -259,7 +260,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 <td className="px-3 py-2">
                                     {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-3 py-2">{v.status}</td>
+                                <td className="px-3 py-2"><StatusBadge status={v.status} /></td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
                                         onClick={() =>

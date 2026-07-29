@@ -21,6 +21,7 @@ import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
+import StatusBadge from "@/components/ui/status-badge";
 
 interface TableViewProps {
     trips: Trip[];
@@ -291,7 +292,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {formatDate(t.created_at)}
                                 </td>
-                                <td className="px-3 py-2">{t.status}</td>
+                                <td className="px-3 py-2"><StatusBadge status={t.status} /></td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
                                         onClick={() =>

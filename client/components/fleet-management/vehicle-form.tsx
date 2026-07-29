@@ -1,13 +1,6 @@
 "use client";
 
-import {
-    Building2,
-    Calendar,
-    Car,
-    CirclePlus,
-    Fuel,
-    Gauge,
-} from "lucide-react";
+import { Building2, Calendar, Car, Fuel, Gauge, Plus } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
 
@@ -21,6 +14,7 @@ export default function VehicleForm() {
     const [vehicleModel, setVehicleModel] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
 
+    // Used to help identify if all required fields are filled
     const allFieldsFilled =
         plateNumber &&
         vehicleType &&
@@ -32,10 +26,12 @@ export default function VehicleForm() {
         Number(targetEfficiency) > 0 &&
         Number(initOdometer) > 0;
 
+    // Used to identify if target efficiency or initial odometer is invalid
     const isTargetEffInvalid =
         targetEfficiency && Number(targetEfficiency) <= 0;
     const isInitOdometerInvalid = initOdometer && Number(initOdometer) <= 0;
 
+    // Ensures inputs aren't saved when form closes
     function handleClose() {
         setPlateNumber("");
         setVehicleType("");
@@ -59,7 +55,7 @@ export default function VehicleForm() {
                 className="flex items-center -mt-2 gap-2 px-4.5 py-1.5 text-sm font-semibold rounded-lg border border-border bg-card 
                     text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300"
             >
-                <CirclePlus size={16} />
+                <Plus size={16} />
                 Add Vehicle
             </button>
 
@@ -91,6 +87,7 @@ export default function VehicleForm() {
                             className="flex flex-col mt-4 gap-3"
                         >
                             <div className="grid grid-cols-3 gap-6 w-full">
+                                {/* Vehicle Plate Number Input */}
                                 <div className="flex flex-col w- gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Plate Number{" "}
@@ -115,6 +112,7 @@ export default function VehicleForm() {
                                     </div>
                                 </div>
 
+                                {/* Vehicle Brand Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Vehicle Brand{" "}
@@ -139,6 +137,7 @@ export default function VehicleForm() {
                                     </div>
                                 </div>
 
+                                {/* Target Efficiency Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Target Efficiency (km/L){" "}
@@ -172,6 +171,7 @@ export default function VehicleForm() {
                                     )}
                                 </div>
 
+                                {/* Vehicle Type Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Vehicle Type{" "}
@@ -196,6 +196,7 @@ export default function VehicleForm() {
                                     </div>
                                 </div>
 
+                                {/* Vehicle Model Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Vehicle Model{" "}
@@ -220,6 +221,7 @@ export default function VehicleForm() {
                                     </div>
                                 </div>
 
+                                {/* Initial Odometer Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Initial Odometer (L){" "}
@@ -251,6 +253,7 @@ export default function VehicleForm() {
                                     )}
                                 </div>
 
+                                {/* Year Input */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-md font-semibold text-foreground">
                                         Year{" "}
@@ -278,6 +281,7 @@ export default function VehicleForm() {
                                 </div>
                             </div>
 
+                            {/* Cancel & Submit Buttons */}
                             <div className="flex font-semibold justify-end gap-2 mt-3.5">
                                 <button
                                     type="button"
