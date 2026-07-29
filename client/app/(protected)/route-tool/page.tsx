@@ -13,6 +13,7 @@ import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
 import Toast from "@/components/ui/toast";
+import * as routeApi from "@/lib/api/routes";
 
 export default function RouteCreationPage() {
     const { theme } = useTheme();
