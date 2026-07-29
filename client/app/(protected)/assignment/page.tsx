@@ -83,11 +83,6 @@ export default function Assignment() {
             </div>
 
             <div className="flex items-center justify-between">
-                {/* <AssignmentForm
-                    driverOptions={drivers}
-                    routeOptions={routes}
-                    onCreated={handleCreateTrip}
-                /> */}
                 <AssignmentForm
                     driverOptions={drivers}
                     routeOptions={routes}
