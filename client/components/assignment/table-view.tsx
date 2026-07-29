@@ -5,9 +5,11 @@ import {
     CalendarClock,
     ClipboardList,
     Clock,
+    Eye,
     MapPinned,
     Route,
     Search,
+    PenLine,
     ArchiveIcon,
     User,
     Fuel,
@@ -17,6 +19,8 @@ import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
+import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 
 interface TableViewProps {
     trips: Trip[];
@@ -38,6 +42,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
+    const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
 
     // Needed for filtering options
     const routeOptions = [
@@ -287,9 +292,15 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                     {formatDate(t.created_at)}
                                 </td>
                                 <td className="px-3 py-2">{t.status}</td>
-                                <td className="pl-7 px-3 py-2">
+                                <td className="pl-7 px-3 py-2 relative">
                                     <button
-                                        // onClick={() => onDeleted(t.id_)}
+                                        onClick={() =>
+                                            setActiveMenu(
+                                                activeMenu === t.id_
+                                                    ? null
+                                                    : t.id_,
+                                            )
+                                        }
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
@@ -297,6 +308,32 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                     >
                                         <Ellipsis size={16} />
                                     </button>
+
+                                    {activeMenu === t.id_ && (
+                                        <TableActionsMenu
+                                            ref={menuRef}
+                                            actions={[
+                                                {
+                                                    label: "Edit",
+                                                    icon: <PenLine size={15} />,
+                                                    onClick: () =>
+                                                        setActiveMenu(null),
+                                                },
+                                                {
+                                                    label: "Archive",
+                                                    icon: (
+                                                        <ArchiveIcon
+                                                            size={15}
+                                                        />
+                                                    ),
+                                                    onClick: () => {
+                                                        setActiveMenu(null);
+                                                    },
+                                                    variant: "danger",
+                                                },
+                                            ]}
+                                        />
+                                    )}
                                 </td>
                             </tr>
                         ))}
