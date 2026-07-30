@@ -12,6 +12,7 @@ import driverRoutes from "./routes/driver-routes.js";
 import orderRoutes from "./routes/order-routes.js";
 import fuelLogRoutes from "./routes/fuel-log-routes.js";
 import efficiencyRoutes from "./routes/efficiency-routes.js";
+import vehicleRoutes from "./routes/vehicle-routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -32,6 +33,7 @@ app.use("/api/drivers", driverRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/fuel_logs", fuelLogRoutes);
 app.use("/api/efficiency", efficiencyRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
