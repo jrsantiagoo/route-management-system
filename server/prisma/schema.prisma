@@ -249,51 +249,6 @@ model fuel_log {
   @@map("fuel_log")
 }
 
-model vehicle {
-  id_                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at          DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime       @db.Timestamptz(6)
-  deleted_at          DateTime?      @db.Timestamptz(6)
-  plate_number        String
-  year                Int
-  initial_odometer    Int
-  last_odometer       Float?
-  expected_kml        Int
-  conduction_sticker  String?
-  is_active           Boolean        @default(true)
-  reg_certification   String?
-  or_number           String?
-  registration_expiry DateTime?      @db.Timestamptz(6)
-  insurance_expiry    DateTime?      @db.Timestamptz(6)
-  driver_id_          String?        @db.Uuid
-  make_id_            String?        @db.Uuid
-  model_id_           String?        @db.Uuid
-  target_efficiency   Float?
-  vehicle_type        VehicleType?
-  weight_capacity     Int?
-  fuel_log            fuel_log[]
-  trip                trip[]
-  agent_profile       agent_profile? @relation(fields: [driver_id_], references: [id_], onDelete: Cascade)
-  vehicle_make        vehicle_make?  @relation(fields: [make_id_], references: [id_], onDelete: Cascade)
-  vehicle_model       vehicle_model? @relation(fields: [model_id_], references: [id_], onDelete: Cascade)
-
-  @@index([created_at, updated_at, driver_id_, make_id_, model_id_])
-}
-
-model vehicle_make {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  vehicle    vehicle[]
-}
-
-model vehicle_model {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  vehicle    vehicle[]
-}
-
 enum TripStatus {
   PENDING
   PROCESSING
@@ -315,13 +270,4 @@ enum TagTypes {
   ASSIGNED
 
   //@@schema("trips")
-}
-
-enum VehicleType {
-  VAN
-  MOTORCYCLE
-  CAR
-  TRUCK
-  BUS
-  OTHER
 }
