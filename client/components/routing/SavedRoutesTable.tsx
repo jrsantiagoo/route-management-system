@@ -3,10 +3,7 @@
 import { useState, useMemo } from "react";
 import { RoutePlan } from "@/lib/routing/types";
 import { formatDateTime } from "@/lib/routing/formatters";
-import {
-    getRouteAreaTags,
-    formatOrderLabel,
-} from "@/lib/routing/orderData";
+import { getRouteAreaTags, formatOrderLabel } from "@/lib/routing/orderData";
 import { useTheme } from "@/lib/theme-context";
 import { DARK } from "./routeTheme";
 
@@ -32,6 +29,10 @@ function stopDisplay(stop: RoutePlan["stops"][number]): string {
         : stop.name;
 }
 
+function isArchived(route: RoutePlan): boolean {
+    return route.archivedAt !== null;
+}
+
 export default function SavedRoutesTable({
     routes,
     onEdit,
@@ -50,15 +51,13 @@ export default function SavedRoutesTable({
 
     const filtered = useMemo(() => {
         const inView = routes.filter((r) =>
-            view === "archived" ? r.archived : !r.archived,
+            view === "archived" ? isArchived(r) : !isArchived(r),
         );
         const q = query.trim().toLowerCase();
         if (!q) return inView;
         return inView.filter((r) => {
             const areas = getRouteAreaTags(r).join(" ").toLowerCase();
-            return (
-                r.name.toLowerCase().includes(q) || areas.includes(q)
-            );
+            return r.name.toLowerCase().includes(q) || areas.includes(q);
         });
     }, [routes, view, query]);
 
@@ -280,15 +279,15 @@ export default function SavedRoutesTable({
                                     route.vehicleType === "car"
                                         ? "Car"
                                         : "Motor";
-                                const expanded = expandedId === route.id;
+                                const expanded = expandedId === route.id_;
                                 return (
                                     <RouteRow
-                                        key={route.id}
+                                        key={route.id_}
                                         route={route}
                                         expanded={expanded}
                                         onToggleExpand={() =>
                                             setExpandedId(
-                                                expanded ? null : route.id,
+                                                expanded ? null : route.id_,
                                             )
                                         }
                                         vehicleTag={vehicleTag}
@@ -462,9 +461,7 @@ function RouteRow({
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             style={{
-                                transform: expanded
-                                    ? "rotate(180deg)"
-                                    : "none",
+                                transform: expanded ? "rotate(180deg)" : "none",
                                 transition: "transform 0.15s",
                                 flexShrink: 0,
                             }}
@@ -579,7 +576,7 @@ function RouteRow({
                         >
                             {route.stops.map((stop, i) => (
                                 <li
-                                    key={stop.id}
+                                    key={stop.id_}
                                     style={{
                                         display: "flex",
                                         alignItems: "flex-start",
@@ -657,13 +654,25 @@ function Tag({
 }) {
     const palette = {
         vehicle: dark
-            ? { bg: "rgba(148,163,184,0.15)", fg: "#cbd5e1", bd: "rgba(148,163,184,0.35)" }
+            ? {
+                  bg: "rgba(148,163,184,0.15)",
+                  fg: "#cbd5e1",
+                  bd: "rgba(148,163,184,0.35)",
+              }
             : { bg: "#f1f5f9", fg: "#475569", bd: "#e2e8f0" },
         area1: dark
-            ? { bg: "rgba(59,130,246,0.15)", fg: "#93c5fd", bd: "rgba(59,130,246,0.35)" }
+            ? {
+                  bg: "rgba(59,130,246,0.15)",
+                  fg: "#93c5fd",
+                  bd: "rgba(59,130,246,0.35)",
+              }
             : { bg: "#eff6ff", fg: "#2563eb", bd: "#dbeafe" },
         area2: dark
-            ? { bg: "rgba(34,197,94,0.15)", fg: "#86efac", bd: "rgba(34,197,94,0.35)" }
+            ? {
+                  bg: "rgba(34,197,94,0.15)",
+                  fg: "#86efac",
+                  bd: "rgba(34,197,94,0.35)",
+              }
             : { bg: "#f0fdf4", fg: "#16a34a", bd: "#dcfce7" },
     }[kind];
 

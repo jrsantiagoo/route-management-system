@@ -16,57 +16,55 @@ datasource db {
 }
 
 model manager {
-  id_            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  lastname       String
-  firstname      String
-  middleInitial  String?
-	email 				 String     @unique
-  createdAt  		 DateTime   @default(now())
+  id_           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lastname      String
+  firstname     String
+  middleInitial String?
+  email         String   @unique
+  createdAt     DateTime @default(now())
 }
 
 model route {
-  id_                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-  name                  String     @unique @default(uuid())
-  totalDistanceKm       Float
-  totalDurationMinutes  Int
-  vehicleType           String?
-  createdAt             DateTime   @default(now())
-  
-  stops                 stop[]
-  trips                 trip[]
+  id_                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String   @unique @default(uuid())
+  totalDistanceKm      Float
+  totalDurationMinutes Int
+  createdAt            DateTime @default(now())
+  archivedAt           DateTime?  
+  vehicleType          String?
 
+  stops                stop[]
+  trips                trip[]
 }
 
 model stop {
-  id_          String    @id @default(uuid())
-  route_id_   String     @db.Uuid
-  
-  name        String
-  address     String?
-  lat         Float
-  lng         Float
-  order       Int                             // sequence in the route
+  id_       String  @id @default(uuid())
+  route_id_ String  @db.Uuid
 
-  route       route     @relation(fields: [route_id_], references: [id_], onDelete: Cascade)
+  name      String
+  address   String?
+  order     Int
+  lat       Float
+  lng       Float
+  route     route   @relation(fields: [route_id_], references: [id_], onDelete: Cascade)
 
   @@index([route_id_])
 }
 
-// driver
 model agent_profile {
   // Internal PK
   id_            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
   // External, from CORE user ID
-  // agent_id_      String  @unique @db.Uuid 
+  // agent_id_   String  @unique @db.Uuid 
 
   //employee_number
   driver_id      String  @unique @db.VarChar(100)
   contact_number String? @db.VarChar(100)
   license_number String? @db.VarChar(100)
-  //avatar_url     String? @db.Text
-  //tenant_id_     String  @db.Uuid
+  //avatar_url   String? @db.Text
+  //tenant_id_   String  @db.Uuid
 
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
 
   // Relations
   vehicles            vehicle[]
@@ -74,6 +72,7 @@ model agent_profile {
   trips               trip[]
 
   //@@index([agent_id_, tenant_id_])
+
   @@map("agent_profile")
 }
 
@@ -146,25 +145,25 @@ model vehicle {
 }
 
 model trip {
-  id_                     String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  status                  TripStatus @default(PENDING)
-  tag_type                TagTypes   @default(OPEN)
+  id_            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status         TripStatus     @default(PENDING)
+  tag_type       TagTypes       @default(OPEN)
   // destination    String     @db.Text
-  scheduled_date          DateTime?  @db.Timestamptz(6)
-  notes                   String?    @db.Text
-  image_url               String?    @db.Text
-  proof_url               String?    @db.Text
-  accepted_at             DateTime?  @db.Timestamptz(6)
-  departed_at             DateTime?  @db.Timestamptz(6)
-  completed_at            DateTime?  @db.Timestamptz(6)
+  scheduled_date DateTime?      @db.Timestamptz(6)
+  notes          String?
+  image_url      String?
+  proof_url      String?
+  accepted_at    DateTime?      @db.Timestamptz(6)
+  departed_at    DateTime?      @db.Timestamptz(6)
+  completed_at   DateTime?      @db.Timestamptz(6)
 
-  created_at              DateTime   @default(now()) @db.Timestamptz(6)
-  updated_at              DateTime   @updatedAt @db.Timestamptz(6)
-  deleted_at              DateTime?  @db.Timestamptz(6)
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime       @updatedAt @db.Timestamptz(6)
+  deleted_at     DateTime?      @db.Timestamptz(6)
 
   // Foreign Keys
-  driver_id_              String? @db.Uuid // FK to agent_profile
-  route_id_               String   @db.Uuid
+  driver_id_     String?        @db.Uuid // FK to agent_profile
+  route_id_      String         @db.Uuid
 
   vehicle_id_            String? @db.Uuid
   //assigned_by      String? @db.Uuid // FK to current user
@@ -195,35 +194,35 @@ model trip {
 }
 
 model order {
-  id_                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_id           String      @unique
-  client             String
-  destination        String?     
-  ordered_on         DateTime    @db.Timestamptz(6)
-  delivered_by       DateTime?   @db.Timestamptz(6)
-  package_content    String?
-  package_size       String?     
-  package_weight     Float?
-  status             OrderStatus   @default(PENDING)
+  id_             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id        String      @unique
+  client          String
+  destination     String?
+  ordered_on      DateTime    @db.Timestamptz(6)
+  delivered_by    DateTime?   @db.Timestamptz(6)
+  package_content String?
+  package_size    String?
+  package_weight  Float?
+  status          OrderStatus @default(PENDING)
 
-  trip_id_           String?       @db.Uuid
-  created_at         DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime      @updatedAt @db.Timestamptz(6)
-
-  trip               trip?         @relation(fields: [trip_id_], references: [id_], onDelete: SetNull)
+  trip_id_        String?     @db.Uuid
+  created_at      DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime    @updatedAt @db.Timestamptz(6)
+  
+  trip            trip?       @relation(fields: [trip_id_], references: [id_])
 
   @@index([trip_id_])
 }
 
 model fuel_log {
-  id_                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  log_date            DateTime?   @db.Timestamptz(6)
+  id_                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  log_date            DateTime?      @db.Timestamptz(6)
   odometer_reading    Float
   liters_added        Float
   price_per_liter     Float
   total_price         Float
-  receipt_url         String?     @db.Text
-  notes               String?     @db.Text
+  receipt_url         String?        @db.Text
+  notes               String?        @db.Text
 
   distance_traveled   Float
   fuel_efficiency     Float
@@ -231,10 +230,10 @@ model fuel_log {
   variance_percentage Float
   needs_attention     Boolean
 
-  created_at          DateTime    @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime    @updatedAt @db.Timestamptz(6)
-  deleted_at          DateTime?   @db.Timestamptz(6)
-
+  created_at          DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime       @updatedAt @db.Timestamptz(6)
+  deleted_at          DateTime?      @db.Timestamptz(6)
+  
   // Foreign Keys
   driver_id_          String?     @db.Uuid // FK to agent_profile
   vehicle_id_         String?     @db.Uuid
@@ -248,6 +247,51 @@ model fuel_log {
   //@@index([created_at, updated_at, vehicle_id_, tenant_id_])
   @@index([created_at, updated_at])
   @@map("fuel_log")
+}
+
+model vehicle {
+  id_                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at          DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime       @db.Timestamptz(6)
+  deleted_at          DateTime?      @db.Timestamptz(6)
+  plate_number        String
+  year                Int
+  initial_odometer    Int
+  last_odometer       Float?
+  expected_kml        Int
+  conduction_sticker  String?
+  is_active           Boolean        @default(true)
+  reg_certification   String?
+  or_number           String?
+  registration_expiry DateTime?      @db.Timestamptz(6)
+  insurance_expiry    DateTime?      @db.Timestamptz(6)
+  driver_id_          String?        @db.Uuid
+  make_id_            String?        @db.Uuid
+  model_id_           String?        @db.Uuid
+  target_efficiency   Float?
+  vehicle_type        VehicleType?
+  weight_capacity     Int?
+  fuel_log            fuel_log[]
+  trip                trip[]
+  agent_profile       agent_profile? @relation(fields: [driver_id_], references: [id_], onDelete: Cascade)
+  vehicle_make        vehicle_make?  @relation(fields: [make_id_], references: [id_], onDelete: Cascade)
+  vehicle_model       vehicle_model? @relation(fields: [model_id_], references: [id_], onDelete: Cascade)
+
+  @@index([created_at, updated_at, driver_id_, make_id_, model_id_])
+}
+
+model vehicle_make {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  vehicle    vehicle[]
+}
+
+model vehicle_model {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  vehicle    vehicle[]
 }
 
 enum TripStatus {
@@ -269,4 +313,15 @@ enum OrderStatus {
 enum TagTypes {
   OPEN
   ASSIGNED
+
+  //@@schema("trips")
+}
+
+enum VehicleType {
+  VAN
+  MOTORCYCLE
+  CAR
+  TRUCK
+  BUS
+  OTHER
 }

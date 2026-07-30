@@ -17,6 +17,7 @@ import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { DARK } from "./routeTheme";
+import { createRoute } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -54,7 +55,7 @@ export default function CreateRouteModal({
     const [isSuggestOpen, setIsSuggestOpen] = useState(false);
     const [isSaveOpen, setIsSaveOpen] = useState(false);
 
-    const routeIdRef = useRef(editingRoute?.id ?? generateRouteId());
+    const routeIdRef = useRef(editingRoute?.id_ ?? generateRouteId());
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const canSave = stops.length >= 2;
@@ -115,27 +116,35 @@ export default function CreateRouteModal({
         setIsSuggestOpen(false);
     }
 
-    function handleConfirmSave(name: string) {
+    async function handleConfirmSave(name: string) {
         if (!canSave) return;
         // Guard against a name added in another tab between opening and saving.
         if (isRouteNameTaken(name, routeIdRef.current)) return;
 
         const plan: RoutePlan = {
             id_: routeIdRef.current,
-            id: routeIdRef.current,
             name,
             stops,
             segments,
             totalDistanceKm,
             totalDurationMinutes,
             vehicleType: recommendVehicle(stops.length),
-            assignedWeek: editingRoute?.assignedWeek ?? "",
+            //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
-            archived: editingRoute?.archived ?? false,
+            archivedAt: editingRoute?.archivedAt ?? undefined,
         };
-        saveRoute(plan);
+
+        try {
+            const res = await createRoute(plan);
+            if (res.success) {
+                onSaved("Route saved successfully.");
+            } else {
+                onSaved(res.message || "Failed to save route.");
+            }
+        } catch {
+            onSaved("Failed to save route to server. Saved locally.");
+        }
         setIsSaveOpen(false);
-        onSaved(name);
     }
 
     return (
@@ -251,7 +260,7 @@ export default function CreateRouteModal({
                         routeError={routeError}
                         onReorder={setStops}
                         onRemoveStop={(id) =>
-                            setStops((prev) => prev.filter((s) => s.id !== id))
+                            setStops((prev) => prev.filter((s) => s.id_ !== id))
                         }
                         onAddStop={handleAddStop}
                         onPreview={setPreviewStop}

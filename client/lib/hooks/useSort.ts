@@ -7,6 +7,7 @@ export interface SortState {
 
 // Given a data array and a getValue accessor, returns a sorted copy
 // with a toggle(key) function to set or flip the sort column.
+// Used for sorting table columns by ascending/descending
 export function useSort<T>(
     data: T[],
     getValue: (item: T, key: string) => string,
