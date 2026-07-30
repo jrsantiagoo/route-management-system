@@ -2,7 +2,7 @@ import prisma from "../lib/prisma.js";
 
 export async function getVehicles() {
     return prisma.vehicle.findMany({
-        where: { deleted_at: null },
+        where: { deleted_at: null, archived_at: null },
         include: { agent_profile: true },
         orderBy: { created_at: "desc" },
     });
@@ -114,6 +114,50 @@ export async function deleteVehicle(vehicleId){
     return prisma.vehicle.update({
         where: { id_: vehicleId },
         data: { deleted_at: new Date() },
+        include: {
+            vehicle_make: true,
+            vehicle_model: true,
+        },
+    });
+}
+
+
+// --- ARCHIVE VEHICLE --- 
+export async function archiveVehicle(vehicleId){
+    const vehicle = await prisma.vehicle.findUnique({
+        where: {id_ : vehicleId },
+        include: {vehicle_make: true, vehicle_model: true}
+    })
+
+    if (!vehicle) throw new Error("Vehicle not found");
+
+    return prisma.vehicle.update({
+        where: { id_: vehicleId },
+        data: {
+            archived_at: new Date(),
+            is_active: false,
+        },
+        include: {
+            vehicle_make: true,
+            vehicle_model: true,
+        },
+    });
+}
+
+export async function unarchiveVehicle(vehicleId){
+    const vehicle = await prisma.vehicle.findUnique({
+        where: {id_ : vehicleId },
+        include: {vehicle_make: true, vehicle_model: true}
+    })
+
+    if (!vehicle) throw new Error("Vehicle not found");
+    
+    return prisma.vehicle.update({
+        where: { id_: vehicleId },
+        data: {
+            archived_at: null,
+            is_active: true,
+        },
         include: {
             vehicle_make: true,
             vehicle_model: true,

@@ -120,3 +120,23 @@ export async function deleteVehicle(req, res) {
         res.status(400).json({ message: error.message})
     }
 }
+
+export async function archiveVehicle(req, res) {
+    try {
+        const { id } = req.params;
+        const result = await vehicleService.archiveVehicle(id);
+        res.json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function unarchiveVehicle(req, res) {
+    try {
+        const { id } = req.params;
+        const result = await vehicleService.unarchiveVehicle(id);
+        res.json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}

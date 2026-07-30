@@ -24,35 +24,6 @@ model manager {
   createdAt  		 DateTime   @default(now())
 }
 
-model vehicle_make {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique @db.Text
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  
-  vehicles   vehicle[]
-  
-  @@map("vehicle_make")
-}
-
-model vehicle_model {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique @db.Text
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  
-  vehicles   vehicle[]
-  
-  @@map("vehicle_model")
-}
-
-enum VehicleType {
-  VAN
-  MOTORCYCLE
-  CAR
-  TRUCK
-  BUS
-  OTHER
-}
-
 model route {
   id_                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
   name                  String     @unique @default(uuid())
@@ -106,10 +77,40 @@ model agent_profile {
   @@map("agent_profile")
 }
 
+model vehicle_make {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_make")
+}
+
+model vehicle_model {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_model")
+}
+
+enum VehicleType {
+  VAN
+  MOTORCYCLE
+  CAR
+  TRUCK
+  BUS
+  OTHER
+}
+
 model vehicle {
   id_                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at         DateTime  @default(now()) @db.Timestamptz(6)
   updated_at         DateTime  @updatedAt @db.Timestamptz(6)
+  archived_at        DateTime?  @db.Timestamptz(6)
   deleted_at         DateTime? @db.Timestamptz(6)
   plate_number       String    @db.Text
   year               Int
@@ -117,8 +118,7 @@ model vehicle {
   weight_capacity    Int?      // in kg
   initial_odometer   Int
   last_odometer      Float?
-  expected_kml       Int
-  target_efficiency  Float?    // km/L
+  expected_kml       Int      //  km/L
   conduction_sticker String?   @db.Text
   is_active          Boolean   @default(true)
 
