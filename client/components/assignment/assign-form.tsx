@@ -48,7 +48,7 @@ export default function AssignmentForm({
             <button
                 onClick={() => setOpen((p) => !p)}
                 className="flex items-center -mt-2 gap-2 px-3.5 py-1.5 text-sm font-semibold rounded-lg border border-border bg-card 
-                    text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300"
+                    text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
             >
                 <Plus size={16} />
                 New Assignment
