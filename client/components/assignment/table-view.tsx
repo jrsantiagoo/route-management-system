@@ -28,7 +28,7 @@ interface TableViewProps {
     trips: Trip[];
 
     onView?: (tripId: string) => void;
-    onEdit?: (tripId: string) => void;
+    onEdit?: (trip: Trip) => void;
     onArchive?: (tripId: string) => void;
 }
 
@@ -334,8 +334,10 @@ export default function TableView({
                                                 {
                                                     label: "Edit",
                                                     icon: <PenLine size={15} />,
-                                                    onClick: () =>
-                                                        setActiveMenu(null),
+                                                    onClick: () => {
+                                                        onEdit?.(t);
+                                                        setActiveMenu(null);
+                                                    },
                                                 },
                                                 {
                                                     label: "Archive",
