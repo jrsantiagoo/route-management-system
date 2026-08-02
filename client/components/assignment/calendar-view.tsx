@@ -7,6 +7,7 @@ import {
     ChevronRight,
     Search,
     User,
+    X,
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
@@ -281,7 +282,7 @@ export default function CalendarView({
                                                                     dark:hover:bg-muted-foreground transition shrink-0 leading-none"
                                                                 title="Remove assignment"
                                                             >
-                                                                x
+                                                                <X size={12} />
                                                             </button>
                                                         </div>
                                                     ))}
