@@ -26,16 +26,15 @@ export const TableActionsMenu = forwardRef<
     HTMLDivElement,
     TableActionsMenuProps
 >(({ actions, anchor }, ref) => {
-    // Renders menu in a portal with fixed viewport positioning
-    // to prevent clipping by overflow
+    // Prevents menu from clipping by overflow by rendering in a portal
+    // with fixed viewport positioning
     const [top, setTop] = useState<number | null>(null);
 
     useLayoutEffect(() => {
         const el = (ref as RefObject<HTMLDivElement>).current;
         if (!el) return;
         const { height } = el.getBoundingClientRect();
-        // Open widget below the button by default;
-        // Flips widget above the button if menu overflow the bottom of the viewport
+        // Adjusts widget location (down/up) if widget overflows the bottom of the viewport
         const down = anchor.bottom + 4;
         if (down + height > window.innerHeight - 8) {
             const above = anchor.top - 4 - height;
