@@ -19,10 +19,11 @@ export default function Toast({
         return () => clearTimeout(t);
     }, [onDismiss, durationMs]);
 
-    const positionStyle =
-        position === "top-right"
-            ? { top: "24px", bottom: "auto" as const, right: "24px" }
-            : { bottom: "24px", top: "auto" as const, right: "24px" };
+    const positionStyle = {
+        bottom: "24px",
+        top: "auto" as const,
+        right: "24px",
+    };
 
     return (
         <div

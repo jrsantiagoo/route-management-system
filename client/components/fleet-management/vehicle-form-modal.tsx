@@ -317,13 +317,7 @@ export default function VehicleFormModal({
                                 <FormSelect
                                     value={status}
                                     onChange={setStatus}
-                                    options={[
-                                        "EN ROUTE",
-                                        "STANDBY",
-                                        "ACTIVE",
-                                        "INACTIVE",
-                                        "RESERVED",
-                                    ]}
+                                    options={["ACTIVE", "INACTIVE"]}
                                     placeholder="Select status"
                                     icon={<Activity size={19} />}
                                 />

@@ -57,7 +57,7 @@ export default function FleetManagement() {
             {toast && (
                 <Toast
                     message={toast}
-                    position="top-right"
+                    position="bottom-right"
                     onDismiss={() => setToast(null)}
                 />
             )}

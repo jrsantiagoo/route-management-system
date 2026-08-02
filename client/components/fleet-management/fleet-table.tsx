@@ -23,13 +23,17 @@ import StatusBadge from "@/components/ui/status-badge";
 
 interface VehicleProps {
     vehicles: Vehicle[];
-    onEdit?: (vehicle: Vehicle) => void;
     onView?: (vehicle: Vehicle) => void;
+    onEdit?: (vehicle: Vehicle) => void;
     onArchive?: (vehicle: Vehicle) => void;
-    // onDeleted: (tripId: string) => void;
 }
 
-export default function FleetTable({ vehicles, onEdit, onView, onArchive }: VehicleProps) {
+export default function FleetTable({
+    vehicles,
+    onEdit,
+    onView,
+    onArchive,
+}: VehicleProps) {
     const [search, setSearch] = useState("");
     const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");

@@ -14,6 +14,7 @@ import {
     User,
     Fuel,
     Ellipsis,
+    Van,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
@@ -25,7 +26,10 @@ import StatusBadge from "@/components/ui/status-badge";
 
 interface TableViewProps {
     trips: Trip[];
-    onDeleted: (tripId: string) => void;
+
+    onView?: (tripId: string) => void;
+    onEdit?: (tripId: string) => void;
+    onArchive?: (tripId: string) => void;
 }
 
 function formatDate(iso: string) {
@@ -37,7 +41,12 @@ function formatDate(iso: string) {
     });
 }
 
-export default function TableView({ trips, onDeleted }: TableViewProps) {
+export default function TableView({
+    trips,
+    onView,
+    onEdit,
+    onArchive,
+}: TableViewProps) {
     const [search, setSearch] = useState("");
     const [routeFilter, setRouteFilter] = useState("All");
     const [driverFilter, setDriverFilter] = useState("All");
@@ -97,10 +106,10 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                 return t.route?.name ?? "";
             case "driver":
                 return t.agent_profile?.driver_id ?? "";
+            case "vehicle":
+                return "";
             case "purpose":
                 return t.purpose ?? "";
-            case "destination":
-                return t.destination ?? "";
             case "fuelConsumed":
                 return "";
             case "scheduled_date":
@@ -205,22 +214,22 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 Driver
                             </SortableHeader>
                             <SortableHeader
+                                sortKey="vehicle"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Van
+                                    size={16}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Vehicle
+                            </SortableHeader>
+                            <SortableHeader
                                 sortKey="purpose"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
                                 Purpose
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="destination"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <MapPinned
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Destination
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="fuelConsumed"
@@ -279,11 +288,9 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {t.agent_profile?.driver_id || "Unassigned"}
                                 </td>
+                                <td className="px-3 py-2">{"—"}</td>
                                 <td className="px-3 py-2">
                                     {t.purpose || "—"}
-                                </td>
-                                <td className="px-3 py-2">
-                                    {t.destination || "—"}
                                 </td>
                                 <td className="px-3 py-2">—</td>
                                 <td className="px-3 py-2">
@@ -292,7 +299,9 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                 <td className="px-3 py-2">
                                     {formatDate(t.created_at)}
                                 </td>
-                                <td className="px-3 py-2"><StatusBadge status={t.status} /></td>
+                                <td className="px-3 py-2">
+                                    <StatusBadge status={t.status} />
+                                </td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
                                         onClick={() =>
@@ -315,6 +324,14 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                             ref={menuRef}
                                             actions={[
                                                 {
+                                                    label: "View",
+                                                    icon: <Eye size={15} />,
+                                                    onClick: () => {
+                                                        onView?.(t.id_);
+                                                        setActiveMenu(null);
+                                                    },
+                                                },
+                                                {
                                                     label: "Edit",
                                                     icon: <PenLine size={15} />,
                                                     onClick: () =>
@@ -328,6 +345,7 @@ export default function TableView({ trips, onDeleted }: TableViewProps) {
                                                         />
                                                     ),
                                                     onClick: () => {
+                                                        onArchive?.(t.id_);
                                                         setActiveMenu(null);
                                                     },
                                                     variant: "danger",

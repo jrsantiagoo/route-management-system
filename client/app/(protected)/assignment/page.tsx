@@ -146,7 +146,7 @@ export default function Assignment() {
             {toast && (
                 <Toast
                     message={toast}
-                    position="top-right"
+                    position="bottom-right"
                     onDismiss={() => setToast(null)}
                 />
             )}
