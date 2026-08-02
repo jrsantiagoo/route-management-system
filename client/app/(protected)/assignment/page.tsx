@@ -26,6 +26,8 @@ export default function Assignment() {
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
     const [editTarget, setEditTarget] = useState<Trip | null>(null);
+    // Tracks which trips are archived so the table can split Active/Archived
+    const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
     useEffect(() => {
         async function loadData() {
@@ -62,6 +64,18 @@ export default function Assignment() {
         } catch (error) {
             console.error("Failed to delete trip:", error);
         }
+    }, []);
+
+    // Move a trip to the archived list
+    const handleArchiveTrip = useCallback((tripId: string) => {
+        setArchivedIds((prev) => [...prev, tripId]);
+        setToast("Assignment archived.");
+    }, []);
+
+    // Restore a trip from the archived list
+    const handleUnarchiveTrip = useCallback((tripId: string) => {
+        setArchivedIds((prev) => prev.filter((id) => id !== tripId));
+        setToast("Assignment unarchived.");
     }, []);
 
     // Close the edit modal and confirm the update
@@ -152,8 +166,10 @@ export default function Assignment() {
             {viewMode === "table" && (
                 <TableView
                     trips={trips}
+                    archivedIds={archivedIds}
                     onEdit={setEditTarget}
-                    onArchive={handleDeleteTrip}
+                    onArchive={handleArchiveTrip}
+                    onUnarchive={handleUnarchiveTrip}
                 />
             )}
             {viewMode === "driver" && <DriverView items={mockDriverDayData} />}

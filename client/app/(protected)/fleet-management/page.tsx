@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import FleetTable from "@/components/fleet-management/fleet-table";
 import VehicleForm from "@/components/fleet-management/vehicle-form";
 import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
@@ -13,6 +13,28 @@ export default function FleetManagement() {
     const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
     const [viewTarget, setViewTarget] = useState<Vehicle | null>(null);
     const [toast, setToast] = useState<string | null>(null);
+    // Tracks which vehicles are archived so the table can split Active/Archived
+    const [archivedIds, setArchivedIds] = useState<string[]>([]);
+
+    // Move a vehicle to the archived list
+    const handleArchive = useCallback(
+        (vehicle: Vehicle) => {
+            setArchivedIds((prev) => [...prev, vehicle.vehicleId_]);
+            setToast("Vehicle archived.");
+        },
+        [],
+    );
+
+    // Restore a vehicle from the archived list
+    const handleUnarchive = useCallback(
+        (vehicle: Vehicle) => {
+            setArchivedIds((prev) =>
+                prev.filter((id) => id !== vehicle.vehicleId_),
+            );
+            setToast("Vehicle unarchived.");
+        },
+        [],
+    );
 
     return (
         <div className="flex flex-col gap-6">
@@ -31,9 +53,11 @@ export default function FleetManagement() {
             />
             <FleetTable
                 vehicles={mockVehicleData}
+                archivedIds={archivedIds}
                 onEdit={setEditTarget}
                 onView={setViewTarget}
-                onArchive={() => setToast("Vehicle archived.")}
+                onArchive={handleArchive}
+                onUnarchive={handleUnarchive}
             />
 
             {editTarget && (

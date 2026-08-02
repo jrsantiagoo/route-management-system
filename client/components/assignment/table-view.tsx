@@ -15,6 +15,7 @@ import {
     Fuel,
     Ellipsis,
     Van,
+    RotateCcw,
 } from "lucide-react";
 import type { Trip } from "@/lib/routing/types";
 import { useSort } from "@/lib/hooks/useSort";
@@ -26,10 +27,12 @@ import StatusBadge from "@/components/ui/status-badge";
 
 interface TableViewProps {
     trips: Trip[];
+    archivedIds?: string[];
 
     onView?: (tripId: string) => void;
     onEdit?: (trip: Trip) => void;
     onArchive?: (tripId: string) => void;
+    onUnarchive?: (tripId: string) => void;
 }
 
 function formatDate(iso: string) {
@@ -43,11 +46,15 @@ function formatDate(iso: string) {
 
 export default function TableView({
     trips,
+    archivedIds,
     onView,
     onEdit,
     onArchive,
+    onUnarchive,
 }: TableViewProps) {
     const [search, setSearch] = useState("");
+    // Toggles between the Active and Archived views
+    const [view, setView] = useState<"active" | "archived">("active");
     const [routeFilter, setRouteFilter] = useState("All");
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
@@ -73,31 +80,36 @@ export default function TableView({
     ] as string[];
     const statusOptions = [...new Set(trips.map((t) => t.status))];
 
-    // Filter trips by route name or driver ID
-    const filtered = trips.filter((t) => {
-        const q = search.toLowerCase();
-        const matchesSearch =
-            t.route?.name?.toLowerCase().includes(q) ||
-            t.agent_profile?.driver_id?.toLowerCase().includes(q) ||
-            false;
-        const matchesRoute =
-            routeFilter === "All" || t.route?.name === routeFilter;
-        const matchesDriver =
-            driverFilter === "All" ||
-            t.agent_profile?.driver_id === driverFilter;
-        const matchesScheduled =
-            scheduledFilter === "All" ||
-            formatDate(t.scheduled_date) === scheduledFilter;
-        const matchesStatus =
-            statusFilter === "All" || t.status === statusFilter;
-        return (
-            matchesSearch &&
-            matchesRoute &&
-            matchesDriver &&
-            matchesScheduled &&
-            matchesStatus
-        );
-    });
+    // Used to determine whether a trip belongs to the Active or Archived view
+    const isArchived = (t: Trip) => archivedIds?.includes(t.id_) ?? false;
+
+    // Filter trips by the selected view, then by route name or driver ID
+    const filtered = trips
+        .filter((t) => (view === "archived" ? isArchived(t) : !isArchived(t)))
+        .filter((t) => {
+            const q = search.toLowerCase();
+            const matchesSearch =
+                t.route?.name?.toLowerCase().includes(q) ||
+                t.agent_profile?.driver_id?.toLowerCase().includes(q) ||
+                false;
+            const matchesRoute =
+                routeFilter === "All" || t.route?.name === routeFilter;
+            const matchesDriver =
+                driverFilter === "All" ||
+                t.agent_profile?.driver_id === driverFilter;
+            const matchesScheduled =
+                scheduledFilter === "All" ||
+                formatDate(t.scheduled_date) === scheduledFilter;
+            const matchesStatus =
+                statusFilter === "All" || t.status === statusFilter;
+            return (
+                matchesSearch &&
+                matchesRoute &&
+                matchesDriver &&
+                matchesScheduled &&
+                matchesStatus
+            );
+        });
 
     // Sort trips by the currently active column
     const getTripVal = useCallback((t: Trip, key: string) => {
@@ -140,20 +152,41 @@ export default function TableView({
                     <h3 className="mt-1 text-foreground">All Assignments</h3>
                 </div>
 
-                {/* Filtered Search */}
-                <div className="relative">
-                    <Search
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search by routes or drivers..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
-                            focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                    />
+                {/* Active / Archived toggle + Filtered Search */}
+                <div className="flex items-center gap-2">
+                    {/* Active / Archived toggle */}
+                    <div className="flex items-center rounded-lg border border-border bg-card">
+                        {(["active", "archived"] as const).map((v) => (
+                            <button
+                                key={v}
+                                onClick={() => setView(v)}
+                                className={`flex items-center px-3.5 py-1.5 text-sm font-semibold rounded-md transition capitalize
+                                    ${
+                                        view === v
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    }`}
+                            >
+                                {v}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Filtered Search */}
+                    <div className="relative">
+                        <Search
+                            size={14}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Search by routes or drivers..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                                focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -340,17 +373,32 @@ export default function TableView({
                                                     },
                                                 },
                                                 {
-                                                    label: "Archive",
-                                                    icon: (
-                                                        <ArchiveIcon
-                                                            size={15}
-                                                        />
-                                                    ),
+                                                    label:
+                                                        view === "archived"
+                                                            ? "Unarchive"
+                                                            : "Archive",
+                                                    icon:
+                                                        view === "archived" ? (
+                                                            <RotateCcw
+                                                                size={15}
+                                                            />
+                                                        ) : (
+                                                            <ArchiveIcon
+                                                                size={15}
+                                                            />
+                                                        ),
                                                     onClick: () => {
-                                                        onArchive?.(t.id_);
+                                                        if (
+                                                            view === "archived"
+                                                        ) {
+                                                            onUnarchive?.(
+                                                                t.id_,
+                                                            );
+                                                        } else {
+                                                            onArchive?.(t.id_);
+                                                        }
                                                         setActiveMenu(null);
                                                     },
-                                                    variant: "danger",
                                                 },
                                             ]}
                                         />
@@ -361,10 +409,12 @@ export default function TableView({
                         {filtered.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={9}
                                     className="px-3 py-8 text-center text-foreground"
                                 >
-                                    No assignments found.
+                                    {view === "archived"
+                                        ? "No archived assignments."
+                                        : "No assignments found."}
                                 </td>
                             </tr>
                         )}
