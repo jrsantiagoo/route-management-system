@@ -188,7 +188,7 @@ export default function TableView({
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 bg-card">
+                    <thead className="sticky top-0 z-10 bg-card">
                         <tr>
                             <SortableHeader
                                 sortKey="route"
