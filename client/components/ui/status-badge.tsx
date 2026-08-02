@@ -7,7 +7,7 @@ interface StatusBadgeProps {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; fg: string; bd: string }> = {
-    "EN ROUTE": { bg: "#eff6ff", fg: "#1d4ed8", bd: "#bfdbfe" },
+    "IN PROGRESS": { bg: "#eff6ff", fg: "#1d4ed8", bd: "#bfdbfe" },
     STANDBY: { bg: "#fefce8", fg: "#a16207", bd: "#fef08a" },
     ACTIVE: { bg: "#f0fdf4", fg: "#15803d", bd: "#bbf7d0" },
     INACTIVE: { bg: "#f8fafc", fg: "#64748b", bd: "#e2e8f0" },
@@ -22,7 +22,7 @@ const STATUS_COLORS_DARK: Record<
     string,
     { bg: string; fg: string; bd: string }
 > = {
-    "EN ROUTE": {
+    "IN PROGRESS": {
         bg: "rgba(59,130,246,0.15)",
         fg: "#93c5fd",
         bd: "rgba(59,130,246,0.35)",

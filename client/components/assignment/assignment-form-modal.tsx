@@ -38,6 +38,7 @@ export default function AssignmentFormModal({
             ? initialData.scheduled_date.split("T")[0]
             : new Date().toISOString().split("T")[0],
     );
+    const [status, setStatus] = useState(initialData?.status ?? "");
 
     // Used to help identify if all required fields are filled
     const allFieldsFilled =
@@ -150,8 +151,7 @@ export default function AssignmentFormModal({
                         </div>
                         <div className="flex flex-col gap-1 w-50">
                             <label className="text-sm font-semibold text-foreground">
-                                Purpose{" "}
-                                <span className="text-red-500">*</span>
+                                Purpose <span className="text-red-500">*</span>
                             </label>
                             <FormSelect
                                 value={selectedPurpose}
@@ -202,6 +202,25 @@ export default function AssignmentFormModal({
                                 />
                             </div>
                         </div>
+
+                        {isEdit && (
+                            <div className="flex flex-col gap-1 w-50">
+                                <label className="text-sm font-semibold text-foreground">
+                                    Status{" "}
+                                    <span className="text-red-500">*</span>
+                                </label>
+                                <FormSelect
+                                    value={status}
+                                    onChange={setStatus}
+                                    options={[
+                                        "PENDING",
+                                        "IN PROGRESS",
+                                        "COMPLETED",
+                                    ]}
+                                    placeholder="Select status"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Optional Notes */}
