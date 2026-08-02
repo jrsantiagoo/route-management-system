@@ -16,7 +16,7 @@ import type { Vehicle } from "@/lib/fleet-management/mockData";
 interface VehicleFormModalProps {
     initialData?: Vehicle | null;
     onClose: () => void;
-    onSave: (data: Partial<Vehicle>) => void;
+    onSave: (data: Partial<Vehicle>) => void | Promise<void>;
 }
 
 export default function VehicleFormModal({
@@ -48,6 +48,7 @@ export default function VehicleFormModal({
         initialData?.year ? String(initialData.year) : "",
     );
     const [status, setStatus] = useState(initialData?.status ?? "");
+    const [saving, setSaving] = useState(false);
 
     // Used to help identify if all required fields are filled
     const allFieldsFilled =
@@ -79,18 +80,24 @@ export default function VehicleFormModal({
         onClose();
     }
 
-    function handleSubmit(e: React.SubmitEvent) {
+    async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
-        onSave({
-            plateNumber,
-            vehicleType,
-            target: Number(targetEfficiency),
-            vehicleMaker,
-            vehicleModel,
-            initOdometer: Number(initOdometer),
-            year: Number(selectedYear),
-            ...(isEdit && { status }),
-        });
+        setSaving(true);
+        try {
+            await onSave({
+                plateNumber,
+                vehicleType,
+                target: Number(targetEfficiency),
+                vehicleMaker,
+                vehicleModel,
+                initOdometer: Number(initOdometer),
+                year: Number(selectedYear),
+                ...(isEdit && { status }),
+            });
+        } finally {
+            // Closes Modal if saving is successful.
+            setSaving(false);
+        }
     }
 
     return (
@@ -335,15 +342,22 @@ export default function VehicleFormModal({
                         </button>
                         <button
                             type="submit"
-                            disabled={!allFieldsFilled}
+                            disabled={!allFieldsFilled || saving}
                             className={`px-5 py-1.5 text-md rounded-md transition duration-350 
                                 ${
                                     allFieldsFilled
                                         ? "bg-primary text-primary-foreground hover:bg-secondary"
                                         : "bg-muted-foreground text-background cursor-not-allowed"
-                                }`}
+                                }
+                                ${saving ? "cursor-not-allowed" : ""}
+                            `}
                         >
-                            {isEdit ? "Save changes" : "Add vehicle"}
+                            {/* Swaps label if 'submit' is clicked or in edit mode*/}
+                            {saving
+                                ? "Saving..."
+                                : isEdit
+                                  ? "Save changes"
+                                  : "Add vehicle"}
                         </button>
                     </div>
                 </form>

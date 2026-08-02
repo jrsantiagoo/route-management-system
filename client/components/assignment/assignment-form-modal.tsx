@@ -10,7 +10,7 @@ interface AssignmentFormModalProps {
     routeOptions: RoutePlan[];
     driverOptions: Driver[];
     onClose: () => void;
-    onSave: (data: Partial<Trip>) => void;
+    onSave: (data: Partial<Trip>) => void | Promise<void>;
 }
 
 export default function AssignmentFormModal({
@@ -39,6 +39,7 @@ export default function AssignmentFormModal({
             : new Date().toISOString().split("T")[0],
     );
     const [status, setStatus] = useState(initialData?.status ?? "");
+    const [saving, setSaving] = useState(false);
 
     // Used to help identify if all required fields are filled
     const allFieldsFilled =
@@ -59,16 +60,22 @@ export default function AssignmentFormModal({
     }
 
     // Build a partial Trip from the selected form values and pass it up
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
-        onSave({
-            route: routeOptions.find((r) => r.name === selectedRoute),
-            agent_profile: driverOptions.find(
-                (d) => d.driver_id === selectedDriver,
-            ),
-            purpose: selectedPurpose,
-            scheduled_date: date,
-        });
+        setSaving(true);
+        try {
+            await onSave({
+                route: routeOptions.find((r) => r.name === selectedRoute),
+                agent_profile: driverOptions.find(
+                    (d) => d.driver_id === selectedDriver,
+                ),
+                purpose: selectedPurpose,
+                scheduled_date: date,
+            });
+        } finally {
+            // Closes Modal if saving is successful.
+            setSaving(false);
+        }
     }
 
     return (
@@ -252,15 +259,22 @@ export default function AssignmentFormModal({
                         </button>
                         <button
                             type="submit"
-                            disabled={!allFieldsFilled}
+                            disabled={!allFieldsFilled || saving}
                             className={`px-5.5 py-1.5 text-md rounded-md transition duration-350 
                                 ${
                                     allFieldsFilled
                                         ? "bg-primary text-primary-foreground hover:bg-secondary"
                                         : "bg-muted-foreground text-background cursor-not-allowed"
-                                }`}
+                                }
+                                ${saving ? "cursor-not-allowed" : ""}
+                            `}
                         >
-                            {isEdit ? "Save changes" : "Create"}
+                            {/* Swaps label if 'submit' is clicked or in edit mode*/}
+                            {saving
+                                ? "Saving..."
+                                : isEdit
+                                  ? "Save changes"
+                                  : "Create"}
                         </button>
                     </div>
                 </form>
