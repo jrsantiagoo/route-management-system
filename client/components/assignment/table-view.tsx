@@ -399,6 +399,7 @@ export default function TableView({
                                                         }
                                                         setActiveMenu(null);
                                                     },
+                                                    variant: "danger",
                                                 },
                                             ]}
                                         />

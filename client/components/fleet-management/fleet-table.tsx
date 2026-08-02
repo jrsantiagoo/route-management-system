@@ -366,6 +366,7 @@ export default function FleetTable({
                                                         }
                                                         setActiveMenu(null);
                                                     },
+                                                    variant: "danger",
                                                 },
                                             ]}
                                         />
