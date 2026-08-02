@@ -59,7 +59,8 @@ export default function TableView({
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
-    const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
+    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
+        useTableActionsMenu();
 
     // Needed for filtering options
     const routeOptions = [
@@ -337,13 +338,7 @@ export default function TableView({
                                 </td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
-                                        onClick={() =>
-                                            setActiveMenu(
-                                                activeMenu === t.id_
-                                                    ? null
-                                                    : t.id_,
-                                            )
-                                        }
+                                        onClick={(e) => openMenu(t.id_, e)}
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
@@ -352,9 +347,11 @@ export default function TableView({
                                         <Ellipsis size={16} />
                                     </button>
 
-                                    {activeMenu === t.id_ && (
+                                    {activeMenu === t.id_ && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
+                                            // Menu renders in a viewport-fixed portal so it pops out of the scroll container
+                                            anchor={anchor}
                                             actions={[
                                                 {
                                                     label: "View",

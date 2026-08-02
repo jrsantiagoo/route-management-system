@@ -42,7 +42,8 @@ export default function FleetTable({
     const [search, setSearch] = useState("");
     // Toggles between the Active and Archived views
     const [view, setView] = useState<"active" | "archived">("active");
-    const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
+    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
+        useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");
     // const [driverFilter, setDriverFilter] = useState("All");
     // const [scheduledFilter, setScheduledFilter] = useState("All");
@@ -306,12 +307,8 @@ export default function FleetTable({
                                 </td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
-                                        onClick={() =>
-                                            setActiveMenu(
-                                                activeMenu === v.vehicleId_
-                                                    ? null
-                                                    : v.vehicleId_,
-                                            )
+                                        onClick={(e) =>
+                                            openMenu(v.vehicleId_, e)
                                         }
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
@@ -321,9 +318,11 @@ export default function FleetTable({
                                         <Ellipsis size={16} />
                                     </button>
 
-                                    {activeMenu === v.vehicleId_ && (
+                                    {activeMenu === v.vehicleId_ && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
+                                            // Menu renders in a viewport-fixed portal so it pops out of the scroll container
+                                            anchor={anchor}
                                             actions={[
                                                 {
                                                     label: "View",
