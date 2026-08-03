@@ -61,8 +61,8 @@ export default function RouteOrderingPanel({
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
-        const oldIdx = stops.findIndex((s) => s.id === active.id);
-        const newIdx = stops.findIndex((s) => s.id === over.id);
+        const oldIdx = stops.findIndex((s) => s.id_ === active.id);
+        const newIdx = stops.findIndex((s) => s.id_ === over.id);
         if (oldIdx < 0 || newIdx < 0) return;
         onReorder(arrayMove(stops, oldIdx, newIdx));
     }
@@ -150,15 +150,15 @@ export default function RouteOrderingPanel({
                     onDragEnd={handleDragEnd}
                 >
                     <SortableContext
-                        items={stops.map((s) => s.id)}
+                        items={stops.map((s) => s.id_)}
                         strategy={verticalListSortingStrategy}
                     >
                         {stops.map((stop, idx) => {
                             const seg =
-                                idx > 0 ? segmentBefore(stop.id) : undefined;
+                                idx > 0 ? segmentBefore(stop.id_) : undefined;
                             return (
                                 <SortableStopItem
-                                    key={stop.id}
+                                    key={stop.id_}
                                     stop={stop}
                                     role={getRole(idx)}
                                     stopNumber={idx}
