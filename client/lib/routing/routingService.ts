@@ -42,8 +42,8 @@ export async function fetchRoute(stops: Stop[]): Promise<FetchRouteResult> {
     const route = data.routes[0];
 
     const segments: RouteSegment[] = route.legs.map((leg, i) => ({
-        fromId: stops[i].id,
-        toId: stops[i + 1].id,
+        fromId: stops[i].id_,
+        toId: stops[i + 1].id_,
         distanceKm: leg.distance / 1000,
         durationMinutes: leg.duration / 60,
     }));

@@ -45,10 +45,10 @@ export async function updateStops(id_, stops) {
             data: {
                 stops: {
                     createMany: {
-                        data: stops.map((stop) => ({
+                        data: stops.map((stop, i) => ({
                             name: stop.name,
                             address: stop.address,
-                            order: stop.order,
+                            order: i,
                             lat: stop.lat,
                             lng: stop.lng,
                         })),
