@@ -129,7 +129,6 @@ export default function CreateRouteModal({
             totalDistanceKm,
             totalDurationMinutes,
             vehicleType: recommendVehicle(stops.length),
-            //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
             archivedAt: editingRoute?.archivedAt ?? undefined,
         };

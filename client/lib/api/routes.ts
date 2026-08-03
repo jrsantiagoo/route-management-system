@@ -1,4 +1,4 @@
-import { RoutePlan } from "../routing/types";
+import { RoutePlan, Stop } from "../routing/types";
 import { apiCall } from "./client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -12,6 +12,17 @@ export async function createRoute(route: RoutePlan) {
     const response = await apiCall("/api/routes", {
         method: "POST",
         body: JSON.stringify(route),
+    });
+    return response.json();
+}
+
+export async function updateRoute(route: RoutePlan) {
+    const response = await apiCall(`/api/routes/update-stops/${route.id_}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            name: route.name,
+            stops: route.stops,
+        }),
     });
     return response.json();
 }

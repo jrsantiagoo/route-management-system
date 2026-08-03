@@ -20,6 +20,26 @@ export async function createRoute(req, res) {
     }
 }
 
+export async function updateRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const name = req.body.name;
+        const stops = route.stops;
+        let updatedRoute;
+
+        if (name) {
+            updatedRoute = await routeService.updateRouteName(id_, name);
+        }
+        if (stops) {
+            updatedRoute = await routeService.updateStops(id_, stops);
+        }
+
+        res.archiveRoute.json({ success: true, data: updatedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export async function archiveRoute(req, res) {
     try {
         const id_ = req.params.id_;

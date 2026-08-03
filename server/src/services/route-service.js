@@ -31,6 +31,41 @@ export async function createRoute(route) {
     });
 }
 
+export async function updateStops(id_, stops) {
+    return prisma.$transaction(async (tx) => {
+        await tx.stop.deleteMany({
+            where: { route_id_: id_ },
+        });
+
+        return tx.route.update({
+            where: { id_ },
+            data: {
+                stops: {
+                    createMany: {
+                        data: stops.map((stop) => ({
+                            name: stop.name,
+                            address: stop.address,
+                            order: stop.order,
+                            lat: stop.lat,
+                            lng: stop.lng,
+                        })),
+                    },
+                },
+            },
+            include: {
+                stops: true,
+            },
+        });
+    });
+}
+
+export async function updateRouteName(id_, name) {
+    return prisma.route.update({
+        where: { id_: id_ },
+        data: { name: name },
+    });
+}
+
 export async function archiveRoute(id_) {
     return prisma.route.update({
         where: { id_: id_ },
