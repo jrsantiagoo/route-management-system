@@ -8,5 +8,6 @@ router.get("/", authenticate, routeController.getAllRoutes);
 router.post("/", authenticate, routeController.createRoute);
 router.patch("/archive/:id_", authenticate, routeController.archiveRoute);
 router.patch("/unarchive/:id_", authenticate, routeController.unarchiveRoute);
+router.delete("/delete/:id_", authenticate, routeController.deleteRoute);
 
 export default router;

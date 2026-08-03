@@ -41,3 +41,14 @@ export async function unarchiveRoute(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function deleteRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const deletedRoute = await routeService.deleteRoute(id_);
+
+        res.json({ success: true, data: deletedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}

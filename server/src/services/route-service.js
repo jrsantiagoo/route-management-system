@@ -48,3 +48,16 @@ export async function unarchiveRoute(id_) {
         },
     });
 }
+
+export async function deleteRoute(id_) {
+    const tripCount = await prisma.trip.count({ where: { route_id_: id_ } });
+    if (tripCount > 0) {
+        throw new Error(
+            `Cannot delete route: ${tripCount} trip(s) are still linked to it.`,
+        );
+    }
+
+    return prisma.route.delete({
+        where: { id_: id_ },
+    });
+}

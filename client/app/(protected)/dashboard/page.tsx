@@ -164,7 +164,7 @@ export default function Dashboard() {
                     <TrendingDown size={24} className="text-red-500" />
                 )}
                 {isEfficiencyPositive ? "+" : ""}
-                {efficiencyChange}km/L compared to {comparisonLabel}
+                {efficiencyChange} km/L compared to {comparisonLabel}
             </>
         );
 
