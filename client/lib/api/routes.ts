@@ -17,12 +17,9 @@ export async function createRoute(route: RoutePlan) {
 }
 
 export async function updateRoute(route: RoutePlan) {
-    const response = await apiCall(`/api/routes/update-stops/${route.id_}`, {
+    const response = await apiCall(`/api/routes/update/${route.id_}`, {
         method: "PATCH",
-        body: JSON.stringify({
-            name: route.name,
-            stops: route.stops,
-        }),
+        body: JSON.stringify(route),
     });
     return response.json();
 }

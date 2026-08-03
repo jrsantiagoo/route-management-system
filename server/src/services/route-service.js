@@ -5,6 +5,9 @@ export async function getAllRoutes() {
         include: {
             stops: true,
         },
+        orderBy: {
+            createdAt: "desc",
+        },
     });
 }
 
@@ -59,10 +62,15 @@ export async function updateStops(id_, stops) {
     });
 }
 
-export async function updateRouteName(id_, name) {
+export async function updateRouteDetails(route) {
     return prisma.route.update({
-        where: { id_: id_ },
-        data: { name: name },
+        where: { id_: route.id_ },
+        data: {
+            name: route.name,
+            totalDistanceKm: route.totalDistanceKm,
+            totalDurationMinutes: route.totalDurationMinutes,
+            vehicleType: route.vehicleType,
+        },
     });
 }
 
