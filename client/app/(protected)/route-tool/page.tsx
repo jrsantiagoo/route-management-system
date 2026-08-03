@@ -100,12 +100,22 @@ export default function RouteCreationPage() {
         }
     }
 
-    function confirmDelete() {
+    async function confirmDelete() {
         if (!deleteTarget) return;
-        deleteRoute(deleteTarget.id_);
+        try {
+            const res = await routeApi.deleteRoute(deleteTarget);
+            if (res.success) {
+                reload();
+                setToast("Route deleted.");
+            } else {
+                console.log("Failed to delete route:", res);
+                alert(res.message || "Failed to delete route.");
+            }
+        } catch (err) {
+            console.error("Failed to delete route:", err);
+            alert("Could not reach the server.");
+        }
         setDeleteTarget(null);
-        reload();
-        setToast("Route deleted.");
     }
 
     // Names of other routes — lets an edited route keep its own name.

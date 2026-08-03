@@ -29,3 +29,10 @@ export async function unarchiveRoute(route: RoutePlan) {
     });
     return response.json();
 }
+
+export async function deleteRoute(route: RoutePlan) {
+    const response = await apiCall(`/api/routes/delete/${route.id_}`, {
+        method: "DELETE",
+    });
+    return response.json();
+}
