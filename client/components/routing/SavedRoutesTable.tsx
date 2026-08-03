@@ -450,7 +450,7 @@ function RouteRow({
                         aria-expanded={expanded}
                         title="Show all stops"
                     >
-                        <span>{stopsSummary(route)}</span>
+                        <span>{route.stops.length}</span>
                         <svg
                             width="14"
                             height="14"

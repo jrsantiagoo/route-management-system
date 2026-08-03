@@ -41,7 +41,7 @@ export async function updateStops(id_, stops) {
         });
 
         return tx.route.update({
-            where: { id_ },
+            where: { id_: id_ },
             data: {
                 stops: {
                     createMany: {
