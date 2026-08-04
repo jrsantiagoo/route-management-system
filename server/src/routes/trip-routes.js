@@ -10,17 +10,18 @@ import {
     deleteTrip,
     getAssignmentGrid,
 } from "../controllers/trip-controller.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", getAllTrips);
-router.post("/trips_date_range", getTripsRange);
-router.post("/", createTrip);
-router.post("/assign", assignTripToDriver);
-router.patch("/:id/status", changeTripStatus);
-router.get("/driver/:driverId", getTripsForDriver);
-router.get("/assignment-grid", getAssignmentGrid);
-router.get("/:id", getTripDetail);
-router.delete("/:id", deleteTrip);
+router.get("/", authenticate, getAllTrips);
+router.post("/trips_date_range", authenticate, getTripsRange);
+router.post("/", authenticate, createTrip);
+router.post("/assign", authenticate, assignTripToDriver);
+router.patch("/:id/status", authenticate, changeTripStatus);
+router.get("/driver/:driverId", authenticate, getTripsForDriver);
+router.get("/assignment-grid", authenticate, getAssignmentGrid);
+router.get("/:id", authenticate, getTripDetail);
+router.delete("/:id", authenticate, deleteTrip);
 
 export default router;

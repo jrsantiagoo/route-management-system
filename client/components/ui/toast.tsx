@@ -5,24 +5,31 @@ interface ToastProps {
     message: string;
     onDismiss: () => void;
     durationMs?: number;
+    position?: "bottom-right" | "top-right";
 }
 
 export default function Toast({
     message,
     onDismiss,
     durationMs = 3000,
+    position = "bottom-right",
 }: ToastProps) {
     useEffect(() => {
         const t = setTimeout(onDismiss, durationMs);
         return () => clearTimeout(t);
     }, [onDismiss, durationMs]);
 
+    const positionStyle = {
+        bottom: "24px",
+        top: "auto" as const,
+        right: "24px",
+    };
+
     return (
         <div
             style={{
                 position: "fixed",
-                bottom: "24px",
-                right: "24px",
+                ...positionStyle,
                 zIndex: 99999,
                 background: "#1f2937",
                 color: "#fff",

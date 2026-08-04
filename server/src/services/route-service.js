@@ -30,3 +30,21 @@ export async function createRoute(route) {
         },
     });
 }
+
+export async function archiveRoute(id_) {
+    return prisma.route.update({
+        where: { id_: id_ },
+        data: {
+            archivedAt: new Date(),
+        },
+    });
+}
+
+export async function unarchiveRoute(id_) {
+    return prisma.route.update({
+        where: { id_: id_ },
+        data: {
+            archivedAt: null,
+        },
+    });
+}

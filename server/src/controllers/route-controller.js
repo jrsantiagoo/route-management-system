@@ -19,3 +19,25 @@ export async function createRoute(req, res) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function archiveRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const archivedRoute = await routeService.archiveRoute(id_);
+
+        res.json({ success: true, data: archivedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function unarchiveRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const unarchivedRoute = await routeService.unarchiveRoute(id_);
+
+        res.json({ success: true, data: unarchivedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}

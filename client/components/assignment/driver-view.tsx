@@ -5,6 +5,7 @@ import { Clock, Fuel, Route, Search, User } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import { DriverDayInfo } from "@/lib/assignment/mockData";
+import StatusBadge from "../ui/status-badge";
 
 interface DriverViewProps {
     items: DriverDayInfo[];
@@ -153,7 +154,9 @@ export default function DriverView({ items }: DriverViewProps) {
                                 <td className="px-3 py-2">
                                     {d.distanceTraveled.toFixed(1)} km
                                 </td>
-                                <td className="px-3 py-2">{d.status}</td>
+                                <td className="px-3 py-2">
+                                    <StatusBadge status={d.status} />
+                                </td>
                             </tr>
                         ))}
                         {filtered.length === 0 && (
