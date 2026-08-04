@@ -97,7 +97,7 @@ export default function SavedRoutesTable({
     // Tab decides the pool (archived flag), search narrows it by name or area
     // tag, then the result is sliced into the current page.
     // ─────────────────────────────────────────────────────────────────────────
-
+    const isArchived = (r: RoutePlan) => r.archivedAt != null;
     const filtered = useMemo(() => {
         const inView = routes.filter((r) =>
             view === "archived" ? isArchived(r) : !isArchived(r),

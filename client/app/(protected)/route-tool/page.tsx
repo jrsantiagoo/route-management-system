@@ -133,7 +133,7 @@ export default function RouteCreationPage() {
 
     function confirmDelete() {
         if (!deleteTarget || deleteTarget.archived) return;
-        deleteRoute(deleteTarget.id);
+        deleteRoute(deleteTarget.id_);
         setDeleteTarget(null);
         reload();
         setToast("Route deleted.");
