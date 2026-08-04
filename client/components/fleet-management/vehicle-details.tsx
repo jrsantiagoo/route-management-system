@@ -1,19 +1,10 @@
 "use client";
 
-import {
-    Activity,
-    Building2,
-    Calendar,
-    Car,
-    Fuel,
-    Gauge,
-    User,
-    X,
-} from "lucide-react";
+import { Activity, Calendar, Car, Fuel, Gauge, User, X } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import StatusBadge from "../ui/status-badge";
 
-interface VehicleDetailsModalProps {
+interface VehicleDetailsProps {
     initialData?: Vehicle | null;
     onClose: () => void;
 }
@@ -21,7 +12,7 @@ interface VehicleDetailsModalProps {
 export default function VehicleDetailsModal({
     initialData,
     onClose,
-}: VehicleDetailsModalProps) {
+}: VehicleDetailsProps) {
     return (
         // Background Overlay
         <div

@@ -14,6 +14,7 @@ import TableView from "@/components/assignment/table-view";
 import DriverView from "@/components/assignment/driver-view";
 import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
+import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -24,6 +25,9 @@ export default function Assignment() {
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
+    const [editTarget, setEditTarget] = useState<Trip | null>(null);
+    // Tracks which trips are archived so the table can split Active/Archived
+    const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
     useEffect(() => {
         async function loadData() {
@@ -61,6 +65,27 @@ export default function Assignment() {
             console.error("Failed to delete trip:", error);
         }
     }, []);
+
+    // Move a trip to the archived list
+    const handleArchiveTrip = useCallback((tripId: string) => {
+        setArchivedIds((prev) => [...prev, tripId]);
+        setToast("Assignment archived.");
+    }, []);
+
+    // Restore a trip from the archived list
+    const handleUnarchiveTrip = useCallback((tripId: string) => {
+        setArchivedIds((prev) => prev.filter((id) => id !== tripId));
+        setToast("Assignment unarchived.");
+    }, []);
+
+    // Close the edit modal and confirm the update
+    const handleSaveTrip = useCallback(
+        (_data: Partial<Trip>) => {
+            setEditTarget(null);
+            setToast("Assignment updated successfully.");
+        },
+        [],
+    );
 
     if (loading) {
         return (
@@ -139,14 +164,30 @@ export default function Assignment() {
                 />
             )}
             {viewMode === "table" && (
-                <TableView trips={trips} onDeleted={handleDeleteTrip} />
+                <TableView
+                    trips={trips}
+                    archivedIds={archivedIds}
+                    onEdit={setEditTarget}
+                    onArchive={handleArchiveTrip}
+                    onUnarchive={handleUnarchiveTrip}
+                />
             )}
             {viewMode === "driver" && <DriverView items={mockDriverDayData} />}
+
+            {editTarget && (
+                <AssignmentFormModal
+                    initialData={editTarget}
+                    routeOptions={routes}
+                    driverOptions={drivers}
+                    onClose={() => setEditTarget(null)}
+                    onSave={handleSaveTrip}
+                />
+            )}
 
             {toast && (
                 <Toast
                     message={toast}
-                    position="top-right"
+                    position="bottom-right"
                     onDismiss={() => setToast(null)}
                 />
             )}

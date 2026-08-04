@@ -12,6 +12,7 @@ import {
     Ellipsis,
     PenLine,
     Power,
+    RotateCcw,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
@@ -23,15 +24,26 @@ import StatusBadge from "@/components/ui/status-badge";
 
 interface VehicleProps {
     vehicles: Vehicle[];
-    onEdit?: (vehicle: Vehicle) => void;
+    archivedIds?: string[];
     onView?: (vehicle: Vehicle) => void;
+    onEdit?: (vehicle: Vehicle) => void;
     onArchive?: (vehicle: Vehicle) => void;
-    // onDeleted: (tripId: string) => void;
+    onUnarchive?: (vehicle: Vehicle) => void;
 }
 
-export default function FleetTable({ vehicles, onEdit, onView, onArchive }: VehicleProps) {
+export default function FleetTable({
+    vehicles,
+    archivedIds,
+    onEdit,
+    onView,
+    onArchive,
+    onUnarchive,
+}: VehicleProps) {
     const [search, setSearch] = useState("");
-    const { activeMenu, setActiveMenu, menuRef } = useTableActionsMenu();
+    // Toggles between the Active and Archived views
+    const [view, setView] = useState<"active" | "archived">("active");
+    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
+        useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");
     // const [driverFilter, setDriverFilter] = useState("All");
     // const [scheduledFilter, setScheduledFilter] = useState("All");
@@ -57,15 +69,21 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
     ] as string[];
     const statusOptions = [...new Set(trips.map((t) => t.status))]; */
 
-    // Filter trips by route name or driver ID
-    const filtered = vehicles.filter((v) => {
-        const q = search.toLowerCase();
-        const matchesSearch =
-            v.plateNumber?.toLowerCase().includes(q) ||
-            v.vehicleType?.toLowerCase().includes(q) ||
-            false;
-        return matchesSearch;
-    });
+    // Used to determine whether a vehicle belongs to the Active or Archived view
+    const isArchived = (v: Vehicle) =>
+        archivedIds?.includes(v.vehicleId_) ?? false;
+
+    // Filter trips by the selected view, then by route name or driver ID
+    const filtered = vehicles
+        .filter((v) => (view === "archived" ? isArchived(v) : !isArchived(v)))
+        .filter((v) => {
+            const q = search.toLowerCase();
+            const matchesSearch =
+                v.plateNumber?.toLowerCase().includes(q) ||
+                v.vehicleType?.toLowerCase().includes(q) ||
+                false;
+            return matchesSearch;
+        });
 
     // Sort trips by the currently active column
     const getVehicleVal = useCallback((v: Vehicle, key: string) => {
@@ -103,20 +121,41 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
                     <h3 className="mt-1 text-foreground">Vehicle Fleet</h3>
                 </div>
 
-                {/* Filtered Search */}
-                <div className="relative">
-                    <Search
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search by vehicle..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
-                            focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                    />
+                {/* Active / Archived toggle + Filtered Search */}
+                <div className="flex items-center gap-2">
+                    {/* Active / Archived toggle */}
+                    <div className="flex items-center rounded-lg border border-border bg-card">
+                        {(["active", "archived"] as const).map((v) => (
+                            <button
+                                key={v}
+                                onClick={() => setView(v)}
+                                className={`flex items-center px-3.5 py-1.5 text-sm font-semibold rounded-md transition capitalize
+                                    ${
+                                        view === v
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    }`}
+                            >
+                                {v}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Filtered Search */}
+                    <div className="relative">
+                        <Search
+                            size={14}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Search by vehicle..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                                focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -151,7 +190,7 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 bg-card">
+                    <thead className="sticky top-0 z-10 bg-card">
                         <tr>
                             <SortableHeader
                                 sortKey="vehicle_plate"
@@ -268,12 +307,8 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
                                 </td>
                                 <td className="pl-7 px-3 py-2 relative">
                                     <button
-                                        onClick={() =>
-                                            setActiveMenu(
-                                                activeMenu === v.vehicleId_
-                                                    ? null
-                                                    : v.vehicleId_,
-                                            )
+                                        onClick={(e) =>
+                                            openMenu(v.vehicleId_, e)
                                         }
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
@@ -283,9 +318,11 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
                                         <Ellipsis size={16} />
                                     </button>
 
-                                    {activeMenu === v.vehicleId_ && (
+                                    {activeMenu === v.vehicleId_ && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
+                                            // Menu renders in a viewport-fixed portal so it pops out of the scroll container
+                                            anchor={anchor}
                                             actions={[
                                                 {
                                                     label: "View",
@@ -304,14 +341,28 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
                                                     },
                                                 },
                                                 {
-                                                    label: "Archive",
-                                                    icon: (
-                                                        <ArchiveIcon
-                                                            size={15}
-                                                        />
-                                                    ),
+                                                    label:
+                                                        view === "archived"
+                                                            ? "Unarchive"
+                                                            : "Archive",
+                                                    icon:
+                                                        view === "archived" ? (
+                                                            <RotateCcw
+                                                                size={15}
+                                                            />
+                                                        ) : (
+                                                            <ArchiveIcon
+                                                                size={15}
+                                                            />
+                                                        ),
                                                     onClick: () => {
-                                                        onArchive?.(v);
+                                                        if (
+                                                            view === "archived"
+                                                        ) {
+                                                            onUnarchive?.(v);
+                                                        } else {
+                                                            onArchive?.(v);
+                                                        }
                                                         setActiveMenu(null);
                                                     },
                                                     variant: "danger",
@@ -325,10 +376,12 @@ export default function FleetTable({ vehicles, onEdit, onView, onArchive }: Vehi
                         {filtered.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-3 py-8 text-center text-foreground"
                                 >
-                                    No vehicles found.
+                                    {view === "archived"
+                                        ? "No archived vehicles."
+                                        : "No vehicles found."}
                                 </td>
                             </tr>
                         )}
