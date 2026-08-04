@@ -63,7 +63,19 @@ export async function getAllTrips(req, res) {
         const trips = await tripService.getAllTrips();
         res.json({ success: true, data: trips });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
+    }
+}
+
+// --- GET TRIPS GIVEN A DATE RANGE
+export async function getTripsRange(req, res) {
+    try {
+        const { startDate, endDate } = req.body;
+
+        const trips = await tripService.getTripsRange(startDate, endDate);
+        res.json({ success: true, data: trips });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 }
 
@@ -74,7 +86,7 @@ export async function getTripsForDriver(req, res) {
         const trips = await tripService.getTripsByDriver(driverId);
         res.json({ success: true, data: trips });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
 }
 
@@ -99,7 +111,7 @@ export async function getTripDetail(req, res) {
         }
         res.json({ success: true, data: trip });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
 }
 
@@ -109,6 +121,6 @@ export async function getAssignmentGrid(req, res) {
         const grid = await tripService.getTripsByDriverAndDay();
         res.json({ success: true, data: grid });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
 }

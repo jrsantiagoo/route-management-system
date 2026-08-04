@@ -48,6 +48,25 @@ export async function getAllTrips() {
     });
 }
 
+export async function getTripsRange(startDate, endDate) {
+    const dateFilter = {};
+    if (startDate) dateFilter.gte = new Date(startDate);
+    if (endDate) {
+        // Set to the end of the day instead of the start of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateFilter.lte = end;
+    }
+    return prisma.trip.findMany({
+        where: {
+            ...(Object.keys(dateFilter).length > 0 && {
+                scheduled_date: dateFilter,
+            }),
+        },
+        orderBy: { scheduled_date: "asc" },
+    });
+}
+
 export async function getTripById(tripId) {
     return prisma.trip.findUnique({
         where: { id_: tripId },

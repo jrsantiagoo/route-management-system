@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 import {
     LayoutDashboard,
     Map,
     ClipboardList,
+    Van,
     Gauge,
     ChevronsLeft,
     ChevronsRight,
@@ -14,23 +15,29 @@ import {
 interface SidebarProps {
     collapsed: boolean;
     onToggle: () => void;
+    noTransition?: boolean;
 }
 
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/route-tool", label: "Routing Tool", icon: Map },
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
+    { href: "/fleet-management", label: "Fleet Management", icon: Van },
 ];
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({
+    collapsed,
+    onToggle,
+    noTransition,
+}: SidebarProps) {
     const pathname = usePathname();
 
     return (
         <div
-            className={`fixed top-0 left-0 h-screen
+            className={`fixed top-0 left-0 h-screen z-30
                 ${collapsed ? "w-20" : "w-64"} 
-                bg-background border-r border-border
-                font-semibold transition-all duration-300`}
+                bg-background border-r border-border font-semibold 
+                ${noTransition ? "transition-none" : "transition-all duration-300"}`}
         >
             {/* Route Management Tool Version Text */}
             <div
@@ -76,7 +83,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <div className="flex justify-center">
                 <button
                     onClick={onToggle}
-                    className="absolute -right-3 top-58 flex items-center justify-center 
+                    className="absolute -right-3 top-70 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
                         hover:bg-secondary dark:hover:text-primary transition duration-300"
                 >

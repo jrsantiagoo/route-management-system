@@ -18,6 +18,7 @@ export interface Stop {
 export interface Driver {
     id_: string;
     driver_id: string;
+    name?: string;
     contact_number?: string;
     license_number?: string;
 }
@@ -45,6 +46,33 @@ export interface RoutePlan {
     // setRouteArchived(); undefined on routes archived before this field
     // existed, which the Archived tab renders as "N/A".
     archivedAt?: string;
+}
+
+export interface Trip {
+    id_: string;
+    status: string;
+    tag_type: string;
+    scheduled_date: string;
+    created_at: string;
+    purpose: string;
+    destination: string;
+    driver_id_?: string;
+    route_id_: string;
+    route: RoutePlan;
+    agent_profile?: Driver;
+}
+
+export interface Order {
+    id_: string;
+    order_id: string;
+    client: string;
+    destination?: string;
+    ordered_on: string;
+    delivered_by?: string;
+    package_content?: string;
+    package_size?: string;
+    package_weight?: string;
+    status: string;
 }
 
 export interface SuggestedRoute {

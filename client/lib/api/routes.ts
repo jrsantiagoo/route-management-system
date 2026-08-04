@@ -8,12 +8,12 @@ export async function getRoutes() {
 }
 
 export async function createRoute(route: RoutePlan) {
-    const response = await fetch(`${API_URL}/api/routes/create-route`, {
+    const response = await fetch(`${API_URL}/api/routes`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ route }),
+        body: JSON.stringify(route),
     });
     return response.json();
 }
