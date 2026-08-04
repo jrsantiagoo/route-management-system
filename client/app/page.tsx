@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiCall } from "@/lib/api/client";
 import * as authApi from "@/lib/api/auth";
@@ -236,12 +237,12 @@ export default function loginPage() {
                                 >
                                     Password
                                 </label>
-                                <a
-                                    href="#"
+                                <Link
+                                    href="/forgot-password"
                                     className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
                                 >
                                     Forgot password?
-                                </a>
+                                </Link>
                             </div>
                             <div className="relative">
                                 <input
