@@ -40,6 +40,10 @@ export interface RoutePlan {
     vehicleType: VehicleType;
     // assignedWeek: string; // ISO Monday date string – set by the Assignment page
     createdAt: string; // ISO datetime string
+    archived?: boolean;
+    // ISO datetime the route was moved Active → Archived. Stamped by
+    // setRouteArchived(); undefined on routes archived before this field
+    // existed, which the Archived tab renders as "N/A".
     archivedAt?: string;
 }
 
