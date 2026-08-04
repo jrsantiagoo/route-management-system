@@ -67,15 +67,81 @@ model agent_profile {
   created_at     DateTime @default(now()) @db.Timestamptz(6)
 
   // Relations
-  //vehicles vehicle[]
-  fuel_log       fuel_log[]
-  trips          trip[]
-  vehicle        vehicle[]
+  vehicles            vehicle[]
+  fuel_log            fuel_log[]
+  trips               trip[]
 
   //@@index([agent_id_, tenant_id_])
 
   @@map("agent_profile")
-  //@@schema("agents")
+}
+
+model vehicle_make {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_make")
+}
+
+model vehicle_model {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_model")
+}
+
+enum VehicleType {
+  VAN
+  MOTORCYCLE
+  CAR
+  TRUCK
+  BUS
+  OTHER
+}
+
+model vehicle {
+  id_                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @updatedAt @db.Timestamptz(6)
+  archived_at        DateTime?  @db.Timestamptz(6)
+  deleted_at         DateTime? @db.Timestamptz(6)
+  plate_number       String    @db.Text
+  year               Int
+  vehicle_type       VehicleType?
+  weight_capacity    Int?      // in kg
+  initial_odometer   Int
+  last_odometer      Float?
+  expected_kml       Int      //  km/L
+  conduction_sticker String?   @db.Text
+  is_active          Boolean   @default(true)
+
+  reg_certification   String?   @db.Text
+  or_number           String?   @db.Text
+  registration_expiry DateTime? @db.Timestamptz(6)
+  insurance_expiry    DateTime? @db.Timestamptz(6)
+
+  // Foreign Keys
+  driver_id_ String? @db.Uuid // FK to agent_profile
+  make_id_   String?  @db.Uuid
+  model_id_  String?  @db.Uuid
+  //tenant_id_     String  @db.Uuid
+
+  // Relations
+  agent_profile agent_profile? @relation(fields: [driver_id_], references: [id_], onDelete: Cascade)
+  vehicle_make  vehicle_make?   @relation(fields: [make_id_], references: [id_], onDelete: Cascade)
+  vehicle_model vehicle_model?  @relation(fields: [model_id_], references: [id_], onDelete: Cascade)
+  fuel_log      fuel_log[]
+  trip          trip[]
+
+  // Indexes
+  @@index([created_at, updated_at, driver_id_, make_id_, model_id_])
+  @@map("vehicle")
 }
 
 model trip {
@@ -99,15 +165,16 @@ model trip {
   driver_id_     String?        @db.Uuid // FK to agent_profile
   route_id_      String         @db.Uuid
 
-  vehicle_id_    String?        @db.Uuid
+  vehicle_id_            String? @db.Uuid
   //assigned_by      String? @db.Uuid // FK to current user
   //task_purpose_id_ String? @db.Uuid
   //tenant_id_       String  @db.Uuid
 
-  agent_profile  agent_profile? @relation(fields: [driver_id_], references: [id_])
-  route          route          @relation(fields: [route_id_], references: [id_])
-  orders         order[]
-  vehicle        vehicle?       @relation(fields: [vehicle_id_], references: [id_])
+  // Relations
+  agent_profile           agent_profile? @relation(fields: [driver_id_], references: [id_])
+  route                   route           @relation(fields: [route_id_], references: [id_])
+  orders                  order[]
+  vehicle                 vehicle?       @relation(fields: [vehicle_id_], references: [id_])
 
   //trip_tasks trip_task[]
   //checkins   checkin[]
@@ -124,7 +191,6 @@ model trip {
   @@index([route_id_])
   @@index([status])
   @@map("trip")
-  //@@schema("trips")
 }
 
 model order {
@@ -169,8 +235,8 @@ model fuel_log {
   deleted_at          DateTime?      @db.Timestamptz(6)
   
   // Foreign Keys
-  driver_id_          String?        @db.Uuid
-  vehicle_id_         String?        @db.Uuid
+  driver_id_          String?     @db.Uuid // FK to agent_profile
+  vehicle_id_         String?     @db.Uuid
   //tenant_id_  String  @db.Uuid
 
   // Relations
@@ -181,52 +247,6 @@ model fuel_log {
   //@@index([created_at, updated_at, vehicle_id_, tenant_id_])
   @@index([created_at, updated_at])
   @@map("fuel_log")
-  //@@schema("vehicles")
-}
-
-model vehicle {
-  id_                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at          DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime       @db.Timestamptz(6)
-  deleted_at          DateTime?      @db.Timestamptz(6)
-  plate_number        String
-  year                Int
-  initial_odometer    Int
-  last_odometer       Float?
-  expected_kml        Int
-  conduction_sticker  String?
-  is_active           Boolean        @default(true)
-  reg_certification   String?
-  or_number           String?
-  registration_expiry DateTime?      @db.Timestamptz(6)
-  insurance_expiry    DateTime?      @db.Timestamptz(6)
-  driver_id_          String?        @db.Uuid
-  make_id_            String?        @db.Uuid
-  model_id_           String?        @db.Uuid
-  target_efficiency   Float?
-  vehicle_type        VehicleType?
-  weight_capacity     Int?
-  fuel_log            fuel_log[]
-  trip                trip[]
-  agent_profile       agent_profile? @relation(fields: [driver_id_], references: [id_], onDelete: Cascade)
-  vehicle_make        vehicle_make?  @relation(fields: [make_id_], references: [id_], onDelete: Cascade)
-  vehicle_model       vehicle_model? @relation(fields: [model_id_], references: [id_], onDelete: Cascade)
-
-  @@index([created_at, updated_at, driver_id_, make_id_, model_id_])
-}
-
-model vehicle_make {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  vehicle    vehicle[]
-}
-
-model vehicle_model {
-  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  vehicle    vehicle[]
 }
 
 enum TripStatus {
@@ -235,8 +255,6 @@ enum TripStatus {
   COMPLETED
   FAILED
   CANCELLED
-
-  //@@schema("trips")
 }
 
 enum OrderStatus {
@@ -252,13 +270,4 @@ enum TagTypes {
   ASSIGNED
 
   //@@schema("trips")
-}
-
-enum VehicleType {
-  VAN
-  MOTORCYCLE
-  CAR
-  TRUCK
-  BUS
-  OTHER
 }

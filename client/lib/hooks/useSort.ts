@@ -19,7 +19,10 @@ export function useSort<T>(
         return [...data].sort((a, b) => {
             const aVal = getValue(a, state.key);
             const bVal = getValue(b, state.key);
-            const cmp = aVal.localeCompare(bVal);
+            const cmp =
+                typeof aVal === "number" && typeof bVal === "number"
+                    ? aVal - bVal
+                    : String(aVal ?? "").localeCompare(String(bVal ?? ""));
             return state.dir === "asc" ? cmp : -cmp;
         });
     }, [data, state, getValue]);

@@ -18,7 +18,7 @@ import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { DARK } from "./routeTheme";
-import { createRoute } from "@/lib/api/routes";
+import { createRoute, updateRoute } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -130,13 +130,14 @@ export default function CreateRouteModal({
             totalDistanceKm,
             totalDurationMinutes,
             vehicleType: recommendVehicle(stops.length),
-            //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
             archivedAt: editingRoute?.archivedAt ?? undefined,
         };
 
         try {
-            const res = await createRoute(plan);
+            const res = isEditing
+                ? await updateRoute(plan)
+                : await createRoute(plan);
             if (res.success) {
                 onSaved("Route saved successfully.");
             } else {
@@ -254,8 +255,10 @@ export default function CreateRouteModal({
                         isLoading={isLoadingRoute}
                         routeError={routeError}
                         onReorder={setStops}
-                        onRemoveStop={(id) =>
-                            setStops((prev) => prev.filter((s) => s.id_ !== id))
+                        onRemoveStop={(id_) =>
+                            setStops((prev) =>
+                                prev.filter((s) => s.id_ !== id_),
+                            )
                         }
                         onAddStop={handleAddStop}
                         onPreview={setPreviewStop}
