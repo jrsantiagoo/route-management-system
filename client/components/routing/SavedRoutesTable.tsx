@@ -1,6 +1,37 @@
 "use client";
 
+/**
+ * SavedRoutesTable — the Active/Archived table on the Route Creation page.
+ *
+ * Section map:
+ *   1. IMPORTS & TYPES
+ *   2. TABLE CONFIG & CELL FORMATTERS
+ *   3. ACTIVE / ARCHIVED FILTERING + PAGINATION
+ *   4. DARK MODE STYLES
+ *   5. REUSABLE TABLE STYLES
+ *   6. TABLE LAYOUT (header, columns, rows, pagination)
+ *   7. ROW COMPONENT + ROUTE ACTION BUTTONS
+ *   8. REUSABLE PRESENTATIONAL HELPERS (Tag, IconButton, PagerButton)
+ *
+ * Action rules: active routes can be edited, archived, and deleted. Archived
+ * routes are read-only — Restore is the only action offered (see ROW COMPONENT).
+ */
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. IMPORTS & TYPES
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useState, useMemo } from "react";
+import {
+    Search,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    Pencil,
+    Archive,
+    ArchiveRestore,
+    Trash2,
+} from "lucide-react";
 import { RoutePlan } from "@/lib/routing/types";
 import { formatDateTime } from "@/lib/routing/formatters";
 import { getRouteAreaTags, formatOrderLabel } from "@/lib/routing/orderData";
@@ -15,12 +46,19 @@ interface SavedRoutesTableProps {
     onDelete: (route: RoutePlan) => void;
 }
 
+type View = "active" | "archived";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. TABLE CONFIG & CELL FORMATTERS
+// ─────────────────────────────────────────────────────────────────────────────
+
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
+/** Compact Stops cell: "3 stops". Full list lives in the expanded row. */
 function stopsSummary(route: RoutePlan): string {
-    const labels = route.stops.map((_, i) => `Stop ${i + 1}`);
-    const shown = labels.slice(0, 4).join(" - ");
-    return labels.length > 4 ? `${shown} - …` : shown || "No stops";
+    const n = route.stops.length;
+    if (n === 0) return "No stops";
+    return `${n} ${n === 1 ? "stop" : "stops"}`;
 }
 
 function stopDisplay(stop: RoutePlan["stops"][number]): string {
@@ -29,8 +67,13 @@ function stopDisplay(stop: RoutePlan["stops"][number]): string {
         : stop.name;
 }
 
-function isArchived(route: RoutePlan): boolean {
-    return route.archivedAt !== null;
+/**
+ * Date cell. Active rows show Date Created; archived rows show Date Archived,
+ * falling back to "N/A" for routes archived before `archivedAt` was stored.
+ */
+function routeDateLabel(route: RoutePlan, view: View): string {
+    if (view === "active") return formatDateTime(route.createdAt);
+    return route.archivedAt ? formatDateTime(route.archivedAt) : "N/A";
 }
 
 export default function SavedRoutesTable({
@@ -43,11 +86,17 @@ export default function SavedRoutesTable({
     const { theme } = useTheme();
     const dark = theme === "dark";
 
-    const [view, setView] = useState<"active" | "archived">("active");
+    const [view, setView] = useState<View>("active");
     const [query, setQuery] = useState("");
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. ACTIVE / ARCHIVED FILTERING + PAGINATION
+    // Tab decides the pool (archived flag), search narrows it by name or area
+    // tag, then the result is sliced into the current page.
+    // ─────────────────────────────────────────────────────────────────────────
 
     const filtered = useMemo(() => {
         const inView = routes.filter((r) =>
@@ -68,9 +117,21 @@ export default function SavedRoutesTable({
     const showingFrom = filtered.length === 0 ? 0 : startIdx + 1;
     const showingTo = Math.min(startIdx + rowsPerPage, filtered.length);
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. DARK MODE STYLES
+    // Resolved once here, then threaded down to the row/helper components so
+    // each one doesn't re-read the theme context. Palette: ./routeTheme.ts
+    // ─────────────────────────────────────────────────────────────────────────
+
     const border = dark ? DARK.panelBorder : "#e5e7eb";
     const muted = dark ? DARK.textMuted : "#6b7280";
     const text = dark ? DARK.text : "#111827";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. REUSABLE TABLE STYLES
+    // Shared header/body cell styles — copy this pair when building a table on
+    // another page, then override per-cell with {...tdStyle, ...}.
+    // ─────────────────────────────────────────────────────────────────────────
 
     const thStyle: React.CSSProperties = {
         textAlign: "left",
@@ -87,6 +148,10 @@ export default function SavedRoutesTable({
         verticalAlign: "middle",
     };
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 6. TABLE LAYOUT
+    // ─────────────────────────────────────────────────────────────────────────
+
     return (
         <section
             style={{
@@ -96,7 +161,7 @@ export default function SavedRoutesTable({
                 padding: "20px 22px",
             }}
         >
-            {/* Header row */}
+            {/* Header row — title, Active/Archived toggle, search */}
             <div
                 style={{
                     display: "flex",
@@ -193,19 +258,7 @@ export default function SavedRoutesTable({
                             minWidth: "240px",
                         }}
                     >
-                        <svg
-                            width="15"
-                            height="15"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke={muted}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.3-4.3" />
-                        </svg>
+                        <Search size={15} color={muted} strokeWidth={2} />
                         <input
                             value={query}
                             onChange={(e) => {
@@ -227,7 +280,7 @@ export default function SavedRoutesTable({
                 </div>
             </div>
 
-            {/* Table */}
+            {/* Table — the date column header swaps with the active tab */}
             <div style={{ overflowX: "auto" }}>
                 <table
                     style={{
@@ -247,7 +300,11 @@ export default function SavedRoutesTable({
                             <th style={thStyle}>Route Name</th>
                             <th style={thStyle}>Stops</th>
                             <th style={thStyle}>Tags</th>
-                            <th style={thStyle}>Date Created</th>
+                            <th style={thStyle}>
+                                {view === "archived"
+                                    ? "Date Archived"
+                                    : "Date Created"}
+                            </th>
                             <th style={{ ...thStyle, textAlign: "right" }}>
                                 Actions
                             </th>
@@ -392,7 +449,11 @@ export default function SavedRoutesTable({
     );
 }
 
-// ── Row ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. ROW COMPONENT + ROUTE ACTION BUTTONS
+// One table row plus its expandable stop list. The Actions cell is where the
+// archived-route restrictions live.
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface RouteRowProps {
     route: RoutePlan;
@@ -401,7 +462,7 @@ interface RouteRowProps {
     vehicleTag: string;
     areaTags: string[];
     dark: boolean;
-    view: "active" | "archived";
+    view: View;
     onEdit: () => void;
     onArchive: () => void;
     onUnarchive: () => void;
@@ -429,10 +490,16 @@ function RouteRow({
     muted,
     text,
 }: RouteRowProps) {
+    // Archived routes are read-only: no editing, no permanent delete. Restore
+    // them to Active first if either is needed.
+    const isArchived = view === "archived";
+
     return (
         <>
             <tr style={{ borderBottom: `1px solid ${border}` }}>
                 <td style={{ ...tdStyle, fontWeight: 600 }}>{route.name}</td>
+
+                {/* Stops — compact count; expand to see the full list */}
                 <td style={tdStyle}>
                     <button
                         onClick={onToggleExpand}
@@ -448,28 +515,22 @@ function RouteRow({
                             padding: 0,
                         }}
                         aria-expanded={expanded}
-                        title="Show all stops"
+                        title={expanded ? "Hide stops" : "Show all stops"}
                     >
                         <span>{stopsSummary(route)}</span>
-                        <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke={muted}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                        <ChevronDown
+                            size={14}
+                            color={muted}
+                            strokeWidth={2}
                             style={{
                                 transform: expanded ? "rotate(180deg)" : "none",
                                 transition: "transform 0.15s",
                                 flexShrink: 0,
                             }}
-                        >
-                            <path d="m6 9 6 6 6-6" />
-                        </svg>
+                        />
                     </button>
                 </td>
+
                 <td style={tdStyle}>
                     <div
                         style={{
@@ -489,9 +550,13 @@ function RouteRow({
                         ))}
                     </div>
                 </td>
+
+                {/* Date Created (Active) / Date Archived (Archived) */}
                 <td style={{ ...tdStyle, color: muted, whiteSpace: "nowrap" }}>
-                    {formatDateTime(route.createdAt)}
+                    {routeDateLabel(route, view)}
                 </td>
+
+                {/* Actions — Restore only when archived; full set when active */}
                 <td style={tdStyle}>
                     <div
                         style={{
@@ -500,61 +565,53 @@ function RouteRow({
                             gap: "6px",
                         }}
                     >
-                        <IconButton
-                            title="Edit route"
-                            onClick={onEdit}
-                            dark={dark}
-                            border={border}
-                            muted={muted}
-                        >
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </IconButton>
-                        {view === "archived" ? (
+                        {isArchived ? (
                             <IconButton
-                                title="Unarchive route"
+                                title="Restore route"
                                 onClick={onUnarchive}
                                 dark={dark}
                                 border={border}
                                 muted={muted}
                             >
-                                <path d="M3 3v5h5" />
-                                <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+                                <ArchiveRestore size={15} />
                             </IconButton>
                         ) : (
-                            <IconButton
-                                title="Archive route"
-                                onClick={onArchive}
-                                dark={dark}
-                                border={border}
-                                muted={muted}
-                            >
-                                <rect
-                                    x="2"
-                                    y="4"
-                                    width="20"
-                                    height="5"
-                                    rx="1"
-                                />
-                                <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9" />
-                                <path d="M10 13h4" />
-                            </IconButton>
+                            <>
+                                <IconButton
+                                    title="Edit route"
+                                    onClick={onEdit}
+                                    dark={dark}
+                                    border={border}
+                                    muted={muted}
+                                >
+                                    <Pencil size={15} />
+                                </IconButton>
+                                <IconButton
+                                    title="Archive route"
+                                    onClick={onArchive}
+                                    dark={dark}
+                                    border={border}
+                                    muted={muted}
+                                >
+                                    <Archive size={15} />
+                                </IconButton>
+                                <IconButton
+                                    title="Delete route"
+                                    onClick={onDelete}
+                                    dark={dark}
+                                    border={border}
+                                    muted={muted}
+                                    danger
+                                >
+                                    <Trash2 size={15} />
+                                </IconButton>
+                            </>
                         )}
-                        <IconButton
-                            title="Delete route"
-                            onClick={onDelete}
-                            dark={dark}
-                            border={border}
-                            muted={muted}
-                            danger
-                        >
-                            <path d="M3 6h18" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </IconButton>
                     </div>
                 </td>
             </tr>
 
+            {/* Expanded stop list — full detail, kept out of the compact row */}
             {expanded && (
                 <tr style={{ borderBottom: `1px solid ${border}` }}>
                     <td
@@ -641,7 +698,11 @@ function RouteRow({
     );
 }
 
-// ── Small presentational helpers ────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. REUSABLE PRESENTATIONAL HELPERS
+// Tag / IconButton / PagerButton — self-contained, no data dependencies.
+// Reusable on other pages: pass the resolved dark-mode colors down as props.
+// ─────────────────────────────────────────────────────────────────────────────
 
 function Tag({
     label,
@@ -694,6 +755,10 @@ function Tag({
     );
 }
 
+/**
+ * 32px square action button. Pass a Lucide icon as the child — it inherits the
+ * button's color via `currentColor`, so `danger` recolors the icon for free.
+ */
 function IconButton({
     title,
     onClick,
@@ -729,18 +794,7 @@ function IconButton({
                 cursor: "pointer",
             }}
         >
-            <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                {children}
-            </svg>
+            {children}
         </button>
     );
 }
@@ -760,6 +814,7 @@ function PagerButton({
     onClick: () => void;
     dir: "prev" | "next";
 }) {
+    const Icon = dir === "prev" ? ChevronLeft : ChevronRight;
     return (
         <button
             onClick={onClick}
@@ -779,22 +834,7 @@ function PagerButton({
                 opacity: disabled ? 0.4 : 1,
             }}
         >
-            <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                {dir === "prev" ? (
-                    <path d="m15 18-6-6 6-6" />
-                ) : (
-                    <path d="m9 18 6-6-6-6" />
-                )}
-            </svg>
+            <Icon size={15} strokeWidth={2} />
         </button>
     );
 }

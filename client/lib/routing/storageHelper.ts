@@ -1,6 +1,15 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCALSTORAGE HANDLING
+// Single source of truth for saved-route persistence. Every read/write goes
+// through this module so the UI never touches localStorage directly — swapping
+// this for API calls later means changing only this file.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { RoutePlan } from "./types";
 
 const STORAGE_KEY = "acesoft_savedRoutes";
+
+// ── Reads ───────────────────────────────────────────────────────────────────
 
 export function loadSavedRoutes(): RoutePlan[] {
     if (typeof window === "undefined") return [];
@@ -20,6 +29,8 @@ export function isRouteNameTaken(name: string, excludeId?: string): boolean {
         (r) => r.id_ !== excludeId && r.name.trim().toLowerCase() === target,
     );
 }
+
+// ── Writes ──────────────────────────────────────────────────────────────────
 
 export function saveRoute(plan: RoutePlan): void {
     if (typeof window === "undefined") return;
@@ -43,10 +54,18 @@ export function deleteRoute(id: string): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
 }
 
+// Archiving stamps `archivedAt` so the Archived tab can show a "Date Archived"
+// column; restoring clears it so a re-archived route gets a fresh timestamp.
 export function setRouteArchived(id: string, archived: boolean): void {
     if (typeof window === "undefined") return;
     const all = loadSavedRoutes().map((r) =>
-        r.id_ === id ? { ...r, archived } : r,
+        r.id === id
+            ? {
+                  ...r,
+                  archived,
+                  archivedAt: archived ? new Date().toISOString() : undefined,
+              }
+            : r,
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 }
