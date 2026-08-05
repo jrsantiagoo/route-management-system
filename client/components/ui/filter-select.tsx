@@ -61,7 +61,7 @@ export default function FilterSelect({
             {/* Collapsable Dropdown Options */}
             {open && (
                 <div
-                    className="overflow-auto flex flex-col absolute left-0 top-full z-10 mt-1 w-max min-w-full max-h-72 rounded-lg border border-border 
+                    className="overflow-auto flex flex-col absolute left-0 top-full z-20 mt-1 w-max min-w-full max-h-72 rounded-lg border border-border 
                         bg-card shadow shadow-muted-foreground scrollbar-thumb-muted-foreground"
                 >
                     <button
