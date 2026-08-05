@@ -8,11 +8,22 @@ vi.mock("../../src/lib/prisma.js", () => ({
     },
 }));
 
+vi.mock("../../src/lib/supabase-client.js", () => ({
+    default: {
+        auth: { getUser: vi.fn() },
+    },
+}));
+
 import prisma from "../../src/lib/prisma.js";
+import supabase from "../../src/lib/supabase-client.js";
 import app from "../../src/app.js";
 
 beforeEach(() => {
     vi.resetAllMocks();
+    supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "test-manager" } },
+        error: null,
+    });
 });
 
 describe("GET /api/routes", () => {
@@ -20,7 +31,9 @@ describe("GET /api/routes", () => {
         const routes = [{ id_: "r1", stops: [{ name: "DLSU" }] }];
         prisma.route.findMany.mockResolvedValue(routes);
 
-        const res = await request(app).get("/api/routes");
+        const res = await request(app)
+            .get("/api/routes")
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ success: true, data: routes });
@@ -33,6 +46,7 @@ describe("POST /api/routes", () => {
 
         const res = await request(app)
             .post("/api/routes")
+            .set("Authorization", "Bearer good-token")
             .send({
                 name: "QA Baseline Route",
                 totalDistanceKm: 12.5,
@@ -54,6 +68,7 @@ describe("POST /api/routes", () => {
     it("400s with the error envelope when the body has no stops", async () => {
         const res = await request(app)
             .post("/api/routes")
+            .set("Authorization", "Bearer good-token")
             .send({ name: "broken" });
 
         expect(res.status).toBe(400);

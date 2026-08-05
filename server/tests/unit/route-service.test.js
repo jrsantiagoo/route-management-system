@@ -22,6 +22,7 @@ describe("getAllRoutes", () => {
         await expect(routeService.getAllRoutes()).resolves.toEqual(routes);
         expect(prisma.route.findMany).toHaveBeenCalledWith({
             include: { stops: true },
+            orderBy: { createdAt: "desc" },
         });
     });
 });

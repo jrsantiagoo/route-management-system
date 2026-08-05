@@ -11,16 +11,28 @@ vi.mock("../../src/lib/prisma.js", () => ({
             update: vi.fn(),
         },
         order: { findMany: vi.fn() },
+        vehicle: { findUnique: vi.fn(), update: vi.fn() },
+    },
+}));
+
+vi.mock("../../src/lib/supabase-client.js", () => ({
+    default: {
+        auth: { getUser: vi.fn() },
     },
 }));
 
 import prisma from "../../src/lib/prisma.js";
+import supabase from "../../src/lib/supabase-client.js";
 import app from "../../src/app.js";
 
 const LOG_ID = "55555555-5555-5555-5555-555555555555";
 
 beforeEach(() => {
     vi.resetAllMocks();
+    supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "test-manager" } },
+        error: null,
+    });
 });
 
 describe("GET /api/fuel_logs", () => {
@@ -28,7 +40,9 @@ describe("GET /api/fuel_logs", () => {
         const logs = [{ id_: LOG_ID, liters_added: 10 }];
         prisma.fuel_log.findMany.mockResolvedValue(logs);
 
-        const res = await request(app).get("/api/fuel_logs");
+        const res = await request(app)
+            .get("/api/fuel_logs")
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ success: true, data: logs });
@@ -37,15 +51,30 @@ describe("GET /api/fuel_logs", () => {
 
 describe("POST /api/fuel_logs", () => {
     it("creates a log from the request body", async () => {
+        // createFuelLog looks up the vehicle to compute variance_percentage
+        // against its expected_kml, and fire-and-forgets an odometer update.
+        prisma.vehicle.findUnique.mockResolvedValue({
+            id_: "VEH-1",
+            expected_kml: 10,
+            last_odometer: 1000,
+        });
+        prisma.vehicle.update.mockResolvedValue({});
         prisma.fuel_log.create.mockResolvedValue({ id_: LOG_ID });
 
         const res = await request(app)
             .post("/api/fuel_logs")
-            .send({ liters_added: 10, distance_traveled: 120 });
+            .set("Authorization", "Bearer good-token")
+            .send({ vehicle_id_: "VEH-1", liters_added: 10, distance_traveled: 120 });
 
         expect(res.status).toBe(200);
         expect(prisma.fuel_log.create).toHaveBeenCalledWith({
-            data: { liters_added: 10, distance_traveled: 120 },
+            data: expect.objectContaining({
+                vehicle_id_: "VEH-1",
+                liters_added: 10,
+                distance_traveled: 120,
+                fuel_efficiency: 12, // 120 / 10
+                variance_percentage: 20, // (12 - 10) / 10 * 100
+            }),
         });
     });
 });
@@ -56,6 +85,7 @@ describe("PUT /api/fuel_logs/:logId", () => {
 
         const res = await request(app)
             .put(`/api/fuel_logs/${LOG_ID}`)
+            .set("Authorization", "Bearer good-token")
             .send({ liters_added: 5 });
 
         expect(res.status).toBe(400);
@@ -74,6 +104,7 @@ describe("POST /api/fuel_logs/daily_fuel_per_order", () => {
 
         const res = await request(app)
             .post("/api/fuel_logs/daily_fuel_per_order")
+            .set("Authorization", "Bearer good-token")
             .send({ startDate: "2026-07-01", endDate: "2026-07-01" });
 
         expect(res.status).toBe(200);

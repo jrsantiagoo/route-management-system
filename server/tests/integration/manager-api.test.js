@@ -28,8 +28,14 @@ describe("GET /api/managers", () => {
     it("returns managers in the success envelope", async () => {
         const managers = [{ id_: MANAGER_ID, lastname: "Reyes" }];
         prisma.manager.findMany.mockResolvedValue(managers);
+        supabase.auth.getUser.mockResolvedValue({
+            data: { user: { id: MANAGER_ID } },
+            error: null,
+        });
 
-        const res = await request(app).get("/api/managers");
+        const res = await request(app)
+            .get("/api/managers")
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ success: true, data: managers });

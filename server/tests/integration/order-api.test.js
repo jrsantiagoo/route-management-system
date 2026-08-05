@@ -16,13 +16,24 @@ vi.mock("../../src/lib/prisma.js", () => ({
     },
 }));
 
+vi.mock("../../src/lib/supabase-client.js", () => ({
+    default: {
+        auth: { getUser: vi.fn() },
+    },
+}));
+
 import prisma from "../../src/lib/prisma.js";
+import supabase from "../../src/lib/supabase-client.js";
 import app from "../../src/app.js";
 
 const ORDER_ID = "ORD-20260706-001";
 
 beforeEach(() => {
     vi.resetAllMocks();
+    supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "test-manager" } },
+        error: null,
+    });
 });
 
 describe("GET /api/orders", () => {
@@ -30,7 +41,9 @@ describe("GET /api/orders", () => {
         const orders = [{ order_id: ORDER_ID }];
         prisma.order.findMany.mockResolvedValue(orders);
 
-        const res = await request(app).get("/api/orders");
+        const res = await request(app)
+            .get("/api/orders")
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ success: true, data: orders });
@@ -41,7 +54,9 @@ describe("GET /api/orders/:orderId", () => {
     it("400s with the service message for an unknown order", async () => {
         prisma.order.findUnique.mockResolvedValue(null);
 
-        const res = await request(app).get(`/api/orders/${ORDER_ID}`);
+        const res = await request(app)
+            .get(`/api/orders/${ORDER_ID}`)
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ message: "Order not found" });
@@ -52,7 +67,9 @@ describe("GET /api/orders/trip_orders/:tripId", () => {
     it("400s when the trip does not exist", async () => {
         prisma.trip.findUnique.mockResolvedValue(null);
 
-        const res = await request(app).get("/api/orders/trip_orders/nope");
+        const res = await request(app)
+            .get("/api/orders/trip_orders/nope")
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ message: "Trip not found" });
@@ -64,11 +81,14 @@ describe("POST /api/orders", () => {
         prisma.order.findFirst.mockResolvedValue(null);
         prisma.order.create.mockResolvedValue({ order_id: ORDER_ID });
 
-        const res = await request(app).post("/api/orders").send({
-            client: "ACME",
-            destination: "Makati",
-            packageContent: "Boxes",
-        });
+        const res = await request(app)
+            .post("/api/orders")
+            .set("Authorization", "Bearer good-token")
+            .send({
+                client: "ACME",
+                destination: "Makati",
+                packageContent: "Boxes",
+            });
 
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
@@ -81,6 +101,7 @@ describe("POST /api/orders", () => {
 
         const res = await request(app)
             .post("/api/orders")
+            .set("Authorization", "Bearer good-token")
             .send({ client: "ACME" });
 
         expect(res.status).toBe(400);
@@ -98,6 +119,7 @@ describe("PUT /api/orders/status/:orderId", () => {
 
         const res = await request(app)
             .put(`/api/orders/status/${ORDER_ID}`)
+            .set("Authorization", "Bearer good-token")
             .send({ status: "completed" });
 
         expect(res.status).toBe(200);
@@ -111,6 +133,7 @@ describe("PUT /api/orders/status/:orderId", () => {
     it("400s when no fields are provided", async () => {
         const res = await request(app)
             .put(`/api/orders/status/${ORDER_ID}`)
+            .set("Authorization", "Bearer good-token")
             .send({});
 
         expect(res.status).toBe(400);
@@ -123,6 +146,7 @@ describe("PUT /api/orders/assign/:orderId", () => {
     it("400s without a tripId", async () => {
         const res = await request(app)
             .put(`/api/orders/assign/${ORDER_ID}`)
+            .set("Authorization", "Bearer good-token")
             .send({});
 
         expect(res.status).toBe(400);
@@ -134,7 +158,9 @@ describe("DELETE /api/orders/:orderId", () => {
     it("400s for an unknown order", async () => {
         prisma.order.findUnique.mockResolvedValue(null);
 
-        const res = await request(app).delete(`/api/orders/${ORDER_ID}`);
+        const res = await request(app)
+            .delete(`/api/orders/${ORDER_ID}`)
+            .set("Authorization", "Bearer good-token");
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ message: "Order not found" });
