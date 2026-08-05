@@ -104,28 +104,35 @@ export default function TableView({
         });
 
     // Sort trips by the currently active column
-    const getTripVal = useCallback((t: Trip, key: string) => {
-        switch (key) {
-            case "route":
-                return t.route?.name ?? "";
-            case "driver":
-                return t.agent_profile?.driver_id ?? "";
-            case "vehicle":
-                return "";
-            case "purpose":
-                return t.purpose ?? "";
-            case "fuelConsumed":
-                return "";
-            case "scheduled_date":
-                return t.scheduled_date ?? "";
-            case "created_at":
-                return t.created_at ?? "";
-            case "status":
-                return t.status;
-            default:
-                return "";
-        }
-    }, []);
+    const getTripVal = useCallback(
+        (t: Trip, key: string) => {
+            switch (key) {
+                case "route":
+                    return t.route?.name ?? "";
+                case "driver":
+                    return t.agent_profile?.driver_id ?? "";
+                case "vehicle":
+                    return "";
+                case "purpose":
+                    return t.purpose ?? "";
+                case "fuelConsumed":
+                    return "";
+                case "scheduled_date":
+                    return t.scheduled_date ?? "";
+                case "created_at":
+                    // Ensures that column sorts by last modified if in Active &
+                    // by archived date if in Archived
+                    return view === "archived"
+                        ? (t.archivedAt ?? "")
+                        : (t.created_at ?? "");
+                case "status":
+                    return t.status;
+                default:
+                    return "";
+            }
+        },
+        [view],
+    );
     const {
         sorted: sortedTrips,
         state: sortState,
@@ -287,7 +294,9 @@ export default function TableView({
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Last Modified
+                                {view === "archived"
+                                    ? "Archived At"
+                                    : "Last Modified"}
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"
@@ -324,7 +333,13 @@ export default function TableView({
                                 <td className="px-3 py-2">
                                     {formatDateTime(t.scheduled_date)}
                                 </td>
-                                <td className="px-3 py-2">{"—"}</td>
+                                <td className="px-3 py-2">
+                                    {view === "archived"
+                                        ? t.archivedAt
+                                            ? formatDateTime(t.archivedAt)
+                                            : "—"
+                                        : formatDateTime(t.created_at)}
+                                </td>
                                 <td className="px-3 py-2">
                                     <StatusBadge status={t.status} />
                                 </td>

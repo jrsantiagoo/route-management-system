@@ -15,6 +15,9 @@ export interface Vehicle {
     year: number;
     archived?: boolean;
     archivedAt?: string;
+    // ISO datetime the vehicle was last edited. Mock data backs the active-tab
+    // "Last Modified" column; there is no created timestamp for vehicles.
+    lastModified?: string;
 }
 
 export const mockVehicleData: Vehicle[] = [
@@ -32,6 +35,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Hiace",
         initOdometer: 15234,
         year: 2022,
+        lastModified: "2026-08-04T09:30:00",
     },
     {
         id_: "VH-002",
@@ -47,6 +51,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Click 125",
         initOdometer: 8921,
         year: 2023,
+        lastModified: "2026-08-03T14:15:00",
     },
     {
         id_: "VH-003",
@@ -62,6 +67,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Vios",
         initOdometer: 24100,
         year: 2021,
+        lastModified: "2026-08-02T10:45:00",
     },
     {
         id_: "VH-004",
@@ -77,6 +83,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Urvan",
         initOdometer: 18765,
         year: 2022,
+        lastModified: "2026-08-01T16:20:00",
     },
     {
         id_: "VH-005",
@@ -92,6 +99,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "NMAX",
         initOdometer: 31200,
         year: 2020,
+        lastModified: "2026-07-31T08:05:00",
     },
     {
         id_: "VH-006",
@@ -107,6 +115,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Civic",
         initOdometer: 9800,
         year: 2023,
+        lastModified: "2026-07-30T11:50:00",
     },
     {
         id_: "VH-007",
@@ -122,6 +131,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Hilux",
         initOdometer: 45000,
         year: 2019,
+        lastModified: "2026-07-29T15:35:00",
     },
     {
         id_: "VH-008",
@@ -137,6 +147,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Mirage",
         initOdometer: 5600,
         year: 2024,
+        lastModified: "2026-07-28T09:10:00",
     },
     {
         id_: "VH-009",
@@ -152,6 +163,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Raider 150",
         initOdometer: 12500,
         year: 2021,
+        lastModified: "2026-07-27T13:40:00",
     },
     {
         id_: "VH-010",
@@ -167,6 +179,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Escape",
         initOdometer: 67000,
         year: 2018,
+        lastModified: "2026-07-26T10:25:00",
     },
     {
         id_: "VH-011",
@@ -182,6 +195,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "PCX 160",
         initOdometer: 4100,
         year: 2024,
+        lastModified: "2026-07-25T17:55:00",
     },
     {
         id_: "VH-012",
@@ -197,6 +211,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Innova",
         initOdometer: 28000,
         year: 2020,
+        lastModified: "2026-07-24T12:30:00",
     },
     {
         id_: "VH-013",
@@ -212,6 +227,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Accent",
         initOdometer: 18200,
         year: 2022,
+        lastModified: "2026-07-23T09:45:00",
     },
     {
         id_: "VH-014",
@@ -227,6 +243,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "NV350",
         initOdometer: 7500,
         year: 2023,
+        lastModified: "2026-07-22T14:00:00",
     },
     {
         id_: "VH-015",
@@ -242,6 +259,7 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Mio Sporty",
         initOdometer: 22000,
         year: 2019,
+        lastModified: "2026-07-21T11:15:00",
     },
     {
         id_: "VH-016",
@@ -257,5 +275,6 @@ export const mockVehicleData: Vehicle[] = [
         vehicleModel: "Wigo",
         initOdometer: 5000,
         year: 2024,
+        lastModified: "2026-07-20T16:50:00",
     },
 ];
