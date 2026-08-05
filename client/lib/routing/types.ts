@@ -59,6 +59,8 @@ export interface Trip {
     route_id_: string;
     route: RoutePlan;
     agent_profile?: Driver;
+    archived?: boolean;
+    archivedAt?: string;
 }
 
 export interface Order {

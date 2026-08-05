@@ -11,7 +11,6 @@ import {
     CircleGauge,
     Ellipsis,
     PenLine,
-    Power,
     RotateCcw,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";

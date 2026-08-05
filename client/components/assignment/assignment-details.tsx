@@ -4,24 +4,29 @@ import {
     Activity,
     Calendar,
     Car,
-    Clock,
+    CalendarClock,
+    ClipboardList,
     Fuel,
     Gauge,
+    Route,
     User,
     X,
+    Clock,
 } from "lucide-react";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import { Trip } from "@/lib/routing/types";
 import StatusBadge from "../ui/status-badge";
+import { init } from "next/dist/compiled/webpack/webpack";
+import { formatDateTime } from "@/lib/routing/formatters";
 
-interface VehicleDetailsProps {
-    initialData?: Vehicle | null;
+interface AssignmentDetailsProps {
+    initialData?: Trip | null;
     onClose: () => void;
 }
 
-export default function VehicleDetailsModal({
+export default function AssignmentDetailsModal({
     initialData,
     onClose,
-}: VehicleDetailsProps) {
+}: AssignmentDetailsProps) {
     return (
         // Background Overlay
         <div
@@ -45,57 +50,51 @@ export default function VehicleDetailsModal({
                 {/* Header Text */}
                 <div>
                     <div className="flex items-center gap-2 font-semibold mb-3">
-                        <Car size={28} className="text-primary-foreground" />
+                        <Route size={28} className="text-primary-foreground" />
                         <h2 className="text-2xl text-foreground ">
-                            Vehicle Details
+                            Assignment Details
                         </h2>
                     </div>
 
                     <p className="-mt-3 text-md text-muted-foreground">
-                        Complete vehicle information
+                        Complete assignment information
                     </p>
                 </div>
 
-                {/* Basic Vehicle Details */}
+                {/* Basic Assignment Details */}
                 <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
-                        Basic Information
+                        Trip Information
                     </h2>
 
                     <div className="grid grid-cols-3 gap-6 w-full font-semibold">
                         {/* First Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Car size={23} />
-                                <h2 className="mt-1">Plate Number</h2>
+                                <Route size={21} />
+                                <h2 className="mt-1">Route Name</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.plateNumber}
+                                {initialData?.route?.name}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <User size={21} />
+                                <h2 className="mt-1">Assigned Driver</h2>
+                            </div>
+                            <div className="ml-8 text-foreground">
+                                {"Driver Name"}
                             </div>
                         </div>
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Car size={23} />
-                                <h2 className="mt-1">Make, Model, & Type</h2>
+                                <h2 className="mt-1">Vehicle</h2>
                             </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.vehicleMaker}{" "}
-                                {initialData?.vehicleModel}{" "}
-                                <span className="text-sm text-muted-foreground">
-                                    ({initialData?.vehicleType})
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Calendar size={21} />
-                                <h2 className="mt-1">Year</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.year}
-                            </div>
+                            <div className="ml-8 text-foreground">{"—"}</div>
                         </div>
 
                         {/* Second Row */}
@@ -113,49 +112,51 @@ export default function VehicleDetailsModal({
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <User size={21} />
-                                <h2 className="mt-1">Last Driver</h2>
+                                <ClipboardList size={21} />
+                                <h2 className="mt-1">Purpose</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.lastDriver == "" ? (
-                                    <div className="italic">
-                                        No assigned driver
-                                    </div>
-                                ) : (
-                                    initialData?.lastDriver
-                                )}
+                                {initialData?.purpose ?? "—"}
                             </div>
                         </div>
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Gauge size={21} />
-                                <h2 className="mt-1">Initial Odometer</h2>
+                                <CalendarClock size={21} />
+                                <h2 className="mt-1">Scheduled Date</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.initOdometer}
+                                {initialData?.scheduled_date
+                                    ? formatDateTime(
+                                          initialData.scheduled_date,
+                                      ).slice(0, -8)
+                                    : ""}
                             </div>
                         </div>
 
                         {/* Third Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Gauge size={21} />
-                                <h2 className="mt-1">Current Odometer</h2>
+                                <Fuel size={21} />
+                                <h2 className="mt-1">Est. Fuel Consumed</h2>
                             </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.initOdometer}
-                            </div>
+                            <div className="ml-8 text-foreground">{"—"}</div>
                         </div>
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Fuel size={21} />
-                                <h2 className="mt-1">Target Fuel Efficiency</h2>
+                                <Gauge size={21} />
+                                <h2 className="mt-1">Est. Travel Distance</h2>
                             </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.target} km/L
+                            <div className="ml-8 text-foreground">{"—"}</div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <User size={21} />
+                                <h2 className="mt-1">Assigned By</h2>
                             </div>
+                            <div className="ml-8 text-foreground">{"—"}</div>
                         </div>
                     </div>
                 </div>
@@ -173,18 +174,34 @@ export default function VehicleDetailsModal({
                                 <h2 className="mt-1">Created At</h2>
                             </div>
                             <div className="text-foreground">
-                                Month Day, Year at Hour:Minute AM/PM
+                                {initialData?.created_at
+                                    ? formatDateTime(initialData.created_at)
+                                    : ""}
                             </div>
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Clock size={21} />
-                                <h2 className="mt-1">Last Updated</h2>
+                                <h2 className="mt-1">Last Modified</h2>
                             </div>
                             <div className="text-foreground">
                                 Month Day, Year at Hour:Minute AM/PM
                             </div>
                         </div>
+
+                        {initialData?.archivedAt && (
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                    <Clock size={21} />
+                                    <h2 className="mt-1">Archived Date</h2>
+                                </div>
+                                <div className="text-foreground">
+                                    {initialData?.archivedAt
+                                        ? formatDateTime(initialData.archivedAt)
+                                        : ""}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

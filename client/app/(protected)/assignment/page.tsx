@@ -15,6 +15,7 @@ import DriverView from "@/components/assignment/driver-view";
 import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
+import AssignmentDetailsModal from "@/components/assignment/assignment-details";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -26,6 +27,7 @@ export default function Assignment() {
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
     const [editTarget, setEditTarget] = useState<Trip | null>(null);
+    const [viewTarget, setViewTarget] = useState<Trip | null>(null);
     // Tracks which trips are archived so the table can split Active/Archived
     const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
@@ -68,24 +70,33 @@ export default function Assignment() {
 
     // Move a trip to the archived list
     const handleArchiveTrip = useCallback((tripId: string) => {
+        setTrips((prev) =>
+            prev.map((t) =>
+                t.id_ === tripId
+                    ? { ...t, archivedAt: new Date().toISOString() }
+                    : t,
+            ),
+        );
         setArchivedIds((prev) => [...prev, tripId]);
         setToast("Assignment archived.");
     }, []);
 
     // Restore a trip from the archived list
     const handleUnarchiveTrip = useCallback((tripId: string) => {
+        setTrips((prev) =>
+            prev.map((t) =>
+                t.id_ === tripId ? { ...t, archivedAt: undefined } : t,
+            ),
+        );
         setArchivedIds((prev) => prev.filter((id) => id !== tripId));
         setToast("Assignment unarchived.");
     }, []);
 
     // Close the edit modal and confirm the update
-    const handleSaveTrip = useCallback(
-        (_data: Partial<Trip>) => {
-            setEditTarget(null);
-            setToast("Assignment updated successfully.");
-        },
-        [],
-    );
+    const handleSaveTrip = useCallback((_data: Partial<Trip>) => {
+        setEditTarget(null);
+        setToast("Assignment updated successfully.");
+    }, []);
 
     if (loading) {
         return (
@@ -168,6 +179,7 @@ export default function Assignment() {
                     trips={trips}
                     archivedIds={archivedIds}
                     onEdit={setEditTarget}
+                    onView={setViewTarget}
                     onArchive={handleArchiveTrip}
                     onUnarchive={handleUnarchiveTrip}
                 />
@@ -181,6 +193,13 @@ export default function Assignment() {
                     driverOptions={drivers}
                     onClose={() => setEditTarget(null)}
                     onSave={handleSaveTrip}
+                />
+            )}
+
+            {viewTarget && (
+                <AssignmentDetailsModal
+                    initialData={viewTarget}
+                    onClose={() => setViewTarget(null)}
                 />
             )}
 
