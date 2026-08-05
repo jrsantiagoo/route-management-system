@@ -13,6 +13,8 @@ export interface Vehicle {
     vehicleModel: string;
     initOdometer: number;
     year: number;
+    archived?: boolean;
+    archivedAt?: string;
 }
 
 export const mockVehicleData: Vehicle[] = [

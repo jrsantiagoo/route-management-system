@@ -161,6 +161,18 @@ export default function AssignmentDetailsModal({
                     </div>
                 </div>
 
+                {/* Notes */}
+
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                    <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
+                        Additional Notes
+                    </h2>
+
+                    <div className="grid grid-cols-2 gap-6 w-full font-semibold ">
+                        {"—"}
+                    </div>
+                </div>
+
                 {/* Record Details */}
                 <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
@@ -170,7 +182,7 @@ export default function AssignmentDetailsModal({
                     <div className="grid grid-cols-2 gap-6 w-full font-semibold ">
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Calendar size={21} />
+                                <Clock size={21} />
                                 <h2 className="mt-1">Created At</h2>
                             </div>
                             <div className="text-foreground">
@@ -184,15 +196,13 @@ export default function AssignmentDetailsModal({
                                 <Clock size={21} />
                                 <h2 className="mt-1">Last Modified</h2>
                             </div>
-                            <div className="text-foreground">
-                                Month Day, Year at Hour:Minute AM/PM
-                            </div>
+                            <div className="text-foreground">{"—"}</div>
                         </div>
 
                         {initialData?.archivedAt && (
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                    <Clock size={21} />
+                                    <CalendarClock size={21} />
                                     <h2 className="mt-1">Archived Date</h2>
                                 </div>
                                 <div className="text-foreground">

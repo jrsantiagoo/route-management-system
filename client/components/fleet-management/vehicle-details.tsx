@@ -3,6 +3,7 @@
 import {
     Activity,
     Calendar,
+    CalendarClock,
     Car,
     Clock,
     Fuel,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import StatusBadge from "../ui/status-badge";
+import { formatDateTime } from "@/lib/routing/formatters";
 
 interface VehicleDetailsProps {
     initialData?: Vehicle | null;
@@ -172,19 +174,28 @@ export default function VehicleDetailsModal({
                                 <Calendar size={21} />
                                 <h2 className="mt-1">Created At</h2>
                             </div>
-                            <div className="text-foreground">
-                                Month Day, Year at Hour:Minute AM/PM
-                            </div>
+                            <div className="text-foreground">{"—"}</div>
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Clock size={21} />
-                                <h2 className="mt-1">Last Updated</h2>
+                                <h2 className="mt-1">Last Modified</h2>
                             </div>
-                            <div className="text-foreground">
-                                Month Day, Year at Hour:Minute AM/PM
-                            </div>
+                            <div className="text-foreground">{"—"}</div>
                         </div>
+                        {initialData?.archivedAt && (
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                    <CalendarClock size={21} />
+                                    <h2 className="mt-1">Archived Date</h2>
+                                </div>
+                                <div className="text-foreground">
+                                    {initialData?.archivedAt
+                                        ? formatDateTime(initialData.archivedAt)
+                                        : "—"}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
