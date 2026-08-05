@@ -15,7 +15,7 @@ import DriverView from "@/components/assignment/driver-view";
 import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
-import AssignmentDetailsModal from "@/components/assignment/assignment-details";
+import TripDetailsModal from "@/components/assignment/trip-details";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -197,7 +197,7 @@ export default function Assignment() {
             )}
 
             {viewTarget && (
-                <AssignmentDetailsModal
+                <TripDetailsModal
                     initialData={viewTarget}
                     onClose={() => setViewTarget(null)}
                 />

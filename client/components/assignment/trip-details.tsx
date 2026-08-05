@@ -18,15 +18,15 @@ import StatusBadge from "../ui/status-badge";
 import { init } from "next/dist/compiled/webpack/webpack";
 import { formatDateTime } from "@/lib/routing/formatters";
 
-interface AssignmentDetailsProps {
+interface TripDetailsProps {
     initialData?: Trip | null;
     onClose: () => void;
 }
 
-export default function AssignmentDetailsModal({
+export default function TripDetailsModal({
     initialData,
     onClose,
-}: AssignmentDetailsProps) {
+}: TripDetailsProps) {
     return (
         // Background Overlay
         <div
