@@ -131,12 +131,12 @@ test.describe('Route Generation', () => {
     async () => {},
   );
 
-  // Blocked: DD-12/RMS-87 — urgent orders aren't sorted to the top of suggestions.
+  // Blocked: DD-12/RMS-105 — urgent orders aren't sorted to the top of suggestions.
   test.fixme('1-8 sorts urgent orders to the top of the stop suggestions', async () => {});
 
-  // Blocked: DD-13/RMS-88 — Suggest Routes generates per delivery-week, not per day.
+  // Blocked: DD-13/RMS-106 — Suggest Routes generates per delivery-week, not per day.
   test.fixme('1-9 generates route suggestions per day rather than per week', async () => {});
 
-  // Blocked: DD-14/RMS-89 — no fuel-consumption projection is shown on suggestions.
+  // Blocked: DD-14/RMS-107 — no fuel-consumption projection is shown on suggestions.
   test.fixme('1-10 shows a projected fuel-consumption figure on each suggestion', async () => {});
 });

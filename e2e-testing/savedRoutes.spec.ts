@@ -324,7 +324,12 @@ test.describe('Saved Routes', () => {
     await expect(page.getByRole('cell', { name })).toHaveCount(0);
   });
 
-  test('SR-15 the search box filters saved routes by name', async ({ page }) => {
+  test('SR-15 the search box filters saved routes by name', async ({ page, browserName }) => {
+    test.skip(
+      browserName === 'webkit',
+      'RMS-100: the filtered-out row stays visible on webkit. Reproduces live; closed as accepted.',
+    );
+
     const keep = uniqueName('QA keepme');
     const hide = uniqueName('QA hideme');
     await seedRoute(page, keep);

@@ -14,9 +14,9 @@ test.describe("Trip Assignment — Table & Driver Views", () => {
     // from activeHours.
     test.fixme("9-2 the Driver Capacity status reflects a computed utilization percentage", async () => {});
 
-    // Blocked: DD-18/RMS-93 — no urgency/time-remaining sort key exists.
+    // Blocked: DD-18/RMS-111 — no urgency/time-remaining sort key exists.
     test.fixme("9-3 the assignment table supports sorting by urgency or time remaining", async () => {});
 
-    // Blocked: DD-19/RMS-94 — no "Ongoing" status value exists anywhere in the status model.
+    // Blocked: DD-19/RMS-112 — no "Ongoing" status value exists anywhere in the status model.
     test.fixme("9-4 an Ongoing status renders with its own badge styling", async () => {});
 });

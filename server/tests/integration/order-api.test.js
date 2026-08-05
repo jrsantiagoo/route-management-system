@@ -95,7 +95,7 @@ describe("POST /api/orders", () => {
         expect(prisma.order.create).toHaveBeenCalled();
     });
 
-    it("400s when required fields are missing", async () => {
+    it("400s and creates nothing when required fields are missing", async () => {
         prisma.order.findFirst.mockResolvedValue(null);
         prisma.order.create.mockResolvedValue({});
 
@@ -105,11 +105,9 @@ describe("POST /api/orders", () => {
             .send({ client: "ACME" });
 
         expect(res.status).toBe(400);
+        expect(res.body).toEqual({ message: "Fields incomplete" });
+        expect(prisma.order.create).not.toHaveBeenCalled();
     });
-
-    // BR-06/RMS-82: the missing-fields branch responds 400 but does not
-    // return, so the order is still created.
-    it.todo("does not create the order when required fields are missing (blocked by RMS-82)");
 });
 
 describe("PUT /api/orders/status/:orderId", () => {

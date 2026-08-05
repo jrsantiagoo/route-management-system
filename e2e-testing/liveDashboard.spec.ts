@@ -119,15 +119,15 @@ test.describe('Live Dashboard', () => {
     async () => {},
   );
 
-  // Blocked: DD-10/RMS-85 — no urgency stat cards exist on the dashboard.
+  // Blocked: DD-10/RMS-103 — no urgency stat cards exist on the dashboard.
   test.fixme('5-12 shows urgency stat cards ("N trips coming soon", "N orders unassigned")', async () => {});
 
-  // Blocked: DD-10/RMS-85 — no projected fuel/distance impact figure exists.
+  // Blocked: DD-10/RMS-103 — no projected fuel/distance impact figure exists.
   test.fixme('5-13 shows a projected fuel/distance impact figure for upcoming trips', async () => {});
 
-  // Blocked: DD-11/RMS-86 — package size is still a raw value, not a category.
+  // Blocked: DD-11/RMS-104 — package size is still a raw value, not a category.
   test.fixme('5-14 shows package size as a category (S/M/L/XL) in the orders table', async () => {});
 
-  // Blocked: DD-11/RMS-86 — destination is unstructured free text.
+  // Blocked: DD-11/RMS-104 — destination is unstructured free text.
   test.fixme('5-15 shows destination in a structured City, Region format', async () => {});
 });
