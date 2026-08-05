@@ -108,6 +108,32 @@ async function installRouteApiMock(page: Page) {
     if (found) found.archivedAt = null;
     await route.fulfill(json({ success: true, data: found ?? null }));
   });
+
+  await page.route('**/api/routes/update/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    const body = JSON.parse(route.request().postData() ?? '{}');
+    const found = store.routes.find((r) => r.id_ === id);
+    if (found) {
+      found.name = body.name ?? found.name;
+      found.stops = (body.stops ?? found.stops).map((s: MockStop, i: number) => ({
+        id_: s.id_ ?? newId(`srv-stop-${i}`),
+        name: s.name,
+        address: s.address,
+        lat: s.lat,
+        lng: s.lng,
+        order: i,
+      }));
+      found.totalDistanceKm = body.totalDistanceKm ?? found.totalDistanceKm;
+      found.totalDurationMinutes = body.totalDurationMinutes ?? found.totalDurationMinutes;
+    }
+    await route.fulfill(json({ success: true, data: found ?? null }));
+  });
+
+  await page.route('**/api/routes/delete/*', async (route) => {
+    const id = decodeURIComponent(route.request().url().split('/').pop() ?? '');
+    store.routes = store.routes.filter((r) => r.id_ !== id);
+    await route.fulfill(json({ success: true, data: null }));
+  });
 }
 
 async function waitForPage(page: Page) {
@@ -257,7 +283,7 @@ test.describe('Saved Routes', () => {
     await page.getByRole('button', { name: 'archived' }).click();
     await expect(page.getByRole('cell', { name })).toBeVisible();
 
-    await page.getByTitle('Unarchive route').first().click();
+    await page.getByTitle('Restore route').first().click();
     await expect(page.getByText('Route unarchived.')).toBeVisible();
 
     await page.getByRole('button', { name: 'active' }).click();

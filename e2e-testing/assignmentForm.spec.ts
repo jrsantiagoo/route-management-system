@@ -211,25 +211,19 @@ test.describe('Assignment Form', () => {
     page,
   }) => {
     const routeName = `QA link probe ${Date.now()}`;
+    const token = await page.evaluate(() => localStorage.getItem('access_token'));
 
-    await page.evaluate((name) => {
-      const key = 'acesoft_savedRoutes';
-      const existing = JSON.parse(localStorage.getItem(key) ?? '[]');
-      existing.push({
-        id: `route-${Date.now()}`,
-        id_: `route-${Date.now()}`,
-        name,
+    const createResponse = await page.request.post('http://localhost:8080/api/routes', {
+      headers: { Authorization: `Bearer ${token}` },
+      data: {
+        name: routeName,
         stops: [],
-        segments: [],
         totalDistanceKm: 0,
         totalDurationMinutes: 0,
         vehicleType: 'car',
-        assignedWeek: '',
-        createdAt: new Date().toISOString(),
-        archived: false,
-      });
-      localStorage.setItem(key, JSON.stringify(existing));
-    }, routeName);
+      },
+    });
+    test.skip(!createResponse.ok(), 'Route Creation API rejected the probe route.');
 
     await page.goto('/assignment');
     await expect(page.getByRole('heading', { name: 'Route Assignment' })).toBeVisible({

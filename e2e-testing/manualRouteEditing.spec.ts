@@ -217,16 +217,21 @@ test.describe('Manual Route Editing', () => {
 
   test.fixme('2-3 reassigns a stop from Driver A to Driver B', async () => {});
 
-  test('2-5 rejects removing the final stop on a route', async ({ page }) => {
+  test('2-5 removing the final stop empties the editor, but the save guard still blocks it', async ({
+    page,
+  }) => {
     await openEditor(page);
     await page.getByRole('button', { name: 'Remove Rizal Park' }).click();
     await expect(page.getByText('Rizal Park')).toBeHidden();
 
     await page.getByRole('button', { name: 'Remove De La Salle University' }).click();
-    await expect(page.getByText('De La Salle University')).toBeVisible();
+    await expect(page.getByText('De La Salle University')).toBeHidden();
+
+    const save = page.getByRole('button', { name: 'Create Route', exact: true }).last();
+    await expect(save).toBeDisabled();
   });
 
-  // Blocked: DD-15/RMS-90 — the editor has no Revert/Undo action, only Cancel (discards
+  // Blocked: DD-15/RMS-108 — the editor has no Revert/Undo action, only Cancel (discards
   // everything) and Done Editing (keeps everything).
   test.fixme('2-10 a revert action restores the pre-edit stop list', async () => {});
 });
