@@ -118,4 +118,16 @@ test.describe('Live Dashboard', () => {
     '5-2 metrics update in real time after a delivery is completed (no manual refresh)',
     async () => {},
   );
+
+  // Blocked: DD-10/RMS-85 — no urgency stat cards exist on the dashboard.
+  test.fixme('5-12 shows urgency stat cards ("N trips coming soon", "N orders unassigned")', async () => {});
+
+  // Blocked: DD-10/RMS-85 — no projected fuel/distance impact figure exists.
+  test.fixme('5-13 shows a projected fuel/distance impact figure for upcoming trips', async () => {});
+
+  // Blocked: DD-11/RMS-86 — package size is still a raw value, not a category.
+  test.fixme('5-14 shows package size as a category (S/M/L/XL) in the orders table', async () => {});
+
+  // Blocked: DD-11/RMS-86 — destination is unstructured free text.
+  test.fixme('5-15 shows destination in a structured City, Region format', async () => {});
 });

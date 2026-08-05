@@ -225,4 +225,8 @@ test.describe('Manual Route Editing', () => {
     await page.getByRole('button', { name: 'Remove De La Salle University' }).click();
     await expect(page.getByText('De La Salle University')).toBeVisible();
   });
+
+  // Blocked: DD-15/RMS-90 — the editor has no Revert/Undo action, only Cancel (discards
+  // everything) and Done Editing (keeps everything).
+  test.fixme('2-10 a revert action restores the pre-edit stop list', async () => {});
 });

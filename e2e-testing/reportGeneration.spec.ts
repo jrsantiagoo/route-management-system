@@ -190,4 +190,7 @@ test.describe('Report Generation', () => {
   );
 
   test.fixme('4-6 upper management can download the PDF report successfully', async () => {});
+
+  // Blocked: DD-05/RMS-75 — no dedicated report-type selection exists, only Full Summary.
+  test.fixme('4-13 a dedicated End-of-day report type produces a daily-scoped PDF', async () => {});
 });
