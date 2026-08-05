@@ -15,6 +15,8 @@ import DriverView from "@/components/assignment/driver-view";
 import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
+import TripDetailsModal from "@/components/assignment/trip-details";
+import TableSkeleton from "@/components/ui/table-skeleton";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -26,6 +28,7 @@ export default function Assignment() {
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
     const [editTarget, setEditTarget] = useState<Trip | null>(null);
+    const [viewTarget, setViewTarget] = useState<Trip | null>(null);
     // Tracks which trips are archived so the table can split Active/Archived
     const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
@@ -68,32 +71,33 @@ export default function Assignment() {
 
     // Move a trip to the archived list
     const handleArchiveTrip = useCallback((tripId: string) => {
+        setTrips((prev) =>
+            prev.map((t) =>
+                t.id_ === tripId
+                    ? { ...t, archivedAt: new Date().toISOString() }
+                    : t,
+            ),
+        );
         setArchivedIds((prev) => [...prev, tripId]);
         setToast("Assignment archived.");
     }, []);
 
     // Restore a trip from the archived list
     const handleUnarchiveTrip = useCallback((tripId: string) => {
+        setTrips((prev) =>
+            prev.map((t) =>
+                t.id_ === tripId ? { ...t, archivedAt: undefined } : t,
+            ),
+        );
         setArchivedIds((prev) => prev.filter((id) => id !== tripId));
         setToast("Assignment unarchived.");
     }, []);
 
     // Close the edit modal and confirm the update
-    const handleSaveTrip = useCallback(
-        (_data: Partial<Trip>) => {
-            setEditTarget(null);
-            setToast("Assignment updated successfully.");
-        },
-        [],
-    );
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64 text-muted-foreground">
-                Loading assignments…
-            </div>
-        );
-    }
+    const handleSaveTrip = useCallback((_data: Partial<Trip>) => {
+        setEditTarget(null);
+        setToast("Assignment updated successfully.");
+    }, []);
 
     return (
         <div className="flex flex-col gap-6">
@@ -156,23 +160,32 @@ export default function Assignment() {
             </div>
 
             {/* Displays views one-by-one */}
-            {viewMode === "calendar" && (
-                <CalendarView
-                    trips={trips}
-                    drivers={drivers}
-                    onDeleted={handleDeleteTrip}
-                />
+            {loading ? (
+                <TableSkeleton rows={7} />
+            ) : (
+                <>
+                    {viewMode === "calendar" && (
+                        <CalendarView
+                            trips={trips}
+                            drivers={drivers}
+                            onDeleted={handleDeleteTrip}
+                        />
+                    )}
+                    {viewMode === "table" && (
+                        <TableView
+                            trips={trips}
+                            archivedIds={archivedIds}
+                            onEdit={setEditTarget}
+                            onView={setViewTarget}
+                            onArchive={handleArchiveTrip}
+                            onUnarchive={handleUnarchiveTrip}
+                        />
+                    )}
+                    {viewMode === "driver" && (
+                        <DriverView items={mockDriverDayData} />
+                    )}
+                </>
             )}
-            {viewMode === "table" && (
-                <TableView
-                    trips={trips}
-                    archivedIds={archivedIds}
-                    onEdit={setEditTarget}
-                    onArchive={handleArchiveTrip}
-                    onUnarchive={handleUnarchiveTrip}
-                />
-            )}
-            {viewMode === "driver" && <DriverView items={mockDriverDayData} />}
 
             {editTarget && (
                 <AssignmentFormModal
@@ -181,6 +194,13 @@ export default function Assignment() {
                     driverOptions={drivers}
                     onClose={() => setEditTarget(null)}
                     onSave={handleSaveTrip}
+                />
+            )}
+
+            {viewTarget && (
+                <TripDetailsModal
+                    initialData={viewTarget}
+                    onClose={() => setViewTarget(null)}
                 />
             )}
 

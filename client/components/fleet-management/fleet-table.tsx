@@ -11,8 +11,8 @@ import {
     CircleGauge,
     Ellipsis,
     PenLine,
-    Power,
     RotateCcw,
+    Clock,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
@@ -21,6 +21,7 @@ import FilterSelect from "../ui/filter-select";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
+import { formatDateTime } from "@/lib/routing/formatters";
 
 interface VehicleProps {
     vehicles: Vehicle[];
@@ -100,12 +101,18 @@ export default function FleetTable({
                 return v.target.toString().padStart(5, "0");
             case "avg_performance":
                 return v.avg_performance?.toString().padStart(5, "0") ?? "";
+            case "archivedAt":
+                // The date column sorts by Last Modified in the Active tab and
+                // by Archived At in the Archived tab, matching what it shows.
+                return view === "archived"
+                    ? v.archivedAt ?? ""
+                    : v.lastModified ?? "";
             case "status":
                 return v.status;
             default:
                 return "";
         }
-    }, []);
+    }, [view]);
     const {
         sorted: sortedVehicles,
         state: sortState,
@@ -256,6 +263,19 @@ export default function FleetTable({
                                 Avg. Performance
                             </SortableHeader>
                             <SortableHeader
+                                sortKey="archivedAt"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Clock
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                {view === "archived"
+                                    ? "Archived At"
+                                    : "Last Modified"}
+                            </SortableHeader>
+                            <SortableHeader
                                 sortKey="status"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -301,6 +321,15 @@ export default function FleetTable({
                                 </td>
                                 <td className="px-3 py-2">
                                     {v.avg_performance ?? "—"}
+                                </td>
+                                <td className="px-3 py-2">
+                                    {view === "archived"
+                                        ? v.archivedAt
+                                            ? formatDateTime(v.archivedAt)
+                                            : "—"
+                                        : v.lastModified
+                                          ? formatDateTime(v.lastModified)
+                                          : "—"}
                                 </td>
                                 <td className="px-3 py-2">
                                     <StatusBadge status={v.status} />
@@ -376,7 +405,7 @@ export default function FleetTable({
                         {filtered.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={8}
+                                    colSpan={9}
                                     className="px-3 py-8 text-center text-foreground"
                                 >
                                     {view === "archived"

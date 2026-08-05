@@ -37,6 +37,19 @@
     --color-card: var(--card);
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
+    /* Slow pulsing outline used by loading skeletons while a page loads */
+    --animate-skeleton: skeleton-pulse 2.4s ease-in-out infinite;
+}
+
+/* Gentle opacity flash that makes skeleton outlines slowly fade in and out */
+@keyframes skeleton-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
 }
 
 body {

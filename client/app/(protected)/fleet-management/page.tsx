@@ -10,31 +10,39 @@ import { mockVehicleData } from "@/lib/fleet-management/mockData";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 
 export default function FleetManagement() {
+    const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicleData);
     const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
     const [viewTarget, setViewTarget] = useState<Vehicle | null>(null);
     const [toast, setToast] = useState<string | null>(null);
-    // Tracks which vehicles are archived so the table can split Active/Archived
     const [archivedIds, setArchivedIds] = useState<string[]>([]);
 
     // Move a vehicle to the archived list
-    const handleArchive = useCallback(
-        (vehicle: Vehicle) => {
-            setArchivedIds((prev) => [...prev, vehicle.vehicleId_]);
-            setToast("Vehicle archived.");
-        },
-        [],
-    );
+    const handleArchive = useCallback((vehicle: Vehicle) => {
+        setVehicles((prev) =>
+            prev.map((v) =>
+                v.vehicleId_ === vehicle.vehicleId_
+                    ? { ...v, archivedAt: new Date().toISOString() }
+                    : v,
+            ),
+        );
+        setArchivedIds((prev) => [...prev, vehicle.vehicleId_]);
+        setToast("Vehicle archived.");
+    }, []);
 
     // Restore a vehicle from the archived list
-    const handleUnarchive = useCallback(
-        (vehicle: Vehicle) => {
-            setArchivedIds((prev) =>
-                prev.filter((id) => id !== vehicle.vehicleId_),
-            );
-            setToast("Vehicle unarchived.");
-        },
-        [],
-    );
+    const handleUnarchive = useCallback((vehicle: Vehicle) => {
+        setVehicles((prev) =>
+            prev.map((v) =>
+                v.vehicleId_ === vehicle.vehicleId_
+                    ? { ...v, archivedAt: undefined }
+                    : v,
+            ),
+        );
+        setArchivedIds((prev) =>
+            prev.filter((id) => id !== vehicle.vehicleId_),
+        );
+        setToast("Vehicle unarchived.");
+    }, []);
 
     return (
         <div className="flex flex-col gap-6">
@@ -52,7 +60,7 @@ export default function FleetManagement() {
                 onSaved={() => setToast("Vehicle added successfully.")}
             />
             <FleetTable
-                vehicles={mockVehicleData}
+                vehicles={vehicles}
                 archivedIds={archivedIds}
                 onEdit={setEditTarget}
                 onView={setViewTarget}

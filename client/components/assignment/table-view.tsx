@@ -6,7 +6,6 @@ import {
     ClipboardList,
     Clock,
     Eye,
-    MapPinned,
     Route,
     Search,
     PenLine,
@@ -24,24 +23,16 @@ import FilterSelect from "../ui/filter-select";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
+import { formatDateTime } from "@/lib/routing/formatters";
 
 interface TableViewProps {
     trips: Trip[];
     archivedIds?: string[];
 
-    onView?: (tripId: string) => void;
+    onView?: (trip: Trip) => void;
     onEdit?: (trip: Trip) => void;
     onArchive?: (tripId: string) => void;
     onUnarchive?: (tripId: string) => void;
-}
-
-function formatDate(iso: string) {
-    if (!iso) return "—";
-    return new Date(iso).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
 }
 
 export default function TableView({
@@ -76,7 +67,7 @@ export default function TableView({
             trips
                 .map((t) => t.scheduled_date)
                 .filter(Boolean)
-                .map((d) => formatDate(d)),
+                .map((d) => formatDateTime(d)),
         ),
     ] as string[];
     const statusOptions = [...new Set(trips.map((t) => t.status))];
@@ -100,7 +91,7 @@ export default function TableView({
                 t.agent_profile?.driver_id === driverFilter;
             const matchesScheduled =
                 scheduledFilter === "All" ||
-                formatDate(t.scheduled_date) === scheduledFilter;
+                formatDateTime(t.scheduled_date) === scheduledFilter;
             const matchesStatus =
                 statusFilter === "All" || t.status === statusFilter;
             return (
@@ -113,28 +104,35 @@ export default function TableView({
         });
 
     // Sort trips by the currently active column
-    const getTripVal = useCallback((t: Trip, key: string) => {
-        switch (key) {
-            case "route":
-                return t.route?.name ?? "";
-            case "driver":
-                return t.agent_profile?.driver_id ?? "";
-            case "vehicle":
-                return "";
-            case "purpose":
-                return t.purpose ?? "";
-            case "fuelConsumed":
-                return "";
-            case "scheduled_date":
-                return t.scheduled_date ?? "";
-            case "created_at":
-                return t.created_at ?? "";
-            case "status":
-                return t.status;
-            default:
-                return "";
-        }
-    }, []);
+    const getTripVal = useCallback(
+        (t: Trip, key: string) => {
+            switch (key) {
+                case "route":
+                    return t.route?.name ?? "";
+                case "driver":
+                    return t.agent_profile?.driver_id ?? "";
+                case "vehicle":
+                    return "";
+                case "purpose":
+                    return t.purpose ?? "";
+                case "fuelConsumed":
+                    return "";
+                case "scheduled_date":
+                    return t.scheduled_date ?? "";
+                case "created_at":
+                    // Ensures that column sorts by last modified if in Active &
+                    // by archived date if in Archived
+                    return view === "archived"
+                        ? (t.archivedAt ?? "")
+                        : (t.created_at ?? "");
+                case "status":
+                    return t.status;
+                default:
+                    return "";
+            }
+        },
+        [view],
+    );
     const {
         sorted: sortedTrips,
         state: sortState,
@@ -296,7 +294,9 @@ export default function TableView({
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Created At
+                                {view === "archived"
+                                    ? "Archived At"
+                                    : "Last Modified"}
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"
@@ -316,7 +316,10 @@ export default function TableView({
                                 key={t.id_}
                                 className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-3 py-2 font-medium">
+                                <td
+                                    className="px-3 py-2 font-medium max-w-40 truncate"
+                                    title={t.route?.name}
+                                >
                                     {t.route?.name || "—"}
                                 </td>
                                 <td className="px-3 py-2">
@@ -326,12 +329,16 @@ export default function TableView({
                                 <td className="px-3 py-2">
                                     {t.purpose || "—"}
                                 </td>
-                                <td className="px-3 py-2">—</td>
+                                <td className="px-3 py-2">{"—"}</td>
                                 <td className="px-3 py-2">
-                                    {formatDate(t.scheduled_date)}
+                                    {formatDateTime(t.scheduled_date)}
                                 </td>
                                 <td className="px-3 py-2">
-                                    {formatDate(t.created_at)}
+                                    {view === "archived"
+                                        ? t.archivedAt
+                                            ? formatDateTime(t.archivedAt)
+                                            : "—"
+                                        : formatDateTime(t.created_at)}
                                 </td>
                                 <td className="px-3 py-2">
                                     <StatusBadge status={t.status} />
@@ -357,7 +364,7 @@ export default function TableView({
                                                     label: "View",
                                                     icon: <Eye size={15} />,
                                                     onClick: () => {
-                                                        onView?.(t.id_);
+                                                        onView?.(t);
                                                         setActiveMenu(null);
                                                     },
                                                 },
