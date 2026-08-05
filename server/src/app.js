@@ -24,7 +24,6 @@ app.use(
 
 // Lightweight health check (used by tooling / Playwright webServer readiness).
 app.get("/health", (req, res) => res.json({ status: "ok" }));
-
 app.use("/api/managers", managerRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/auth", authRoutes);
