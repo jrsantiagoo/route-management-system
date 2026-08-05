@@ -53,3 +53,41 @@ export async function changePassword(
     });
     return response.json();
 }
+
+interface AuthApiResponse {
+    success: boolean;
+    error?: string;
+    message?: string;
+}
+
+// TODO: Connect to backend. Placeholder until /api/auth/forgot-password is
+// routed and connected on the server.
+export async function forgotPassword(email: string): Promise<AuthApiResponse> {
+    // const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ email }),
+    // });
+    // return response.json();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return { success: true };
+}
+
+// TODO: Connect to backend. Placeholder until /api/auth/reset-password is
+// routed and connected on the server.
+export async function resetPassword(
+    token: string,
+    newPassword: string,
+    confirmPassword: string,
+): Promise<AuthApiResponse> {
+    // const response = await fetch(`${API_URL}/api/auth/reset-password`, {
+    //     method: "PUT",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ token, newPassword, confirmPassword }),
+    // });
+    // return response.json();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return { success: true };
+}

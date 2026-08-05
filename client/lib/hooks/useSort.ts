@@ -7,6 +7,7 @@ export interface SortState {
 
 // Given a data array and a getValue accessor, returns a sorted copy
 // with a toggle(key) function to set or flip the sort column.
+// Used for sorting table columns by ascending/descending
 export function useSort<T>(
     data: T[],
     getValue: (item: T, key: string) => string,
@@ -18,7 +19,10 @@ export function useSort<T>(
         return [...data].sort((a, b) => {
             const aVal = getValue(a, state.key);
             const bVal = getValue(b, state.key);
-            const cmp = aVal.localeCompare(bVal);
+            const cmp =
+                typeof aVal === "number" && typeof bVal === "number"
+                    ? aVal - bVal
+                    : String(aVal ?? "").localeCompare(String(bVal ?? ""));
             return state.dir === "asc" ? cmp : -cmp;
         });
     }, [data, state, getValue]);

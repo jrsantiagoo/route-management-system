@@ -71,7 +71,7 @@ function FitBoundsController({
     const prevKey = useRef("");
 
     useEffect(() => {
-        const key = `${stops.map((s) => s.id).join(",")}|${polyline.length}`;
+        const key = `${stops.map((s) => s.id_).join(",")}|${polyline.length}`;
         if (key === prevKey.current) return;
         prevKey.current = key;
 
@@ -235,7 +235,7 @@ export default function RouteMapInner({
                 const label = String(index + 1);
                 return (
                     <Marker
-                        key={stop.id}
+                        key={stop.id_}
                         position={[stop.lat, stop.lng]}
                         icon={createStopIcon(label, color)}
                     >

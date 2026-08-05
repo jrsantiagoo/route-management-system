@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { changePassword } from "../../lib/api/auth";
 
-export default function ChangePasswordCard() {
+interface ChangePasswordCardProps {
+    onSuccess?: () => void;
+}
+
+export default function ChangePasswordCard({ onSuccess }: ChangePasswordCardProps) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,7 +26,7 @@ export default function ChangePasswordCard() {
             if (result.error) {
                 alert(result.error); // or show error in UI
             } else {
-                alert("Password changed successfully!");
+                onSuccess?.();
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");

@@ -10,6 +10,7 @@ import driverRoutes from "./routes/driver-routes.js";
 import orderRoutes from "./routes/order-routes.js";
 import fuelLogRoutes from "./routes/fuel-log-routes.js";
 import efficiencyRoutes from "./routes/efficiency-routes.js";
+import vehicleRoutes from "./routes/vehicle-routes.js";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api/drivers", driverRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/fuel_logs", fuelLogRoutes);
 app.use("/api/efficiency", efficiencyRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 export default app;

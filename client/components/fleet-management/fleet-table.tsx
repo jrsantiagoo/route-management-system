@@ -1,29 +1,49 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
     Search,
     ArchiveIcon,
     Eye,
-    SquarePen,
     User,
     Van,
     Weight,
     CircleGauge,
     Ellipsis,
+    PenLine,
+    Power,
+    RotateCcw,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
+import { TableActionsMenu } from "@/components/ui/table-actions-menu";
+import StatusBadge from "@/components/ui/status-badge";
 
 interface VehicleProps {
     vehicles: Vehicle[];
-    // onDeleted: (tripId: string) => void;
+    archivedIds?: string[];
+    onView?: (vehicle: Vehicle) => void;
+    onEdit?: (vehicle: Vehicle) => void;
+    onArchive?: (vehicle: Vehicle) => void;
+    onUnarchive?: (vehicle: Vehicle) => void;
 }
 
-export default function FleetTable({ vehicles }: VehicleProps) {
+export default function FleetTable({
+    vehicles,
+    archivedIds,
+    onEdit,
+    onView,
+    onArchive,
+    onUnarchive,
+}: VehicleProps) {
     const [search, setSearch] = useState("");
+    // Toggles between the Active and Archived views
+    const [view, setView] = useState<"active" | "archived">("active");
+    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
+        useTableActionsMenu();
     // const [routeFilter, setRouteFilter] = useState("All");
     // const [driverFilter, setDriverFilter] = useState("All");
     // const [scheduledFilter, setScheduledFilter] = useState("All");
@@ -49,15 +69,21 @@ export default function FleetTable({ vehicles }: VehicleProps) {
     ] as string[];
     const statusOptions = [...new Set(trips.map((t) => t.status))]; */
 
-    // Filter trips by route name or driver ID
-    const filtered = vehicles.filter((v) => {
-        const q = search.toLowerCase();
-        const matchesSearch =
-            v.plateNumber?.toLowerCase().includes(q) ||
-            v.vehicleType?.toLowerCase().includes(q) ||
-            false;
-        return matchesSearch;
-    });
+    // Used to determine whether a vehicle belongs to the Active or Archived view
+    const isArchived = (v: Vehicle) =>
+        archivedIds?.includes(v.vehicleId_) ?? false;
+
+    // Filter trips by the selected view, then by route name or driver ID
+    const filtered = vehicles
+        .filter((v) => (view === "archived" ? isArchived(v) : !isArchived(v)))
+        .filter((v) => {
+            const q = search.toLowerCase();
+            const matchesSearch =
+                v.plateNumber?.toLowerCase().includes(q) ||
+                v.vehicleType?.toLowerCase().includes(q) ||
+                false;
+            return matchesSearch;
+        });
 
     // Sort trips by the currently active column
     const getVehicleVal = useCallback((v: Vehicle, key: string) => {
@@ -95,20 +121,41 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                     <h3 className="mt-1 text-foreground">Vehicle Fleet</h3>
                 </div>
 
-                {/* Filtered Search */}
-                <div className="relative">
-                    <Search
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search by vehicle..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
-                            focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                    />
+                {/* Active / Archived toggle + Filtered Search */}
+                <div className="flex items-center gap-2">
+                    {/* Active / Archived toggle */}
+                    <div className="flex items-center rounded-lg border border-border bg-card">
+                        {(["active", "archived"] as const).map((v) => (
+                            <button
+                                key={v}
+                                onClick={() => setView(v)}
+                                className={`flex items-center px-3.5 py-1.5 text-sm font-semibold rounded-md transition capitalize
+                                    ${
+                                        view === v
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    }`}
+                            >
+                                {v}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Filtered Search */}
+                    <div className="relative">
+                        <Search
+                            size={14}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Search by vehicle..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                                focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -143,7 +190,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 bg-card">
+                    <thead className="sticky top-0 z-10 bg-card">
                         <tr>
                             <SortableHeader
                                 sortKey="vehicle_plate"
@@ -227,7 +274,7 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-3 py-2 font-medium">
-                                    <div className="font-medium">
+                                    <div className="font-semibold">
                                         {v.plateNumber}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
@@ -249,13 +296,20 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                 <td className="px-3 py-2">
                                     {v.weightCapacity} kg
                                 </td>
-                                <td className="px-3 py-2">{v.target}</td>
+                                <td className="px-3 py-2 font-semibold">
+                                    {v.target} km/L
+                                </td>
                                 <td className="px-3 py-2">
                                     {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-3 py-2">{v.status}</td>
-                                <td className="pl-7 px-3 py-2">
+                                <td className="px-3 py-2">
+                                    <StatusBadge status={v.status} />
+                                </td>
+                                <td className="pl-7 px-3 py-2 relative">
                                     <button
+                                        onClick={(e) =>
+                                            openMenu(v.vehicleId_, e)
+                                        }
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
@@ -263,16 +317,71 @@ export default function FleetTable({ vehicles }: VehicleProps) {
                                     >
                                         <Ellipsis size={16} />
                                     </button>
+
+                                    {activeMenu === v.vehicleId_ && anchor && (
+                                        <TableActionsMenu
+                                            ref={menuRef}
+                                            // Menu renders in a viewport-fixed portal so it pops out of the scroll container
+                                            anchor={anchor}
+                                            actions={[
+                                                {
+                                                    label: "View",
+                                                    icon: <Eye size={15} />,
+                                                    onClick: () => {
+                                                        onView?.(v);
+                                                        setActiveMenu(null);
+                                                    },
+                                                },
+                                                {
+                                                    label: "Edit",
+                                                    icon: <PenLine size={15} />,
+                                                    onClick: () => {
+                                                        onEdit?.(v);
+                                                        setActiveMenu(null);
+                                                    },
+                                                },
+                                                {
+                                                    label:
+                                                        view === "archived"
+                                                            ? "Unarchive"
+                                                            : "Archive",
+                                                    icon:
+                                                        view === "archived" ? (
+                                                            <RotateCcw
+                                                                size={15}
+                                                            />
+                                                        ) : (
+                                                            <ArchiveIcon
+                                                                size={15}
+                                                            />
+                                                        ),
+                                                    onClick: () => {
+                                                        if (
+                                                            view === "archived"
+                                                        ) {
+                                                            onUnarchive?.(v);
+                                                        } else {
+                                                            onArchive?.(v);
+                                                        }
+                                                        setActiveMenu(null);
+                                                    },
+                                                    variant: "danger",
+                                                },
+                                            ]}
+                                        />
+                                    )}
                                 </td>
                             </tr>
                         ))}
                         {filtered.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="px-3 py-8 text-center text-foreground"
                                 >
-                                    No vehicles found.
+                                    {view === "archived"
+                                        ? "No archived vehicles."
+                                        : "No vehicles found."}
                                 </td>
                             </tr>
                         )}

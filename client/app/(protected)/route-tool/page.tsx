@@ -1,6 +1,23 @@
 "use client";
 
+/**
+ * Route Creation page — owns the saved-routes list and decides which modal is
+ * open. All persistence goes through lib/routing/storageHelper.
+ *
+ * Section map:
+ *   1. IMPORTS
+ *   2. PAGE STATE + LOCALSTORAGE LOADING
+ *   3. ROUTE ACTION HANDLERS
+ *   4. DARK MODE STYLES
+ *   5. PAGE LAYOUT
+ */
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. IMPORTS
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useState, useEffect, useCallback } from "react";
+import { Plus, RefreshCw } from "lucide-react";
 import { RoutePlan } from "@/lib/routing/types";
 import {
     loadSavedRoutes,
@@ -12,12 +29,18 @@ import { DARK } from "@/components/routing/routeTheme";
 import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
-import Toast from "@/components/routing/Toast";
+import Toast from "@/components/ui/toast";
 import * as routeApi from "@/lib/api/routes";
 
 export default function RouteCreationPage() {
     const { theme } = useTheme();
     const dark = theme === "dark";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. PAGE STATE + LOCALSTORAGE LOADING
+    // Every mutation below calls a storage helper then reload(), so the table
+    // can never drift out of sync with what is actually stored.
+    // ─────────────────────────────────────────────────────────────────────────
 
     const [savedRoutes, setSavedRoutes] = useState<RoutePlan[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,12 +69,20 @@ export default function RouteCreationPage() {
         reload();
     }, [reload]);
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. ROUTE ACTION HANDLERS
+    // Create / edit / archive / restore / delete. Archived routes are
+    // read-only — the table hides Edit and Delete for them, and openEdit /
+    // confirmDelete below refuse them as a second line of defense.
+    // ─────────────────────────────────────────────────────────────────────────
+
     function openCreate() {
         setEditingRoute(null);
         setIsModalOpen(true);
     }
 
     function openEdit(route: RoutePlan) {
+        if (route.archived) return; // restore it first
         setEditingRoute(route);
         setIsModalOpen(true);
     }
@@ -100,12 +131,22 @@ export default function RouteCreationPage() {
         }
     }
 
-    function confirmDelete() {
-        if (!deleteTarget) return;
-        deleteRoute(deleteTarget.id_);
+    async function confirmDelete() {
+        if (!deleteTarget || deleteTarget.archived) return;
+        try {
+            const res = await routeApi.deleteRoute(deleteTarget);
+            if (res.success) {
+                reload();
+                setToast("Route deleted.");
+            } else {
+                console.log("Failed to delete route:", res);
+                alert(res.message || "Failed to delete route.");
+            }
+        } catch (err) {
+            console.error("Failed to delete route:", err);
+            alert("Could not reach the server.");
+        }
         setDeleteTarget(null);
-        reload();
-        setToast("Route deleted.");
     }
 
     // Names of other routes — lets an edited route keep its own name.
@@ -113,9 +154,17 @@ export default function RouteCreationPage() {
         .filter((r) => r.id_ !== editingRoute?.id_)
         .map((r) => r.name);
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. DARK MODE STYLES — palette lives in components/routing/routeTheme.ts
+    // ─────────────────────────────────────────────────────────────────────────
+
     const text = dark ? DARK.text : "#111827";
     const muted = dark ? DARK.textMuted : "#6b7280";
     const border = dark ? DARK.panelBorder : "#d1d5db";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. PAGE LAYOUT
+    // ─────────────────────────────────────────────────────────────────────────
 
     return (
         <div style={{ width: "100%" }}>
@@ -168,18 +217,7 @@ export default function RouteCreationPage() {
                         cursor: "pointer",
                     }}
                 >
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <path d="M12 5v14M5 12h14" />
-                    </svg>
+                    <Plus size={16} strokeWidth={2} />
                     Create New Route
                 </button>
 
@@ -200,21 +238,7 @@ export default function RouteCreationPage() {
                         cursor: "pointer",
                     }}
                 >
-                    <svg
-                        width="17"
-                        height="17"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3L21 8" />
-                        <path d="M21 3v5h-5" />
-                        <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.7-3L3 16" />
-                        <path d="M3 21v-5h5" />
-                    </svg>
+                    <RefreshCw size={17} strokeWidth={2} />
                 </button>
             </div>
 

@@ -20,6 +20,24 @@ export async function createRoute(req, res) {
     }
 }
 
+export async function updateRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const route = req.body;
+        const stops = route.stops;
+        let updatedRoute;
+
+        await routeService.updateRouteDetails(route);
+        if (stops) {
+            updatedRoute = await routeService.updateStops(id_, stops);
+        }
+
+        res.json({ success: true, data: updatedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export async function archiveRoute(req, res) {
     try {
         const id_ = req.params.id_;
@@ -37,6 +55,17 @@ export async function unarchiveRoute(req, res) {
         const unarchivedRoute = await routeService.unarchiveRoute(id_);
 
         res.json({ success: true, data: unarchivedRoute });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function deleteRoute(req, res) {
+    try {
+        const id_ = req.params.id_;
+        const deletedRoute = await routeService.deleteRoute(id_);
+
+        res.json({ success: true, data: deletedRoute });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma.js";
 import * as orderService from "./order-service.js";
+import { getVehicleById, updateVehicle } from "./vehicle-service.js";
 
 export function buildDailyPerOrderMetrics(
     logs,
@@ -50,6 +51,54 @@ export async function getAllLogs() {
 
 // --- CREATE LOG ---
 export async function createFuelLog(data) {
+    const vehicle = getVehicleById(data.vehicle_id_);
+    if (!data.distance_traveled) {
+        data.distance_traveled =
+            data.odometer_reading - (await vehicle).last_odometer;
+    }
+    if (data.distance_traveled < 0) {
+        throw new Error("Distance traveled cannot be negative.");
+    }
+    if (data.liters_added <= 0) {
+        throw new Error("Liters added must be greater than 0");
+    }
+
+    if (!data.fuel_efficiency) {
+        data.fuel_efficiency = data.distance_traveled / data.liters_added;
+    }
+
+    if (!data.variance_percentage) {
+        const target_efficiency = (await vehicle).expected_kml;
+        data.variance_percentage =
+            ((data.fuel_efficiency - target_efficiency) / target_efficiency) *
+            100;
+    }
+
+    if (!data.price_per_liter && data.total_price) {
+        data.price_per_liter = data.total_price / data.liters_added;
+    } else if (data.price_per_liter && !data.total_price) {
+        data.total_price = data.liters_added * data.price_per_liter;
+    }
+
+    if (!data.cost_per_km) {
+        data.cost_per_km =
+            data.distance_traveled != 0
+                ? data.total_price / data.distance_traveled
+                : 0;
+    }
+
+    if (!data.needs_attention) {
+        data.needs_attention = false;
+    }
+
+    if (!data.log_date) {
+        data.log_date = new Date();
+    } else {
+        data.log_date = new Date(data.log_date);
+    }
+
+    updateVehicle(data.vehicle_id_, { last_odometer: data.odometer_reading });
+
     return prisma.fuel_log.create({
         data,
     });

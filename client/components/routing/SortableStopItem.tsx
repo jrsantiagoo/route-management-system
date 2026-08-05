@@ -66,7 +66,7 @@ export default function SortableStopItem({
         transform,
         transition,
         isDragging,
-    } = useSortable({ id: stop.id, disabled: !isEditMode });
+    } = useSortable({ id: stop.id_, disabled: !isEditMode });
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -250,7 +250,7 @@ export default function SortableStopItem({
                 {/* Remove button — visible in edit mode for all stops */}
                 {isEditMode && (
                     <button
-                        onClick={() => onRemove(stop.id)}
+                        onClick={() => onRemove(stop.id_)}
                         style={{
                             background: "none",
                             border: "none",

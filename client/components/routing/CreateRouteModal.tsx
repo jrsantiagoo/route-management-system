@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { MapPin, X } from "lucide-react";
 import {
     Stop,
     RouteSegment,
@@ -17,7 +18,7 @@ import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { DARK } from "./routeTheme";
-import { createRoute } from "@/lib/api/routes";
+import { createRoute, updateRoute } from "@/lib/api/routes";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -129,13 +130,14 @@ export default function CreateRouteModal({
             totalDistanceKm,
             totalDurationMinutes,
             vehicleType: recommendVehicle(stops.length),
-            //assignedWeek: editingRoute?.assignedWeek ?? "",
             createdAt: editingRoute?.createdAt ?? new Date().toISOString(),
             archivedAt: editingRoute?.archivedAt ?? undefined,
         };
 
         try {
-            const res = await createRoute(plan);
+            const res = isEditing
+                ? await updateRoute(plan)
+                : await createRoute(plan);
             if (res.success) {
                 onSaved("Route saved successfully.");
             } else {
@@ -193,19 +195,11 @@ export default function CreateRouteModal({
                             gap: "8px",
                         }}
                     >
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke={dark ? DARK.textMuted : "#6b7280"}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                            <circle cx="12" cy="10" r="3" />
-                        </svg>
+                        <MapPin
+                            size={20}
+                            color={dark ? DARK.textMuted : "#6b7280"}
+                            strokeWidth={2}
+                        />
                         <h2
                             style={{
                                 margin: 0,
@@ -221,16 +215,18 @@ export default function CreateRouteModal({
                         onClick={onClose}
                         aria-label="Close"
                         style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                             background: "none",
                             border: "none",
-                            fontSize: "22px",
                             cursor: "pointer",
                             color: dark ? DARK.textMuted : "#6b7280",
                             lineHeight: 1,
                             padding: "0 4px",
                         }}
                     >
-                        ×
+                        <X size={20} strokeWidth={2} />
                     </button>
                 </div>
 
@@ -259,8 +255,10 @@ export default function CreateRouteModal({
                         isLoading={isLoadingRoute}
                         routeError={routeError}
                         onReorder={setStops}
-                        onRemoveStop={(id) =>
-                            setStops((prev) => prev.filter((s) => s.id_ !== id))
+                        onRemoveStop={(id_) =>
+                            setStops((prev) =>
+                                prev.filter((s) => s.id_ !== id_),
+                            )
                         }
                         onAddStop={handleAddStop}
                         onPreview={setPreviewStop}
