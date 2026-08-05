@@ -16,6 +16,7 @@ import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
 import TripDetailsModal from "@/components/assignment/trip-details";
+import TableSkeleton from "@/components/ui/table-skeleton";
 
 export default function Assignment() {
     const [viewMode, setViewMode] = useState<"calendar" | "table" | "driver">(
@@ -98,14 +99,6 @@ export default function Assignment() {
         setToast("Assignment updated successfully.");
     }, []);
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64 text-muted-foreground">
-                Loading assignments…
-            </div>
-        );
-    }
-
     return (
         <div className="flex flex-col gap-6">
             {/* Page Header */}
@@ -167,24 +160,32 @@ export default function Assignment() {
             </div>
 
             {/* Displays views one-by-one */}
-            {viewMode === "calendar" && (
-                <CalendarView
-                    trips={trips}
-                    drivers={drivers}
-                    onDeleted={handleDeleteTrip}
-                />
+            {loading ? (
+                <TableSkeleton rows={7} />
+            ) : (
+                <>
+                    {viewMode === "calendar" && (
+                        <CalendarView
+                            trips={trips}
+                            drivers={drivers}
+                            onDeleted={handleDeleteTrip}
+                        />
+                    )}
+                    {viewMode === "table" && (
+                        <TableView
+                            trips={trips}
+                            archivedIds={archivedIds}
+                            onEdit={setEditTarget}
+                            onView={setViewTarget}
+                            onArchive={handleArchiveTrip}
+                            onUnarchive={handleUnarchiveTrip}
+                        />
+                    )}
+                    {viewMode === "driver" && (
+                        <DriverView items={mockDriverDayData} />
+                    )}
+                </>
             )}
-            {viewMode === "table" && (
-                <TableView
-                    trips={trips}
-                    archivedIds={archivedIds}
-                    onEdit={setEditTarget}
-                    onView={setViewTarget}
-                    onArchive={handleArchiveTrip}
-                    onUnarchive={handleUnarchiveTrip}
-                />
-            )}
-            {viewMode === "driver" && <DriverView items={mockDriverDayData} />}
 
             {editTarget && (
                 <AssignmentFormModal
