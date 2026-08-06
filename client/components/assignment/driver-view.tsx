@@ -95,7 +95,7 @@ export default function DriverView({ items }: DriverViewProps) {
 
             <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-white/5">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="driverName"
@@ -157,7 +157,7 @@ export default function DriverView({ items }: DriverViewProps) {
                                 key={d.id_}
                                 className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-3 py-2 w-60 truncate border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle w-60 truncate border-b border-border">
                                     <div className="font-semibold">
                                         {d.driverName}
                                     </div>
@@ -165,16 +165,16 @@ export default function DriverView({ items }: DriverViewProps) {
                                         {d.driverId}
                                     </div>
                                 </td>
-                                <td className="px-3 py-2 border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
                                     {d.activeHours.toFixed(1)} hrs
                                 </td>
-                                <td className="px-3 py-2 border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
                                     {d.fuelConsumed.toFixed(1)} L
                                 </td>
-                                <td className="px-3 py-2 border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
                                     {d.distanceTraveled.toFixed(1)} km
                                 </td>
-                                <td className="px-3 py-2 w-40 truncate border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle w-40 truncate border-b border-border">
                                     <StatusBadge status={d.status} />
                                 </td>
                             </tr>

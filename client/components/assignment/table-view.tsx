@@ -252,7 +252,7 @@ export default function TableView({
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-white/5">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900">
                         <tr>
                             <SortableHeader
                                 sortKey="route"
@@ -355,7 +355,12 @@ export default function TableView({
                                     {t.route?.name || "—"}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
-                                    {t.agent_profile?.driver_id || "Unassigned"}
+                                    <div className="font-semibold">
+                                        {"Driver Name"}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {t.agent_profile?.driver_id || ""}
+                                    </div>
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {"—"}

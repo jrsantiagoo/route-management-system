@@ -223,7 +223,7 @@ export default function FleetTable({
             {/* Route Assignment Table View */}
             <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-white/5">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="vehicle_plate"

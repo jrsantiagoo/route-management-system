@@ -210,7 +210,7 @@ export default function CalendarView({
 
             <div className="overflow-auto max-h-128 rounded-lg border border-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
-                    <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-white/5">
+                    <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="driver_id"
