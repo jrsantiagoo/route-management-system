@@ -243,8 +243,8 @@ test.describe('Assignment Form', () => {
   );
 
   // Blocked: DD-09/RMS-102 — the date input has no `min`, so past dates are selectable.
-  test.fixme('8-16 rejects scheduling a trip on a past date', async () => {});
+  test.fixme('AS-16 rejects scheduling a trip on a past date', async () => {});
 
   // Blocked: DD-09/RMS-102 — there is no delivery time-of-day field at all.
-  test.fixme('8-17 enforces a 9am-5pm delivery time window', async () => {});
+  test.fixme('AS-17 enforces a 9am-5pm delivery time window', async () => {});
 });

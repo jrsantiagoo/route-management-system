@@ -17,10 +17,15 @@ async function signOut(page: Page) {
 }
 
 const NAV = [
-  { href: '/dashboard', label: 'Dashboard', heading: 'Dashboard' },
-  { href: '/route-tool', label: 'Routing Tool', heading: 'Route Creation' },
-  { href: '/assignment', label: 'Assignment', heading: 'Route Assignment' },
-  { href: '/fleet-management', label: 'Fleet Management', heading: 'Fleet Management' },
+  { id: 'SN-02', href: '/dashboard', label: 'Dashboard', heading: 'Dashboard' },
+  { id: 'SN-03', href: '/route-tool', label: 'Routing Tool', heading: 'Route Creation' },
+  { id: 'SN-04', href: '/assignment', label: 'Assignment', heading: 'Route Assignment' },
+  {
+    id: 'SN-05',
+    href: '/fleet-management',
+    label: 'Fleet Management',
+    heading: 'Fleet Management',
+  },
 ] as const;
 
 const SIDEBAR = 'div.fixed.top-0.left-0';
@@ -65,8 +70,8 @@ test.describe('Session & Navigation', () => {
     }
   });
 
-  for (const { href, label, heading } of NAV) {
-    test(`SN-nav ${label} navigates to ${href} and renders its page heading`, async ({ page }) => {
+  for (const { id, href, label, heading } of NAV) {
+    test(`${id} ${label} navigates to ${href} and renders its page heading`, async ({ page }) => {
       await page.getByRole('link', { name: label }).click();
       await page.waitForURL(`**${href}`);
       await expect(page.getByRole('heading', { name: heading })).toBeVisible({ timeout: 30_000 });
