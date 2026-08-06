@@ -157,12 +157,12 @@ export default function TableView({
         <div className="rounded-xl bg-card p-6 border border-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
-                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
+                <div className="flex -mt-4 items-center gap-2 text-lg font-bold">
                     <ClipboardList
                         size={21}
                         className="text-primary-foreground"
                     />
-                    <h3 className="mt-1 text-foreground">All Assignments</h3>
+                    <h2 className="mt-1 text-foreground">All Assignments</h2>
                 </div>
 
                 {/* Active / Archived toggle + Filtered Search */}
@@ -250,9 +250,9 @@ export default function TableView({
             </div>
 
             {/* Route Assignment Table View */}
-            <div className="overflow-auto max-h-128 rounded-lg border-x border-border scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-100/70 dark:bg-white/5">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-white/5">
                         <tr>
                             <SortableHeader
                                 sortKey="route"
@@ -349,37 +349,37 @@ export default function TableView({
                                 className="border-b border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td
-                                    className="px-4 py-3.5 text-[13px] align-middle font-medium max-w-40 truncate"
+                                    className="px-4 py-3.5 text-[13px] align-middle font-semibold max-w-40 truncate border-b border-border"
                                     title={t.route?.name}
                                 >
                                     {t.route?.name || "—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {t.agent_profile?.driver_id || "Unassigned"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {"—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {t.purpose || "—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {"—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {formatDateTime(t.scheduled_date)}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {view === "archived"
                                         ? t.archivedAt
                                             ? formatDateTime(t.archivedAt)
                                             : "—"
                                         : formatDateTime(t.created_at)}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     <StatusBadge status={t.status} />
                                 </td>
-                                <td className="pl-7 px-4 py-3.5 align-middle relative">
+                                <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-border">
                                     <button
                                         onClick={(e) => openMenu(t.id_, e)}
                                         className="p-1 rounded-md text-muted-foreground bg-card border border-border
@@ -482,10 +482,12 @@ export default function TableView({
                         ))}
                     </select>
                     <span>
-                        | Showing {showingFrom}-{showingTo} of {sortedTrips.length}
+                        | Showing {showingFrom}-{showingTo} of{" "}
+                        {sortedTrips.length}
                     </span>
                 </div>
 
+                {/* Change pages */}
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -500,7 +502,9 @@ export default function TableView({
                         Page {currentPage} of {totalPages}
                     </span>
                     <button
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        onClick={() =>
+                            setPage((p) => Math.min(totalPages, p + 1))
+                        }
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
