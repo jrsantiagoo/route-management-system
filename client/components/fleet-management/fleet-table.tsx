@@ -14,7 +14,7 @@ import {
     RotateCcw,
     Clock,
 } from "lucide-react";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/types/vehicle";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";

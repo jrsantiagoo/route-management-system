@@ -6,11 +6,11 @@ import VehicleForm from "@/components/fleet-management/vehicle-form";
 import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
 import VehicleDetailsModal from "@/components/fleet-management/vehicle-details";
 import Toast from "@/components/ui/toast";
-import { mockVehicleData } from "@/lib/fleet-management/mockData";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/types/vehicle";
+import * as vehicleApi from "@/lib/api/vehicles";
 
 export default function FleetManagement() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicleData);
+    const [vehicles, setVehicles] = useState<Vehicle[]>();
     const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
     const [viewTarget, setViewTarget] = useState<Vehicle | null>(null);
     const [toast, setToast] = useState<string | null>(null);

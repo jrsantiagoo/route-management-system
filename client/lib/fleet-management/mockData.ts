@@ -1,24 +1,4 @@
-export interface Vehicle {
-    id_: String;
-    lastDriver: string;
-    driverId: string;
-    vehicleId_: string;
-    vehicleType: string;
-    plateNumber: string;
-    weightCapacity: number;
-    target: number;
-    avg_performance?: number;
-    status: string;
-    vehicleMaker: string;
-    vehicleModel: string;
-    initOdometer: number;
-    year: number;
-    archived?: boolean;
-    archivedAt?: string;
-    // ISO datetime the vehicle was last edited. Mock data backs the active-tab
-    // "Last Modified" column; there is no created timestamp for vehicles.
-    lastModified?: string;
-}
+import type { Vehicle } from "@/lib/types/vehicle";
 
 export const mockVehicleData: Vehicle[] = [
     {

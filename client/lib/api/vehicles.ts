@@ -1,4 +1,5 @@
 import { apiCall } from "./client";
+import type { Vehicle } from "@/lib/types/vehicle";
 
 type BackendVehicle = {
     id_: string;
@@ -22,26 +23,6 @@ type BackendVehicle = {
     vehicle_model?: {
         name?: string | null;
     } | null;
-};
-
-export type Vehicle = {
-    id_: string;
-    vehicleId_: string;
-    plateNumber: string;
-    vehicleType: string;
-    lastDriver: string;
-    driverId: string;
-    weightCapacity: number;
-    target: number;
-    avg_performance?: number;
-    status: string;
-    vehicleMaker: string;
-    vehicleModel: string;
-    initOdometer: number;
-    year: number;
-    archived?: boolean;
-    archivedAt?: string;
-    lastModified?: string;
 };
 
 const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
