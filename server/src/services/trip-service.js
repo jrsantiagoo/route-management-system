@@ -23,7 +23,7 @@ export async function createTrip(routeId, driverId, scheduledDate) {
 
     return prisma.trip.create({
         data: {
-            route_id_: routeId,
+            route_id_: routeId || null,
             driver_id_: driverId,
             status: "PENDING",
             tag_type: "ASSIGNED",
