@@ -9,7 +9,7 @@ export async function getVehicles(includeArchived = false) {
 
     return prisma.vehicle.findMany({
         where,
-        include: { agent_profile: true },
+        include: { agent_profile: true, vehicle_make: true, vehicle_model: true },
         orderBy: { created_at: "desc" },
     });
 }
@@ -17,7 +17,7 @@ export async function getVehicles(includeArchived = false) {
 export async function getVehicleById(vehicleId) {
     const vehicle = await prisma.vehicle.findUnique({
         where: { id_: vehicleId },
-        include: { agent_profile: true, fuel_log: true, trip: true },
+        include: { agent_profile: true, fuel_log: true, trip: true, vehicle_make: true, vehicle_model: true },
     });
     if (!vehicle) throw new Error("Vehicle not found");
     return vehicle;
