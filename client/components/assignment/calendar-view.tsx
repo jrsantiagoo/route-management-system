@@ -35,6 +35,21 @@ function formatDate(d: Date) {
 }
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+];
+const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 export default function CalendarView({
     trips,
@@ -45,6 +60,8 @@ export default function CalendarView({
         return getWeekRange(new Date()).monday;
     });
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const weekRange = getWeekRange(currentWeekStart);
     const weekDates = DAYS.map((_, i) => {
@@ -112,34 +129,39 @@ export default function CalendarView({
 
     const todayStr = formatDate(new Date());
 
-    const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ];
-    const startMonth = monthNames[weekRange.monday.getMonth()];
-    const endMonth = monthNames[weekRange.sunday.getMonth()];
+    const startMonth = MONTH_NAMES[weekRange.monday.getMonth()];
+    const endMonth = MONTH_NAMES[weekRange.sunday.getMonth()];
     const weekLabel =
         startMonth === endMonth
             ? `${startMonth} ${weekRange.monday.getDate()} - ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`
             : `${startMonth} ${weekRange.monday.getDate()} - ${endMonth} ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`;
 
+    // Paginate the sorted, filtered trips into the current page's slice
+    const totalPages = Math.max(
+        1,
+        Math.ceil(sortedDrivers.length / rowsPerPage),
+    );
+    const currentPage = Math.min(page, totalPages);
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const pageRows = sortedDrivers.slice(startIdx, startIdx + rowsPerPage);
+    const showingFrom = sortedDrivers.length === 0 ? 0 : startIdx + 1;
+    const showingTo = Math.min(startIdx + rowsPerPage, sortedDrivers.length);
+
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
             {/* Calendar View Header */}
             <div className="flex items-center justify-between mb-4">
-                <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
-                    <Calendar size={21} className="text-primary-foreground" />
-                    <h3 className="mt-1 text-foreground">{weekLabel}</h3>
+                <div>
+                    <div className="flex -mt-2 items-center gap-2 text-lg font-bold">
+                        <Calendar
+                            size={21}
+                            className="text-primary-foreground"
+                        />
+                        <h2 className="mt-1 text-foreground">Weekly View</h2>
+                    </div>
+                    <p className="-mb-2 text-[13px] text-muted-foreground">
+                        {weekLabel}
+                    </p>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -188,13 +210,13 @@ export default function CalendarView({
 
             <div className="overflow-auto max-h-128 rounded-lg border border-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
-                    <thead className="sticky top-0 z-20 bg-card">
+                    <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="driver_id"
                                 sortState={sortState}
                                 onToggle={toggleSort}
-                                className="sticky left-0 z-30 min-w-30 bg-card border-r border-b border-border rounded-tl-lg"
+                                className="sticky left-0 z-30 min-w-30 text-sm! border-r border-b border-border rounded-tl-lg"
                             >
                                 <User
                                     size={14}
@@ -236,11 +258,11 @@ export default function CalendarView({
                                 </td>
                             </tr>
                         )}
-                        {sortedDrivers.map((driver) => (
+                        {pageRows.map((driver) => (
                             <tr key={driver.id_}>
                                 <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
-                                    <div className="font-medium">
-                                        {driver.name}
+                                    <div className="font-semibold">
+                                        {driver.name ?? "Driver Name"}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
                                         {driver.driver_id}
@@ -295,6 +317,58 @@ export default function CalendarView({
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <span>Rows per page</span>
+                    <select
+                        value={rowsPerPage}
+                        onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setPage(1);
+                        }}
+                        className="px-2 py-1 border border-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                    >
+                        {ROWS_PER_PAGE_OPTIONS.map((n) => (
+                            <option key={n} value={n}>
+                                {n}
+                            </option>
+                        ))}
+                    </select>
+                    <span>
+                        | Showing {showingFrom}-{showingTo} of{" "}
+                        {sortedDrivers.length}
+                    </span>
+                </div>
+
+                {/* Change pages */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage <= 1}
+                        aria-label="Previous page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronLeft size={15} strokeWidth={2} />
+                    </button>
+                    <span className="text-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() =>
+                            setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage >= totalPages}
+                        aria-label="Next page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronRight size={15} strokeWidth={2} />
+                    </button>
+                </div>
             </div>
         </div>
     );

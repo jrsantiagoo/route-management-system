@@ -13,6 +13,8 @@ import {
     PenLine,
     RotateCcw,
     Clock,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 import type { Vehicle } from "@/lib/fleet-management/mockData";
 import { useSort } from "@/lib/hooks/useSort";
@@ -22,6 +24,8 @@ import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
+
+const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 interface VehicleProps {
     vehicles: Vehicle[];
@@ -45,6 +49,8 @@ export default function FleetTable({
     const [view, setView] = useState<"active" | "archived">("active");
     const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
         useTableActionsMenu();
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     // const [routeFilter, setRouteFilter] = useState("All");
     // const [driverFilter, setDriverFilter] = useState("All");
     // const [scheduledFilter, setScheduledFilter] = useState("All");
@@ -87,45 +93,59 @@ export default function FleetTable({
         });
 
     // Sort trips by the currently active column
-    const getVehicleVal = useCallback((v: Vehicle, key: string) => {
-        switch (key) {
-            case "vehicle_plate":
-                return v.plateNumber;
-            case "vehicle_type":
-                return v.vehicleType;
-            case "last_driver":
-                return v.lastDriver;
-            case "weight_capacity":
-                return v.weightCapacity.toString().padStart(5, "0");
-            case "target":
-                return v.target.toString().padStart(5, "0");
-            case "avg_performance":
-                return v.avg_performance?.toString().padStart(5, "0") ?? "";
-            case "archivedAt":
-                // The date column sorts by Last Modified in the Active tab and
-                // by Archived At in the Archived tab, matching what it shows.
-                return view === "archived"
-                    ? v.archivedAt ?? ""
-                    : v.lastModified ?? "";
-            case "status":
-                return v.status;
-            default:
-                return "";
-        }
-    }, [view]);
+    const getVehicleVal = useCallback(
+        (v: Vehicle, key: string) => {
+            switch (key) {
+                case "vehicle_plate":
+                    return v.plateNumber;
+                case "vehicle_type":
+                    return v.vehicleType;
+                case "last_driver":
+                    return v.lastDriver;
+                case "weight_capacity":
+                    return v.weightCapacity.toString().padStart(5, "0");
+                case "target":
+                    return v.target.toString().padStart(5, "0");
+                case "avg_performance":
+                    return v.avg_performance?.toString().padStart(5, "0") ?? "";
+                case "archivedAt":
+                    // The date column sorts by Last Modified in the Active tab and
+                    // by Archived At in the Archived tab, matching what it shows.
+                    return view === "archived"
+                        ? (v.archivedAt ?? "")
+                        : (v.lastModified ?? "");
+                case "status":
+                    return v.status;
+                default:
+                    return "";
+            }
+        },
+        [view],
+    );
     const {
         sorted: sortedVehicles,
         state: sortState,
         toggle: toggleSort,
     } = useSort(filtered, getVehicleVal);
 
+    // Paginate the sorted, filtered vehicles into the current page's slice
+    const totalPages = Math.max(
+        1,
+        Math.ceil(sortedVehicles.length / rowsPerPage),
+    );
+    const currentPage = Math.min(page, totalPages);
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const pageRows = sortedVehicles.slice(startIdx, startIdx + rowsPerPage);
+    const showingFrom = sortedVehicles.length === 0 ? 0 : startIdx + 1;
+    const showingTo = Math.min(startIdx + rowsPerPage, sortedVehicles.length);
+
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 border border-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-base font-semibold">
                     <Van size={21} className="text-primary-foreground" />
-                    <h3 className="mt-1 text-foreground">Vehicle Fleet</h3>
+                    <h2 className="mt-1 text-foreground">Vehicle Fleet</h2>
                 </div>
 
                 {/* Active / Archived toggle + Filtered Search */}
@@ -135,7 +155,10 @@ export default function FleetTable({
                         {(["active", "archived"] as const).map((v) => (
                             <button
                                 key={v}
-                                onClick={() => setView(v)}
+                                onClick={() => {
+                                    setView(v);
+                                    setPage(1);
+                                }}
                                 className={`flex items-center px-3.5 py-1.5 text-sm font-semibold rounded-md transition capitalize
                                     ${
                                         view === v
@@ -158,7 +181,10 @@ export default function FleetTable({
                             type="text"
                             placeholder="Search by vehicle..."
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setPage(1);
+                            }}
                             className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
                                 focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                         />
@@ -195,9 +221,9 @@ export default function FleetTable({
             </div> */}
 
             {/* Route Assignment Table View */}
-            <div className="overflow-auto max-h-128 rounded-lg scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-card">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="vehicle_plate"
@@ -282,18 +308,18 @@ export default function FleetTable({
                             >
                                 Status
                             </SortableHeader>
-                            <th className="px-3 py-2 font-semibold text-foreground border-b border-border">
+                            <th className="px-4 py-3 text-xs font-bold text-foreground border-b border-border">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedVehicles.map((v) => (
+                        {pageRows.map((v) => (
                             <tr
                                 key={v.vehicleId_}
-                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
+                                className="border-b border-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-3 py-2 font-medium">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-border">
                                     <div className="font-semibold">
                                         {v.plateNumber}
                                     </div>
@@ -301,28 +327,28 @@ export default function FleetTable({
                                         {v.vehicleId_}
                                     </div>
                                 </td>
-                                <td className="px-3 py-2 font-medium">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-border">
                                     {v.vehicleType}
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {v.lastDriver == "" ? (
-                                        <div className="italic text-muted-foreground">
+                                        <div className="italic text-muted-foreground border-b border-border">
                                             No assigned driver
                                         </div>
                                     ) : (
                                         v.lastDriver
                                     )}
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {v.weightCapacity} kg
                                 </td>
-                                <td className="px-3 py-2 font-semibold">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-semibold border-b border-border">
                                     {v.target} km/L
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {view === "archived"
                                         ? v.archivedAt
                                             ? formatDateTime(v.archivedAt)
@@ -331,10 +357,10 @@ export default function FleetTable({
                                           ? formatDateTime(v.lastModified)
                                           : "—"}
                                 </td>
-                                <td className="px-3 py-2">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     <StatusBadge status={v.status} />
                                 </td>
-                                <td className="pl-7 px-3 py-2 relative">
+                                <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-border">
                                     <button
                                         onClick={(e) =>
                                             openMenu(v.vehicleId_, e)
@@ -406,7 +432,7 @@ export default function FleetTable({
                             <tr>
                                 <td
                                     colSpan={9}
-                                    className="px-3 py-8 text-center text-foreground"
+                                    className="py-10 text-center text-muted-foreground"
                                 >
                                     {view === "archived"
                                         ? "No archived vehicles."
@@ -416,6 +442,57 @@ export default function FleetTable({
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <span>Rows per page</span>
+                    <select
+                        value={rowsPerPage}
+                        onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setPage(1);
+                        }}
+                        className="px-2 py-1 border border-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                    >
+                        {ROWS_PER_PAGE_OPTIONS.map((n) => (
+                            <option key={n} value={n}>
+                                {n}
+                            </option>
+                        ))}
+                    </select>
+                    <span>
+                        | Showing {showingFrom}-{showingTo} of{" "}
+                        {sortedVehicles.length}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage <= 1}
+                        aria-label="Previous page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                            transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronLeft size={15} strokeWidth={2} />
+                    </button>
+                    <span className="text-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() =>
+                            setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage >= totalPages}
+                        aria-label="Next page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                            transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronRight size={15} strokeWidth={2} />
+                    </button>
+                </div>
             </div>
         </div>
     );
