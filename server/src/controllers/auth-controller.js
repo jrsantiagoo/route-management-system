@@ -113,3 +113,44 @@ export const logout = async (req, res) => {
     if (error) return res.status(400).json({ error: error.message });
     res.json({ message: "Logged out successfully" });
 };
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  res.json({ message: "Password reset link sent to your email" });
+};
+
+// --- RESET PASSWORD ---
+export const resetPassword = async (req, res) => {
+    const { newPassword, confirmPassword } = req.body;
+
+    // Validate new password and confirmation match
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: "New password and confirmation do not match" });
+    }
+
+    // Validate strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+        return res.status(400).json({
+            error: "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a symbol."
+        });
+    }
+
+    // Update password (Supabase requires active session from reset link)
+    const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+    });
+
+    if (error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+    res.json({ message: "Password reset successfully" });
+};
