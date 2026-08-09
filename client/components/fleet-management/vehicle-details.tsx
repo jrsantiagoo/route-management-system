@@ -11,7 +11,7 @@ import {
     User,
     X,
 } from "lucide-react";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/types/vehicle";
 import StatusBadge from "../ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
 
