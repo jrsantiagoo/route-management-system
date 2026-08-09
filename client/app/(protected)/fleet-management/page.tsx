@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import FleetTable from "@/components/fleet-management/fleet-table";
 import VehicleForm from "@/components/fleet-management/vehicle-form";
 import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
@@ -9,40 +9,122 @@ import Toast from "@/components/ui/toast";
 import type { Vehicle } from "@/lib/types/vehicle";
 import * as vehicleApi from "@/lib/api/vehicles";
 
+const VALID_VEHICLE_TYPES = [
+    "VAN",
+    "MOTORCYCLE",
+    "CAR",
+    "TRUCK",
+    "BUS",
+    "OTHER",
+];
+
+function buildVehiclePayload(data: Partial<Vehicle>) {
+    const normalizedType = data.vehicleType
+        ? data.vehicleType.trim().toUpperCase()
+        : null;
+
+    return {
+        plate_number: data.plateNumber,
+        year: data.year,
+        vehicle_type: VALID_VEHICLE_TYPES.includes(normalizedType ?? "")
+            ? normalizedType
+            : "OTHER",
+        initial_odometer: data.initOdometer,
+        expected_kml: data.target,
+        is_active: data.status?.toUpperCase() !== "INACTIVE",
+    };
+}
+
 export default function FleetManagement() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>();
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [editTarget, setEditTarget] = useState<Vehicle | null>(null);
     const [viewTarget, setViewTarget] = useState<Vehicle | null>(null);
     const [toast, setToast] = useState<string | null>(null);
-    const [archivedIds, setArchivedIds] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Move a vehicle to the archived list
-    const handleArchive = useCallback((vehicle: Vehicle) => {
-        setVehicles((prev) =>
-            prev.map((v) =>
-                v.vehicleId_ === vehicle.vehicleId_
-                    ? { ...v, archivedAt: new Date().toISOString() }
-                    : v,
-            ),
-        );
-        setArchivedIds((prev) => [...prev, vehicle.vehicleId_]);
-        setToast("Vehicle archived.");
+    async function loadVehicles() {
+        setIsLoading(true);
+        try {
+            // Request archived and active vehicles so the table can show both views
+            const result = await vehicleApi.getVehicles(true);
+            if (result.success) {
+                setVehicles(result.data);
+            } else {
+                setToast(result.message ?? "Failed to load vehicles.");
+            }
+        } catch (error: any) {
+            setToast(error?.message ?? "Failed to load vehicles.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        loadVehicles();
     }, []);
 
-    // Restore a vehicle from the archived list
-    const handleUnarchive = useCallback((vehicle: Vehicle) => {
-        setVehicles((prev) =>
-            prev.map((v) =>
-                v.vehicleId_ === vehicle.vehicleId_
-                    ? { ...v, archivedAt: undefined }
-                    : v,
-            ),
-        );
-        setArchivedIds((prev) =>
-            prev.filter((id) => id !== vehicle.vehicleId_),
-        );
-        setToast("Vehicle unarchived.");
-    }, []);
+    async function handleCreateVehicle(data: Partial<Vehicle>) {
+        try {
+            const payload = buildVehiclePayload(data);
+            const result = await vehicleApi.createVehicle(payload);
+            if (!result.success) {
+                throw new Error(result.message ?? "Failed to create vehicle.");
+            }
+            await loadVehicles();
+            setToast("Vehicle added successfully.");
+        } catch (error: any) {
+            setToast(error?.message ?? "Failed to create vehicle.");
+        }
+    }
+
+    async function handleUpdateVehicle(data: Partial<Vehicle>) {
+        if (!editTarget) return;
+        try {
+            const payload = buildVehiclePayload(data);
+            const result = await vehicleApi.updateVehicle(
+                editTarget.vehicleId_,
+                payload,
+            );
+            if (!result.success) {
+                throw new Error(result.message ?? "Failed to update vehicle.");
+            }
+            await loadVehicles();
+            setToast("Vehicle updated successfully.");
+            setEditTarget(null);
+        } catch (error: any) {
+            setToast(error?.message ?? "Failed to update vehicle.");
+        }
+    }
+
+    async function handleArchive(vehicle: Vehicle) {
+        try {
+            const result = await vehicleApi.archiveVehicle(vehicle.vehicleId_);
+            if (!result.success) {
+                throw new Error(result.message ?? "Failed to archive vehicle.");
+            }
+            await loadVehicles();
+            setToast("Vehicle archived.");
+        } catch (error: any) {
+            setToast(error?.message ?? "Failed to archive vehicle.");
+        }
+    }
+
+    async function handleUnarchive(vehicle: Vehicle) {
+        try {
+            const result = await vehicleApi.unarchiveVehicle(
+                vehicle.vehicleId_,
+            );
+            if (!result.success) {
+                throw new Error(
+                    result.message ?? "Failed to unarchive vehicle.",
+                );
+            }
+            await loadVehicles();
+            setToast("Vehicle unarchived.");
+        } catch (error: any) {
+            setToast(error?.message ?? "Failed to unarchive vehicle.");
+        }
+    }
 
     return (
         <div className="flex flex-col gap-6">
@@ -56,12 +138,9 @@ export default function FleetManagement() {
                 </div>
             </div>
 
-            <VehicleForm
-                onSaved={() => setToast("Vehicle added successfully.")}
-            />
+            <VehicleForm onCreate={handleCreateVehicle} />
             <FleetTable
                 vehicles={vehicles}
-                archivedIds={archivedIds}
                 onEdit={setEditTarget}
                 onView={setViewTarget}
                 onArchive={handleArchive}
@@ -72,10 +151,7 @@ export default function FleetManagement() {
                 <VehicleFormModal
                     initialData={editTarget}
                     onClose={() => setEditTarget(null)}
-                    onSave={() => {
-                        setEditTarget(null);
-                        setToast("Vehicle updated successfully.");
-                    }}
+                    onSave={handleUpdateVehicle}
                 />
             )}
 

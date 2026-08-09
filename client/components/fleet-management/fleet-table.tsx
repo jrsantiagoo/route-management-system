@@ -25,7 +25,6 @@ import { formatDateTime } from "@/lib/routing/formatters";
 
 interface VehicleProps {
     vehicles: Vehicle[];
-    archivedIds?: string[];
     onView?: (vehicle: Vehicle) => void;
     onEdit?: (vehicle: Vehicle) => void;
     onArchive?: (vehicle: Vehicle) => void;
@@ -34,7 +33,6 @@ interface VehicleProps {
 
 export default function FleetTable({
     vehicles,
-    archivedIds,
     onEdit,
     onView,
     onArchive,
@@ -71,8 +69,7 @@ export default function FleetTable({
     const statusOptions = [...new Set(trips.map((t) => t.status))]; */
 
     // Used to determine whether a vehicle belongs to the Active or Archived view
-    const isArchived = (v: Vehicle) =>
-        archivedIds?.includes(v.vehicleId_) ?? false;
+    const isArchived = (v: Vehicle) => Boolean(v.archived || v.archivedAt);
 
     // Filter trips by the selected view, then by route name or driver ID
     const filtered = vehicles

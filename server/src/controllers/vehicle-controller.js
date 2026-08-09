@@ -42,10 +42,7 @@ function validateVehicleInput(data, isUpdate = false) {
         if (!VALID_VEHICLE_TYPES.includes(data.vehicle_type))
             return [`vehicle_type must be one of: ${VALID_VEHICLE_TYPES.join(", ")}`];
     }
-    if (data.target_efficiency !== undefined && data.target_efficiency !== null) {
-        if (isNaN(Number(data.target_efficiency))) return ["target_efficiency must be a valid number"];
-        if (Number(data.target_efficiency) <= 0) return ["target_efficiency must be > 0"];
-    }
+    // `target_efficiency` is deprecated; use `expected_kml` instead
     if (data.weight_capacity !== undefined && data.weight_capacity !== null) {
         if (isNaN(Number(data.weight_capacity))) return ["weight_capacity must be a valid number"];
         if (Number(data.weight_capacity) < 0) return ["weight_capacity must be >= 0"];
@@ -64,7 +61,9 @@ function validateVehicleInput(data, isUpdate = false) {
 
 export async function getVehicles(req, res) {
     try {
-        const vehicles = await vehicleService.getVehicles();
+        // If the client requests archived vehicles include them.
+        const includeArchived = String(req.query.archived) === "true";
+        const vehicles = await vehicleService.getVehicles(includeArchived);
         res.json({ success: true, data: vehicles });
     } catch (error) {
         res.status(400).json({ message: error.message });

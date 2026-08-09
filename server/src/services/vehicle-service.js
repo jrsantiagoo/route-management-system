@@ -1,8 +1,14 @@
 import prisma from "../lib/prisma.js";
 
-export async function getVehicles() {
+export async function getVehicles(includeArchived = false) {
+    const where = { deleted_at: null };
+    if (!includeArchived) {
+        // default behavior: only non-archived vehicles
+        where.archived_at = null;
+    }
+
     return prisma.vehicle.findMany({
-        where: { deleted_at: null, archived_at: null },
+        where,
         include: { agent_profile: true },
         orderBy: { created_at: "desc" },
     });
@@ -32,9 +38,6 @@ export async function createVehicle(vehicle) {
                 ? Number(vehicle.last_odometer)
                 : null,
             expected_kml: Number(vehicle.expected_kml),
-            target_efficiency: vehicle.target_efficiency
-                ? Number(vehicle.target_efficiency)
-                : null,
             conduction_sticker: vehicle.conduction_sticker ?? null,
             reg_certification: vehicle.reg_certification ?? null,
             or_number: vehicle.or_number ?? null,

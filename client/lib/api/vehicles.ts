@@ -56,8 +56,9 @@ const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
 
 const mapVehicles = (vehicles: BackendVehicle[]) => vehicles.map(mapVehicle);
 
-export async function getVehicles() {
-    const response = await apiCall("/api/vehicles");
+export async function getVehicles(includeArchived = false) {
+    const endpoint = includeArchived ? "/api/vehicles?archived=true" : "/api/vehicles";
+    const response = await apiCall(endpoint);
     const result = await response.json();
     return {
         ...result,
