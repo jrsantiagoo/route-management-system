@@ -114,16 +114,19 @@ export const logout = async (req, res) => {
     res.json({ message: "Logged out successfully" });
 };
 
+// --- FORGOT PASSWORD ---
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+    const { email } = req.body;
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+    await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: "http://localhost:3000/reset-password",
+    });
 
-  if (error) {
-    return res.status(400).json({ error: error.message });
-  }
+    if (error) {
+        return res.status(400).json({ error: error.message });
+    }
 
-  res.json({ message: "Password reset link sent to your email" });
+    res.json({ message: "Password reset link sent to your email" });
 };
 
 // --- RESET PASSWORD ---
