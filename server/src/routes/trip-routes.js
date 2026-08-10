@@ -22,7 +22,7 @@ router.post("/trips_date_range", authenticate, getTripsRange);
 router.post("/", authenticate, createTrip);
 router.post("/assign", authenticate, assignTripToDriver);
 router.patch("/:id/status", authenticate, changeTripStatus);
-router.patch("update/:id", authenticate, updateTrip);
+router.patch("/update/:id", authenticate, updateTrip);
 router.patch("/archive/:id", authenticate, archiveTrip);
 router.patch("/unarchive/:id", authenticate, unarchiveTrip);
 router.get("/driver/:driverId", authenticate, getTripsForDriver);
