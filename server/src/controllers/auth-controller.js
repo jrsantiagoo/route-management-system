@@ -78,7 +78,9 @@ export const changePassword = async (req, res) => {
 
     // Validate new password and confirmation match
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ error: "New password and confirmation do not match" });
+        return res
+            .status(400)
+            .json({ error: "New password and confirmation do not match" });
     }
 
     // Get the current user from the authenticate middleware
@@ -106,7 +108,6 @@ export const changePassword = async (req, res) => {
     res.json({ message: "Password changed successfully" });
 };
 
-
 // --- LOGOUT ---
 export const logout = async (req, res) => {
     const { error } = await supabase.auth.signOut();
@@ -118,7 +119,7 @@ export const logout = async (req, res) => {
 export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
-    await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: "http://localhost:3000/reset-password",
     });
 
@@ -135,14 +136,16 @@ export const resetPassword = async (req, res) => {
 
     // Validate new password and confirmation match
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ error: "New password and confirmation do not match" });
+        return res
+            .status(400)
+            .json({ error: "New password and confirmation do not match" });
     }
 
     // Validate strength
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!passwordRegex.test(newPassword)) {
         return res.status(400).json({
-            error: "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a symbol."
+            error: "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a symbol.",
         });
     }
 
