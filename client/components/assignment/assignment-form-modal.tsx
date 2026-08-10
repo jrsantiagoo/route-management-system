@@ -4,11 +4,13 @@ import { CalendarDays, Route, User, Van, X } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import { Driver, RoutePlan, Trip } from "@/lib/routing/types";
+import { Vehicle } from "@/lib/types/vehicle";
 
 interface AssignmentFormModalProps {
     initialData?: Trip | null;
     routeOptions: RoutePlan[];
     driverOptions: Driver[];
+    vehicleOptions: Vehicle[];
     onClose: () => void;
     onSave: (data: Partial<Trip>) => void | Promise<void>;
 }
@@ -17,6 +19,7 @@ export default function AssignmentFormModal({
     initialData,
     routeOptions,
     driverOptions,
+    vehicleOptions,
     onClose,
     onSave,
 }: AssignmentFormModalProps) {
@@ -24,9 +27,6 @@ export default function AssignmentFormModal({
 
     const [selectedRoute, setSelectedRoute] = useState(
         initialData?.route?.name ?? "",
-    );
-    const [selectedPurpose, setSelectedPurpose] = useState(
-        initialData?.purpose ?? "",
     );
     const [selectedDriver, setSelectedDriver] = useState(
         initialData?.agent_profile?.driver_id ?? "",
@@ -42,13 +42,11 @@ export default function AssignmentFormModal({
     const [saving, setSaving] = useState(false);
 
     // Used to help identify if all required fields are filled
-    const allFieldsFilled =
-        selectedRoute && selectedPurpose && selectedDriver && date;
+    const allFieldsFilled = selectedRoute && selectedDriver && date;
 
     // Ensures inputs aren't saved when form closes
     function handleClose() {
         setSelectedRoute("");
-        setSelectedPurpose("");
         setSelectedDriver("");
         setSelectedVehicle("");
         setDate("");
@@ -69,7 +67,6 @@ export default function AssignmentFormModal({
                 agent_profile: driverOptions.find(
                     (d) => d.driver_id === selectedDriver,
                 ),
-                purpose: selectedPurpose,
                 scheduled_date: date,
             });
         } finally {
@@ -156,17 +153,6 @@ export default function AssignmentFormModal({
                                 placeholder="Select a route"
                             />
                         </div>
-                        <div className="flex flex-col gap-1 w-50">
-                            <label className="text-sm font-semibold text-foreground">
-                                Purpose <span className="text-red-500">*</span>
-                            </label>
-                            <FormSelect
-                                value={selectedPurpose}
-                                onChange={setSelectedPurpose}
-                                options={["General", "Delivery"]}
-                                placeholder="Select purpose"
-                            />
-                        </div>
                         <div className="flex gap-10">
                             <div className="flex flex-col gap-1 w-50">
                                 <div className="flex gap-1 items-center">
@@ -204,7 +190,9 @@ export default function AssignmentFormModal({
                                 <FormSelect
                                     value={selectedVehicle}
                                     onChange={setSelectedVehicle}
-                                    options={routeOptions.map((r) => r.name)}
+                                    options={vehicleOptions.map(
+                                        (v) => v.plateNumber,
+                                    )}
                                     placeholder="Select a vehicle"
                                 />
                             </div>

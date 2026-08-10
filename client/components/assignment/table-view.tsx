@@ -119,8 +119,6 @@ export default function TableView({
                     return t.agent_profile?.driver_id ?? "";
                 case "vehicle":
                     return "";
-                case "purpose":
-                    return t.purpose ?? "";
                 case "fuelConsumed":
                     return "";
                 case "scheduled_date":
@@ -129,7 +127,7 @@ export default function TableView({
                     // Ensures that column sorts by last modified if in Active &
                     // by archived date if in Archived
                     return view === "archived"
-                        ? (t.archivedAt ?? "")
+                        ? (t.deleted_at ?? "")
                         : (t.created_at ?? "");
                 case "status":
                     return t.status;
@@ -289,24 +287,6 @@ export default function TableView({
                                 Vehicle
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="purpose"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                Purpose
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="fuelConsumed"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <Fuel
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Fuel Consumed
-                            </SortableHeader>
-                            <SortableHeader
                                 sortKey="scheduled_date"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -360,23 +340,17 @@ export default function TableView({
                                     </div>
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
-                                    {"—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
-                                    {t.purpose || "—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
-                                    {"—"}
+                                    {t.vehicle?.plate_number || "—"}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {formatDateTime(t.scheduled_date)}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     {view === "archived"
-                                        ? t.archivedAt
-                                            ? formatDateTime(t.archivedAt)
+                                        ? t.deleted_at
+                                            ? formatDateTime(t.deleted_at)
                                             : "—"
-                                        : formatDateTime(t.created_at)}
+                                        : formatDateTime(t.updated_at)}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     <StatusBadge status={t.status} />

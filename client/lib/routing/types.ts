@@ -53,15 +53,40 @@ export interface Trip {
     tag_type: string;
     scheduled_date: string;
     created_at: string;
-    purpose: string;
+    updated_at: string;
     destination: string;
     driver_id_?: string;
     route_id_: string;
     route: RoutePlan;
+    notes?: string;
     agent_profile?: Driver;
-    archived?: boolean;
-    archivedAt?: string;
+    vehicle?: BackendVehicle;
+    deleted_at?: string;
 }
+
+export type BackendVehicle = {
+    id_: string;
+    plate_number: string;
+    year: number;
+    vehicle_type?: string | null;
+    weight_capacity?: number | null;
+    initial_odometer: number;
+    last_odometer?: number | null;
+    expected_kml: number;
+    target_efficiency?: number | null;
+    is_active: boolean;
+    archived_at?: string | null;
+    updated_at?: string | null;
+    agent_profile?: {
+        driver_id?: string | null;
+    } | null;
+    vehicle_make?: {
+        name?: string | null;
+    } | null;
+    vehicle_model?: {
+        name?: string | null;
+    } | null;
+};
 
 export interface Order {
     id_: string;

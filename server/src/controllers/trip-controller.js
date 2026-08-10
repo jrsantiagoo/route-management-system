@@ -57,6 +57,20 @@ export async function changeTripStatus(req, res) {
     }
 }
 
+// --- TRIP UPDATE ---
+export async function updateTrip(req, res) {
+    try {
+        const { id_ } = req.params;
+        const updatedFields = req.body;
+
+        const result = await tripService.updateTrip(id_, updatedFields);
+
+        res.json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 // --- GET ALL TRIPS ---
 export async function getAllTrips(req, res) {
     try {

@@ -41,6 +41,7 @@ export async function getAllTrips() {
         include: {
             agent_profile: true,
             route: true,
+            vehicle: true,
         },
         orderBy: {
             scheduled_date: "asc",
@@ -149,6 +150,38 @@ export async function updateTripStatus(tripId, status) {
         include: {
             agent_profile: true,
             route: true,
+        },
+    });
+}
+
+export async function updateTrip(tripId, updatedFields) {
+    const trip = await prisma.trip.findUnique({
+        where: { id_: tripId },
+    });
+
+    if (!trip) throw new Error("Trip record not found");
+
+    let vehicle_id_ = trip.vehicle_id_; // keep existing value by default
+
+    if (updatedFields.plateNumber !== undefined) {
+        const vehicle = await prisma.vehicle.findUnique({
+            where: { id_: updatedFields.plateNumber },
+        });
+        vehicle_id_ = vehicle ? vehicle.id_ : null;
+    }
+
+    const { plateNumber, ...rest } = updatedFields; // remove plateNumber before spreading
+
+    return prisma.trip.update({
+        where: { id_: tripId },
+        data: {
+            ...rest,
+            vehicle_id_,
+        },
+        include: {
+            agent_profile: true,
+            route: true,
+            vehicle: true,
         },
     });
 }

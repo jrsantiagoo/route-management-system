@@ -4,17 +4,20 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import AssignmentFormModal from "./assignment-form-modal";
 import { Driver, RoutePlan, Trip } from "@/lib/routing/types";
+import { Vehicle } from "@/lib/types/vehicle";
 import { createTrip } from "@/lib/api/trips";
 
 interface AssignmentFormProps {
     routeOptions: RoutePlan[];
     driverOptions: Driver[];
+    vehicleOptions: Vehicle[];
     onCreated: (newTrip: Trip) => void;
 }
 
 export default function AssignmentForm({
     routeOptions,
     driverOptions,
+    vehicleOptions,
     onCreated,
 }: AssignmentFormProps) {
     const [open, setOpen] = useState(false);
@@ -58,6 +61,7 @@ export default function AssignmentForm({
                 <AssignmentFormModal
                     routeOptions={routeOptions}
                     driverOptions={driverOptions}
+                    vehicleOptions={vehicleOptions}
                     onClose={() => setOpen(false)}
                     onSave={handleSave}
                 />

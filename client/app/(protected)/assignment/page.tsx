@@ -9,8 +9,10 @@ import type {
     RoutePlan,
     DriverCapacity,
 } from "@/lib/routing/types";
+import type { Vehicle } from "@/lib/types/vehicle";
 import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
 import { getDrivers, getDriverCapacity } from "@/lib/api/drivers";
+import { getVehicles } from "@/lib/api/vehicles";
 import { getRoutes } from "@/lib/api/routes";
 
 // import AssignmentForm from "@/components/assignment/assignment-form";
@@ -30,6 +32,7 @@ export default function Assignment() {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [driverCapacity, setDriverCapacity] = useState<DriverCapacity[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]); // Added state for vehicles
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
     const [editTarget, setEditTarget] = useState<Trip | null>(null);
@@ -40,17 +43,24 @@ export default function Assignment() {
     useEffect(() => {
         async function loadData() {
             try {
-                const [tripsRes, driversRes, capacityRes, routesRes] =
-                    await Promise.all([
-                        getAllTrips(),
-                        getDrivers(),
-                        getDriverCapacity(),
-                        getRoutes(),
-                    ]);
+                const [
+                    tripsRes,
+                    driversRes,
+                    capacityRes,
+                    routesRes,
+                    vehicleRes,
+                ] = await Promise.all([
+                    getAllTrips(),
+                    getDrivers(),
+                    getDriverCapacity(),
+                    getRoutes(),
+                    getVehicles(),
+                ]);
                 setTrips(tripsRes.data);
                 setDrivers(driversRes.data);
                 setDriverCapacity(capacityRes.data);
                 setRoutes(routesRes.data);
+                setVehicles(vehicleRes.data);
             } catch (err) {
                 console.error("Failed to load assignment data:", err);
             } finally {
@@ -123,6 +133,7 @@ export default function Assignment() {
                 <AssignmentForm
                     driverOptions={drivers}
                     routeOptions={routes}
+                    vehicleOptions={vehicles}
                     onCreated={handleCreateTrip}
                 />
 
@@ -200,6 +211,7 @@ export default function Assignment() {
                     initialData={editTarget}
                     routeOptions={routes}
                     driverOptions={drivers}
+                    vehicleOptions={vehicles}
                     onClose={() => setEditTarget(null)}
                     onSave={handleSaveTrip}
                 />

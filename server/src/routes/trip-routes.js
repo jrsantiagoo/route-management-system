@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
     assignTripToDriver,
     changeTripStatus,
+    updateTrip,
     getTripsForDriver,
     getTripDetail,
     getAllTrips,
@@ -19,6 +20,7 @@ router.post("/trips_date_range", authenticate, getTripsRange);
 router.post("/", authenticate, createTrip);
 router.post("/assign", authenticate, assignTripToDriver);
 router.patch("/:id/status", authenticate, changeTripStatus);
+router.patch("/:id", authenticate, updateTrip);
 router.get("/driver/:driverId", authenticate, getTripsForDriver);
 router.get("/assignment-grid", authenticate, getAssignmentGrid);
 router.get("/:id", authenticate, getTripDetail);
