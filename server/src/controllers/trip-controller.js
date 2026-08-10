@@ -5,7 +5,7 @@ import * as tripService from "../services/trip-service.js";
 // --- CREATE TRIP ---
 export async function createTrip(req, res) {
     try {
-        const { routeId, driverId, scheduledDate } = req.body;
+        const { routeId, driverId, scheduledDate, notes, vehicleId } = req.body;
         if (!routeId || !driverId) {
             return res
                 .status(400)
@@ -16,6 +16,8 @@ export async function createTrip(req, res) {
             routeId,
             driverId,
             scheduledDate,
+            notes,
+            vehicleId,
         );
         res.json({ success: true, data: result });
     } catch (error) {
@@ -60,10 +62,10 @@ export async function changeTripStatus(req, res) {
 // --- TRIP UPDATE ---
 export async function updateTrip(req, res) {
     try {
-        const { id_ } = req.params;
+        const { id } = req.params;
         const updatedFields = req.body;
 
-        const result = await tripService.updateTrip(id_, updatedFields);
+        const result = await tripService.updateTrip(id, updatedFields);
 
         res.json({ success: true, data: result });
     } catch (error) {

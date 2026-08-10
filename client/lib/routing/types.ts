@@ -56,10 +56,11 @@ export interface Trip {
     updated_at: string;
     destination: string;
     driver_id_?: string;
-    route_id_: string;
-    route: RoutePlan;
+    route_id_?: string;
+    route?: RoutePlan;
     notes?: string;
     agent_profile?: Driver;
+    vehicle_id_?: string;
     vehicle?: BackendVehicle;
     deleted_at?: string;
 }

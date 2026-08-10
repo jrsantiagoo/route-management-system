@@ -10,7 +10,12 @@ import type {
     DriverCapacity,
 } from "@/lib/routing/types";
 import type { Vehicle } from "@/lib/types/vehicle";
-import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
+import {
+    getAllTrips,
+    createTrip,
+    deleteTrip,
+    updateTrip,
+} from "@/lib/api/trips";
 import { getDrivers, getDriverCapacity } from "@/lib/api/drivers";
 import { getVehicles } from "@/lib/api/vehicles";
 import { getRoutes } from "@/lib/api/routes";
@@ -61,6 +66,10 @@ export default function Assignment() {
                 setDriverCapacity(capacityRes.data);
                 setRoutes(routesRes.data);
                 setVehicles(vehicleRes.data);
+
+                setArchivedIds(
+                    trips.filter((t) => t.deleted_at).map((t) => t.id_),
+                );
             } catch (err) {
                 console.error("Failed to load assignment data:", err);
             } finally {
@@ -71,9 +80,21 @@ export default function Assignment() {
     }, []);
 
     // Add a newly created trip to the shared trips list
-    const handleCreateTrip = useCallback((newTrip: Trip) => {
-        setTrips((prev) => [...prev, newTrip]);
-        setToast("Assignment created successfully.");
+    const handleCreateTrip = useCallback(async (newTrip: Trip) => {
+        try {
+            setTrips((prev) => [...prev, newTrip]);
+            await createTrip(
+                newTrip.route_id_!,
+                newTrip.driver_id_!,
+                newTrip.scheduled_date,
+                newTrip.notes,
+                newTrip.vehicle_id_,
+            );
+            setToast("Assignment created successfully.");
+        } catch (error) {
+            console.error("Failed to add new trip:", error);
+            alert("Failed to add new trip. Please try again.");
+        }
     }, []);
 
     // Remove a trip by ID from the shared trips list
@@ -84,6 +105,7 @@ export default function Assignment() {
             setToast("Assignment deleted.");
         } catch (error) {
             console.error("Failed to delete trip:", error);
+            alert("Failed to delete trip. Please try again.");
         }
     }, []);
 
@@ -92,7 +114,7 @@ export default function Assignment() {
         setTrips((prev) =>
             prev.map((t) =>
                 t.id_ === tripId
-                    ? { ...t, archivedAt: new Date().toISOString() }
+                    ? { ...t, deleted_at: new Date().toISOString() }
                     : t,
             ),
         );
@@ -104,7 +126,7 @@ export default function Assignment() {
     const handleUnarchiveTrip = useCallback((tripId: string) => {
         setTrips((prev) =>
             prev.map((t) =>
-                t.id_ === tripId ? { ...t, archivedAt: undefined } : t,
+                t.id_ === tripId ? { ...t, deleted_at: undefined } : t,
             ),
         );
         setArchivedIds((prev) => prev.filter((id) => id !== tripId));
@@ -112,10 +134,26 @@ export default function Assignment() {
     }, []);
 
     // Close the edit modal and confirm the update
-    const handleSaveTrip = useCallback((_data: Partial<Trip>) => {
-        setEditTarget(null);
-        setToast("Assignment updated successfully.");
-    }, []);
+    const handleSaveTrip = useCallback(
+        async (_data: Partial<Trip>) => {
+            try {
+                const response = await updateTrip(editTarget!.id_, _data);
+                if (response.success) {
+                    setTrips((prev) =>
+                        prev.map((t) =>
+                            t.id_ === editTarget!.id_ ? { ...t, ..._data } : t,
+                        ),
+                    );
+                    setEditTarget(null);
+                    setToast("Assignment updated successfully.");
+                } else {
+                    console.error("Failed to update trip:", response);
+                    alert("Failed to update trip. Please try again.");
+                }
+            } catch (error) {}
+        },
+        [editTarget],
+    );
 
     return (
         <div className="flex flex-col gap-6">

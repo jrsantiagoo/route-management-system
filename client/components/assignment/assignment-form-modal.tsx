@@ -63,12 +63,23 @@ export default function AssignmentFormModal({
         setSaving(true);
         try {
             await onSave({
-                route: routeOptions.find((r) => r.name === selectedRoute),
-                agent_profile: driverOptions.find(
+                route_id_:
+                    routeOptions.find((r) => r.name === selectedRoute)?.id_ ||
+                    undefined,
+                driver_id_: driverOptions.find(
                     (d) => d.driver_id === selectedDriver,
-                ),
+                )?.id_,
                 scheduled_date: date,
+                vehicle_id_:
+                    vehicleOptions.find(
+                        (v) => v.plateNumber === selectedVehicle,
+                    )?.id_ || undefined,
+                notes: notes || undefined,
+                status: status || undefined,
             });
+        } catch (error) {
+            console.error("Failed to save assignment: ", error);
+            alert("Failed to save assignment. Please try again.");
         } finally {
             // Closes Modal if saving is successful.
             setSaving(false);
@@ -209,8 +220,10 @@ export default function AssignmentFormModal({
                                     onChange={setStatus}
                                     options={[
                                         "PENDING",
-                                        "IN PROGRESS",
+                                        "PROCESSING",
                                         "COMPLETED",
+                                        "FAILED",
+                                        "CANCELLED",
                                     ]}
                                     placeholder="Select status"
                                 />

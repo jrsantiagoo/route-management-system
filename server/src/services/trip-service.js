@@ -8,7 +8,13 @@ const VALID_STATUSES = [
     "CANCELLED",
 ];
 
-export async function createTrip(routeId, driverId, scheduledDate) {
+export async function createTrip(
+    routeId,
+    driverId,
+    scheduledDate,
+    notes,
+    vehicleId,
+) {
     const route = await prisma.route.findUnique({ where: { id_: routeId } });
     if (!route) {
         throw new Error("Route not found");
@@ -28,10 +34,13 @@ export async function createTrip(routeId, driverId, scheduledDate) {
             status: "PENDING",
             tag_type: "ASSIGNED",
             scheduled_date: scheduledDate ? new Date(scheduledDate) : undefined,
+            notes: notes || null,
+            vehicle_id_: vehicleId || null,
         },
         include: {
             agent_profile: true,
             route: true,
+            vehicle: true,
         },
     });
 }
@@ -161,23 +170,14 @@ export async function updateTrip(tripId, updatedFields) {
 
     if (!trip) throw new Error("Trip record not found");
 
-    let vehicle_id_ = trip.vehicle_id_; // keep existing value by default
-
-    if (updatedFields.plateNumber !== undefined) {
-        const vehicle = await prisma.vehicle.findUnique({
-            where: { id_: updatedFields.plateNumber },
-        });
-        vehicle_id_ = vehicle ? vehicle.id_ : null;
+    const data = { ...updatedFields };
+    if (updatedFields.scheduled_date) {
+        data.scheduled_date = new Date(updatedFields.scheduled_date);
     }
-
-    const { plateNumber, ...rest } = updatedFields; // remove plateNumber before spreading
 
     return prisma.trip.update({
         where: { id_: tripId },
-        data: {
-            ...rest,
-            vehicle_id_,
-        },
+        data,
         include: {
             agent_profile: true,
             route: true,
