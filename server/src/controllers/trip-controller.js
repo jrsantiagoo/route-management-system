@@ -117,6 +117,28 @@ export async function deleteTrip(req, res) {
     }
 }
 
+export async function archiveTrip(req, res) {
+    try {
+        const id_ = req.params.id;
+        const archivedTrip = await tripService.archiveTrip(id_);
+
+        res.json({ success: true, data: archivedTrip });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function unarchiveTrip(req, res) {
+    try {
+        const id_ = req.params.id;
+        const unarchivedTrip = await tripService.unarchiveTrip(id_);
+
+        res.json({ success: true, data: unarchivedTrip });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 // --- GET TRIP DETAILS ---
 export async function getTripDetail(req, res) {
     try {

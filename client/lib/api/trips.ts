@@ -26,7 +26,7 @@ export async function updateTrip(
     id_: string,
     updatedTrip: Record<string, unknown>,
 ) {
-    const response = await apiCall(`/api/trips/${id_}`, {
+    const response = await apiCall(`/api/trips/update/${id_}`, {
         method: "PATCH",
         body: JSON.stringify(updatedTrip),
     });
@@ -36,6 +36,20 @@ export async function updateTrip(
 export async function deleteTrip(tripId: string) {
     const response = await apiCall(`/api/trips/${tripId}`, {
         method: "DELETE",
+    });
+    return response.json();
+}
+
+export async function archiveTrip(id_: string) {
+    const response = await apiCall(`/api/trips/archive/${id_}`, {
+        method: "PATCH",
+    });
+    return response.json();
+}
+
+export async function unarchiveTrip(id_: string) {
+    const response = await apiCall(`/api/trips/unarchive/${id_}`, {
+        method: "PATCH",
     });
     return response.json();
 }

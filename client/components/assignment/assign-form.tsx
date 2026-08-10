@@ -24,24 +24,8 @@ export default function AssignmentForm({
 
     // Build a MockTrip from the submitted form values and pass it up
     async function handleSave(data: Partial<Trip>) {
-        const route = data.route;
-        const driver = data.agent_profile;
-        if (!route || !driver || !data.scheduled_date) return;
-
-        let newTrip;
-        try {
-            const result = await createTrip(
-                route.id_,
-                driver.id_,
-                data.scheduled_date,
-            );
-            newTrip = result.data as Trip;
-        } catch (error) {
-            console.error("Failed to create trip: ", error);
-            return;
-        }
-
-        onCreated(newTrip);
+        console.log(data);
+        onCreated(data as Trip);
         setOpen(false);
     }
 

@@ -109,6 +109,24 @@ export async function deleteTrip(tripId) {
     return prisma.trip.delete({ where: { id_: tripId } });
 }
 
+export async function archiveTrip(id_) {
+    return prisma.trip.update({
+        where: { id_: id_ },
+        data: {
+            deleted_at: new Date(),
+        },
+    });
+}
+
+export async function unarchiveTrip(id_) {
+    return prisma.trip.update({
+        where: { id_: id_ },
+        data: {
+            deleted_at: null,
+        },
+    });
+}
+
 export async function assignDriverToTrip(tripId, driverId) {
     const trip = await prisma.trip.findUnique({ where: { id_: tripId } });
     if (!trip) {

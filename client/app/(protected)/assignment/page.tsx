@@ -15,6 +15,8 @@ import {
     createTrip,
     deleteTrip,
     updateTrip,
+    archiveTrip,
+    unarchiveTrip,
 } from "@/lib/api/trips";
 import { getDrivers, getDriverCapacity } from "@/lib/api/drivers";
 import { getVehicles } from "@/lib/api/vehicles";
@@ -68,7 +70,9 @@ export default function Assignment() {
                 setVehicles(vehicleRes.data);
 
                 setArchivedIds(
-                    trips.filter((t) => t.deleted_at).map((t) => t.id_),
+                    tripsRes.data
+                        .filter((t: Trip) => t.deleted_at)
+                        .map((t: Trip) => t.id_),
                 );
             } catch (err) {
                 console.error("Failed to load assignment data:", err);
@@ -82,15 +86,20 @@ export default function Assignment() {
     // Add a newly created trip to the shared trips list
     const handleCreateTrip = useCallback(async (newTrip: Trip) => {
         try {
-            setTrips((prev) => [...prev, newTrip]);
-            await createTrip(
+            const res = await createTrip(
                 newTrip.route_id_!,
                 newTrip.driver_id_!,
                 newTrip.scheduled_date,
                 newTrip.notes,
                 newTrip.vehicle_id_,
             );
-            setToast("Assignment created successfully.");
+            if (res.success) {
+                setTrips((prev) => [...prev, res.data]);
+                setToast("Assignment created successfully.");
+            } else {
+                console.error("Failed to create trip:", res);
+                alert("Failed to create trip. Please try again.");
+            }
         } catch (error) {
             console.error("Failed to add new trip:", error);
             alert("Failed to add new trip. Please try again.");
@@ -100,9 +109,14 @@ export default function Assignment() {
     // Remove a trip by ID from the shared trips list
     const handleDeleteTrip = useCallback(async (tripId: string) => {
         try {
-            setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
-            await deleteTrip(tripId);
-            setToast("Assignment deleted.");
+            const res = await deleteTrip(tripId);
+            if (res.success) {
+                setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
+                setToast("Assignment deleted.");
+            } else {
+                console.error("Failed to delete trip:", res);
+                alert("Failed to delete trip. Please try again.");
+            }
         } catch (error) {
             console.error("Failed to delete trip:", error);
             alert("Failed to delete trip. Please try again.");
@@ -110,27 +124,49 @@ export default function Assignment() {
     }, []);
 
     // Move a trip to the archived list
-    const handleArchiveTrip = useCallback((tripId: string) => {
-        setTrips((prev) =>
-            prev.map((t) =>
-                t.id_ === tripId
-                    ? { ...t, deleted_at: new Date().toISOString() }
-                    : t,
-            ),
-        );
-        setArchivedIds((prev) => [...prev, tripId]);
-        setToast("Assignment archived.");
+    const handleArchiveTrip = useCallback(async (tripId: string) => {
+        try {
+            const res = await archiveTrip(tripId);
+            if (res.success) {
+                setTrips((prev) =>
+                    prev.map((t) =>
+                        t.id_ === tripId
+                            ? { ...t, deleted_at: new Date().toISOString() }
+                            : t,
+                    ),
+                );
+                setArchivedIds((prev) => [...prev, tripId]);
+                setToast("Assignment archived.");
+            } else {
+                console.error("Failed to archive trip:", res);
+                alert("Failed to archive trip. Please try again.");
+            }
+        } catch (error) {
+            console.error("Failed to archive trip:", error);
+            alert("Failed to archive trip. Please try again.");
+        }
     }, []);
 
     // Restore a trip from the archived list
-    const handleUnarchiveTrip = useCallback((tripId: string) => {
-        setTrips((prev) =>
-            prev.map((t) =>
-                t.id_ === tripId ? { ...t, deleted_at: undefined } : t,
-            ),
-        );
-        setArchivedIds((prev) => prev.filter((id) => id !== tripId));
-        setToast("Assignment unarchived.");
+    const handleUnarchiveTrip = useCallback(async (tripId: string) => {
+        try {
+            const res = await unarchiveTrip(tripId);
+            if (res.success) {
+                setTrips((prev) =>
+                    prev.map((t) =>
+                        t.id_ === tripId ? { ...t, deleted_at: undefined } : t,
+                    ),
+                );
+                setArchivedIds((prev) => prev.filter((id) => id !== tripId));
+                setToast("Assignment unarchived.");
+            } else {
+                console.error("Failed to unarchive trip:", res);
+                alert("Failed to unarchive trip. Please try again.");
+            }
+        } catch (error) {
+            console.error("Failed to unarchive trip:", error);
+            alert("Failed to unarchive trip. Please try again.");
+        }
     }, []);
 
     // Close the edit modal and confirm the update

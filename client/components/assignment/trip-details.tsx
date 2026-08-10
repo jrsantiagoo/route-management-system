@@ -94,7 +94,9 @@ export default function TripDetailsModal({
                                 <Car size={23} />
                                 <h2 className="mt-1">Vehicle</h2>
                             </div>
-                            <div className="ml-8 text-foreground">{"—"}</div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.vehicle?.plate_number || "—"}
+                            </div>
                         </div>
 
                         {/* Second Row */}
