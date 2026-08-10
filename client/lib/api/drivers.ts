@@ -6,3 +6,8 @@ export async function getDrivers() {
     const response = await apiCall("/api/drivers");
     return response.json();
 }
+
+export async function getDriverCapacity() {
+    const response = await apiCall("/api/drivers/capacity");
+    return response.json();
+}

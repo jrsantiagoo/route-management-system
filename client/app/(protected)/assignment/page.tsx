@@ -3,16 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import Toast from "@/components/ui/toast";
 import { CalendarDays, List, User } from "lucide-react";
-import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
+import type {
+    Trip,
+    Driver,
+    RoutePlan,
+    DriverCapacity,
+} from "@/lib/routing/types";
 import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
-import { getDrivers } from "@/lib/api/drivers";
+import { getDrivers, getDriverCapacity } from "@/lib/api/drivers";
 import { getRoutes } from "@/lib/api/routes";
 
 // import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
 import DriverView from "@/components/assignment/driver-view";
-import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
 import TripDetailsModal from "@/components/assignment/trip-details";
@@ -24,6 +28,7 @@ export default function Assignment() {
     );
     const [trips, setTrips] = useState<Trip[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
+    const [driverCapacity, setDriverCapacity] = useState<DriverCapacity[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
@@ -35,13 +40,16 @@ export default function Assignment() {
     useEffect(() => {
         async function loadData() {
             try {
-                const [tripsRes, driversRes, routesRes] = await Promise.all([
-                    getAllTrips(),
-                    getDrivers(),
-                    getRoutes(),
-                ]);
+                const [tripsRes, driversRes, capacityRes, routesRes] =
+                    await Promise.all([
+                        getAllTrips(),
+                        getDrivers(),
+                        getDriverCapacity(),
+                        getRoutes(),
+                    ]);
                 setTrips(tripsRes.data);
                 setDrivers(driversRes.data);
+                setDriverCapacity(capacityRes.data);
                 setRoutes(routesRes.data);
             } catch (err) {
                 console.error("Failed to load assignment data:", err);
@@ -182,7 +190,7 @@ export default function Assignment() {
                         />
                     )}
                     {viewMode === "driver" && (
-                        <DriverView items={mockDriverDayData} />
+                        <DriverView items={driverCapacity} />
                     )}
                 </>
             )}

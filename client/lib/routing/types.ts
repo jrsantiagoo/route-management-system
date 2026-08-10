@@ -76,6 +76,16 @@ export interface Order {
     status: string;
 }
 
+export interface DriverCapacity {
+    id_: string;
+    driverId: string;
+    date: string;
+    activeHours: number;
+    fuelConsumed: number;
+    distanceTraveled: number;
+    status: string;
+}
+
 export interface SuggestedRoute {
     id: string;
     name: string;
