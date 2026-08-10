@@ -94,7 +94,7 @@ export default function CalendarView({
         if (!grid[driverKey][dayName]) grid[driverKey][dayName] = [];
         grid[driverKey][dayName].push({
             tripId: trip.id_,
-            routeName: trip.route.name || "",
+            routeName: trip.route?.name || "",
         });
     }
 
