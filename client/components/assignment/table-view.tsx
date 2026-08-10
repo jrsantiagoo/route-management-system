@@ -356,9 +356,6 @@ export default function TableView({
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
                                     <div className="font-semibold">
-                                        {"Driver Name"}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
                                         {t.agent_profile?.driver_id || ""}
                                     </div>
                                 </td>

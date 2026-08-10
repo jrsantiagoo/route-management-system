@@ -262,9 +262,6 @@ export default function CalendarView({
                             <tr key={driver.id_}>
                                 <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
                                     <div className="font-semibold">
-                                        {driver.name ?? "Driver Name"}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
                                         {driver.driver_id}
                                     </div>
                                 </td>
