@@ -118,9 +118,7 @@ export default function TableView({
                 case "driver":
                     return t.agent_profile?.driver_id ?? "";
                 case "vehicle":
-                    return "";
-                case "fuelConsumed":
-                    return "";
+                    return t.vehicle?.plate_number ?? "";
                 case "scheduled_date":
                     return t.scheduled_date ?? "";
                 case "created_at":
