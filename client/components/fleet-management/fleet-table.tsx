@@ -454,7 +454,7 @@ export default function FleetTable({
                             setRowsPerPage(Number(e.target.value));
                             setPage(1);
                         }}
-                        className="px-2 py-1 border border-card-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                        className="px-2 py-1 border border-btn-border rounded-md bg-card text-foreground text-xs cursor-pointer"
                     >
                         {ROWS_PER_PAGE_OPTIONS.map((n) => (
                             <option key={n} value={n}>

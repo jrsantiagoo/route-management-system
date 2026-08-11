@@ -148,7 +148,7 @@ export default function CalendarView({
     const showingTo = Math.min(startIdx + rowsPerPage, sortedDrivers.length);
 
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Calendar View Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
@@ -177,7 +177,7 @@ export default function CalendarView({
                         onClick={() =>
                             setCurrentWeekStart(getWeekRange(new Date()).monday)
                         }
-                        className="px-3 py-1 text-xs font-semibold rounded-md border border-border 
+                        className="px-3 py-1 text-xs font-semibold rounded-md border border-btn-border 
                             dark:border-foreground hover:bg-secondary dark:hover:text-primary transition"
                     >
                         Today
@@ -201,14 +201,14 @@ export default function CalendarView({
                             placeholder="Search drivers..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                            className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
                                 focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="overflow-auto max-h-128 rounded-lg border border-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-card-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
@@ -216,7 +216,7 @@ export default function CalendarView({
                                 sortKey="driver_id"
                                 sortState={sortState}
                                 onToggle={toggleSort}
-                                className="sticky left-0 z-30 min-w-30 text-sm! border-r border-b border-border rounded-tl-lg"
+                                className="sticky left-0 z-30 min-w-30 text-sm! border-r border-b border-card-border rounded-tl-lg"
                             >
                                 <User
                                     size={14}
@@ -231,7 +231,7 @@ export default function CalendarView({
                                 return (
                                     <th
                                         key={i}
-                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-border min-w-25 
+                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-card-border min-w-25 
                                             ${i === 6 ? "rounded-tr-lg" : ""} ${
                                                 isToday
                                                     ? "bg-primary/10 text-primary-foreground"
@@ -260,7 +260,7 @@ export default function CalendarView({
                         )}
                         {pageRows.map((driver) => (
                             <tr key={driver.id_}>
-                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
+                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-card-border">
                                     <div className="font-semibold">
                                         {driver.name ?? "Driver Name"}
                                     </div>
@@ -274,7 +274,7 @@ export default function CalendarView({
                                     return (
                                         <td
                                             key={day}
-                                            className={`px-1 py-1 border-r border-b border-border align-top ${
+                                            className={`px-1 py-1 border-r border-b border-card-border align-top ${
                                                 assignments.length === 0
                                                     ? "text-muted-foreground"
                                                     : ""
@@ -329,7 +329,7 @@ export default function CalendarView({
                             setRowsPerPage(Number(e.target.value));
                             setPage(1);
                         }}
-                        className="px-2 py-1 border border-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                        className="px-2 py-1 border border-btn-border rounded-md bg-card text-foreground text-xs cursor-pointer"
                     >
                         {ROWS_PER_PAGE_OPTIONS.map((n) => (
                             <option key={n} value={n}>
@@ -349,7 +349,7 @@ export default function CalendarView({
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage <= 1}
                         aria-label="Previous page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
                                         transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
@@ -363,7 +363,7 @@ export default function CalendarView({
                         }
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
                                         transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronRight size={15} strokeWidth={2} />

@@ -157,7 +157,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setPlateNumber(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -181,7 +181,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setVehicleMaker(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -206,7 +206,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setTargetEfficiency(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -235,7 +235,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setVehicleType(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -259,7 +259,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setVehicleModel(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -284,7 +284,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setInitOdometer(e.target.value)
                                     }
-                                    className="bg-background border border-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
