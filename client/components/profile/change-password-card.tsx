@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { changePassword } from "../../lib/api/auth";
 
@@ -11,6 +12,7 @@ interface ChangePasswordCardProps {
 export default function ChangePasswordCard({
     onSuccess,
 }: ChangePasswordCardProps) {
+    const router = useRouter();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,6 +34,12 @@ export default function ChangePasswordCard({
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
+                alert(
+                    "Password changed successfully! Kindly log in again with your new password.",
+                );
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                router.push("/"); // Redirect to login page after password change
             }
         } catch (err) {
             console.error(err);

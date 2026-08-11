@@ -3,16 +3,29 @@
 import { useState, useEffect, useCallback } from "react";
 import Toast from "@/components/ui/toast";
 import { CalendarDays, List, User } from "lucide-react";
-import type { Trip, Driver, RoutePlan } from "@/lib/routing/types";
-import { getAllTrips, createTrip, deleteTrip } from "@/lib/api/trips";
-import { getDrivers } from "@/lib/api/drivers";
+import type {
+    Trip,
+    Driver,
+    RoutePlan,
+    DriverCapacity,
+} from "@/lib/routing/types";
+import type { Vehicle } from "@/lib/types/vehicle";
+import {
+    getAllTrips,
+    createTrip,
+    deleteTrip,
+    updateTrip,
+    archiveTrip,
+    unarchiveTrip,
+} from "@/lib/api/trips";
+import { getDrivers, getDriverCapacity } from "@/lib/api/drivers";
+import { getVehicles } from "@/lib/api/vehicles";
 import { getRoutes } from "@/lib/api/routes";
 
 // import AssignmentForm from "@/components/assignment/assignment-form";
 import CalendarView from "@/components/assignment/calendar-view";
 import TableView from "@/components/assignment/table-view";
 import DriverView from "@/components/assignment/driver-view";
-import { mockDriverDayData } from "@/lib/assignment/mockData";
 import AssignmentForm from "@/components/assignment/assign-form";
 import AssignmentFormModal from "@/components/assignment/assignment-form-modal";
 import TripDetailsModal from "@/components/assignment/trip-details";
@@ -24,7 +37,9 @@ export default function Assignment() {
     );
     const [trips, setTrips] = useState<Trip[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
+    const [driverCapacity, setDriverCapacity] = useState<DriverCapacity[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]); // Added state for vehicles
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
     const [editTarget, setEditTarget] = useState<Trip | null>(null);
@@ -35,14 +50,30 @@ export default function Assignment() {
     useEffect(() => {
         async function loadData() {
             try {
-                const [tripsRes, driversRes, routesRes] = await Promise.all([
+                const [
+                    tripsRes,
+                    driversRes,
+                    capacityRes,
+                    routesRes,
+                    vehicleRes,
+                ] = await Promise.all([
                     getAllTrips(),
                     getDrivers(),
+                    getDriverCapacity(),
                     getRoutes(),
+                    getVehicles(),
                 ]);
                 setTrips(tripsRes.data);
                 setDrivers(driversRes.data);
+                setDriverCapacity(capacityRes.data);
                 setRoutes(routesRes.data);
+                setVehicles(vehicleRes.data);
+
+                setArchivedIds(
+                    tripsRes.data
+                        .filter((t: Trip) => t.deleted_at)
+                        .map((t: Trip) => t.id_),
+                );
             } catch (err) {
                 console.error("Failed to load assignment data:", err);
             } finally {
@@ -53,51 +84,112 @@ export default function Assignment() {
     }, []);
 
     // Add a newly created trip to the shared trips list
-    const handleCreateTrip = useCallback((newTrip: Trip) => {
-        setTrips((prev) => [...prev, newTrip]);
-        setToast("Assignment created successfully.");
+    const handleCreateTrip = useCallback(async (newTrip: Trip) => {
+        try {
+            const res = await createTrip(
+                newTrip.route_id_!,
+                newTrip.driver_id_!,
+                newTrip.scheduled_date,
+                newTrip.notes,
+                newTrip.vehicle_id_,
+            );
+            if (res.success) {
+                setTrips((prev) => [...prev, res.data]);
+                setToast("Assignment created successfully.");
+            } else {
+                console.error("Failed to create trip:", res);
+                alert("Failed to create trip. Please try again.");
+            }
+        } catch (error) {
+            console.error("Failed to add new trip:", error);
+            alert("Failed to add new trip. Please try again.");
+        }
     }, []);
 
     // Remove a trip by ID from the shared trips list
     const handleDeleteTrip = useCallback(async (tripId: string) => {
         try {
-            setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
-            await deleteTrip(tripId);
-            setToast("Assignment deleted.");
+            const res = await deleteTrip(tripId);
+            if (res.success) {
+                setTrips((prev) => prev.filter((t) => t.id_ !== tripId));
+                setToast("Assignment deleted.");
+            } else {
+                console.error("Failed to delete trip:", res);
+                alert("Failed to delete trip. Please try again.");
+            }
         } catch (error) {
             console.error("Failed to delete trip:", error);
+            alert("Failed to delete trip. Please try again.");
         }
     }, []);
 
     // Move a trip to the archived list
-    const handleArchiveTrip = useCallback((tripId: string) => {
-        setTrips((prev) =>
-            prev.map((t) =>
-                t.id_ === tripId
-                    ? { ...t, archivedAt: new Date().toISOString() }
-                    : t,
-            ),
-        );
-        setArchivedIds((prev) => [...prev, tripId]);
-        setToast("Assignment archived.");
+    const handleArchiveTrip = useCallback(async (tripId: string) => {
+        try {
+            const res = await archiveTrip(tripId);
+            if (res.success) {
+                setTrips((prev) =>
+                    prev.map((t) =>
+                        t.id_ === tripId
+                            ? { ...t, deleted_at: new Date().toISOString() }
+                            : t,
+                    ),
+                );
+                setArchivedIds((prev) => [...prev, tripId]);
+                setToast("Assignment archived.");
+            } else {
+                console.error("Failed to archive trip:", res);
+                alert("Failed to archive trip. Please try again.");
+            }
+        } catch (error) {
+            console.error("Failed to archive trip:", error);
+            alert("Failed to archive trip. Please try again.");
+        }
     }, []);
 
     // Restore a trip from the archived list
-    const handleUnarchiveTrip = useCallback((tripId: string) => {
-        setTrips((prev) =>
-            prev.map((t) =>
-                t.id_ === tripId ? { ...t, archivedAt: undefined } : t,
-            ),
-        );
-        setArchivedIds((prev) => prev.filter((id) => id !== tripId));
-        setToast("Assignment unarchived.");
+    const handleUnarchiveTrip = useCallback(async (tripId: string) => {
+        try {
+            const res = await unarchiveTrip(tripId);
+            if (res.success) {
+                setTrips((prev) =>
+                    prev.map((t) =>
+                        t.id_ === tripId ? { ...t, deleted_at: undefined } : t,
+                    ),
+                );
+                setArchivedIds((prev) => prev.filter((id) => id !== tripId));
+                setToast("Assignment unarchived.");
+            } else {
+                console.error("Failed to unarchive trip:", res);
+                alert("Failed to unarchive trip. Please try again.");
+            }
+        } catch (error) {
+            console.error("Failed to unarchive trip:", error);
+            alert("Failed to unarchive trip. Please try again.");
+        }
     }, []);
 
     // Close the edit modal and confirm the update
-    const handleSaveTrip = useCallback((_data: Partial<Trip>) => {
-        setEditTarget(null);
-        setToast("Assignment updated successfully.");
-    }, []);
+    const handleSaveTrip = useCallback(
+        async (_data: Partial<Trip>) => {
+            try {
+                const response = await updateTrip(editTarget!.id_, _data);
+                if (response.success) {
+                    setTrips((prev) =>
+                        prev.map((t) =>
+                            t.id_ === editTarget!.id_ ? { ...t, ..._data } : t,
+                        ),
+                    );
+                    setEditTarget(null);
+                    setToast("Assignment updated successfully.");
+                } else {
+                    console.error("Failed to update trip:", response);
+                    alert("Failed to update trip. Please try again.");
+                }
+            } catch (error) {}
+        },
+        [editTarget],
+    );
 
     return (
         <div className="flex flex-col gap-6">
@@ -115,6 +207,7 @@ export default function Assignment() {
                 <AssignmentForm
                     driverOptions={drivers}
                     routeOptions={routes}
+                    vehicleOptions={vehicles}
                     onCreated={handleCreateTrip}
                 />
 
@@ -182,7 +275,7 @@ export default function Assignment() {
                         />
                     )}
                     {viewMode === "driver" && (
-                        <DriverView items={mockDriverDayData} />
+                        <DriverView items={driverCapacity} />
                     )}
                 </>
             )}
@@ -192,6 +285,7 @@ export default function Assignment() {
                     initialData={editTarget}
                     routeOptions={routes}
                     driverOptions={drivers}
+                    vehicleOptions={vehicles}
                     onClose={() => setEditTarget(null)}
                     onSave={handleSaveTrip}
                 />

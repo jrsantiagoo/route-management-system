@@ -163,7 +163,7 @@ model trip {
 
   // Foreign Keys
   driver_id_     String?        @db.Uuid // FK to agent_profile
-  route_id_      String         @db.Uuid
+  route_id_      String?         @db.Uuid
 
   vehicle_id_            String? @db.Uuid
   //assigned_by      String? @db.Uuid // FK to current user
@@ -172,7 +172,7 @@ model trip {
 
   // Relations
   agent_profile           agent_profile? @relation(fields: [driver_id_], references: [id_])
-  route                   route           @relation(fields: [route_id_], references: [id_])
+  route                   route?           @relation(fields: [route_id_], references: [id_])
   orders                  order[]
   vehicle                 vehicle?       @relation(fields: [vehicle_id_], references: [id_])
 

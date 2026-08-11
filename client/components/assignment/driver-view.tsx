@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
-import { DriverDayInfo } from "@/lib/assignment/mockData";
+import { DriverCapacity } from "@/lib/routing/types";
 import StatusBadge from "../ui/status-badge";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 interface DriverViewProps {
-    items: DriverDayInfo[];
+    items: DriverCapacity[];
 }
 
 export default function DriverView({ items }: DriverViewProps) {
@@ -28,16 +28,11 @@ export default function DriverView({ items }: DriverViewProps) {
 
     const filtered = items.filter((d) => {
         const q = search.toLowerCase();
-        return (
-            d.driverName.toLowerCase().includes(q) ||
-            d.driverId.toLowerCase().includes(q)
-        );
+        return d.driverId.toLowerCase().includes(q);
     });
 
-    const getItemVal = useCallback((d: DriverDayInfo, key: string) => {
+    const getItemVal = useCallback((d: DriverCapacity, key: string) => {
         switch (key) {
-            case "driverName":
-                return d.driverName;
             case "activeHours":
                 return d.activeHours.toString().padStart(5, "0");
             case "fuelConsumed":
@@ -159,9 +154,6 @@ export default function DriverView({ items }: DriverViewProps) {
                             >
                                 <td className="px-3 py-2 text-[13px] align-middle w-60 truncate border-b border-card-border">
                                     <div className="font-semibold">
-                                        {d.driverName}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
                                         {d.driverId}
                                     </div>
                                 </td>

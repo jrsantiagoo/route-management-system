@@ -2,13 +2,14 @@
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import type { Vehicle } from "@/lib/types/vehicle";
 import VehicleFormModal from "./vehicle-form-modal";
 
 interface VehicleFormProps {
-    onSaved?: () => void;
+    onCreate?: (data: Partial<Vehicle>) => void;
 }
 
-export default function VehicleForm({ onSaved }: VehicleFormProps) {
+export default function VehicleForm({ onCreate }: VehicleFormProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -26,9 +27,9 @@ export default function VehicleForm({ onSaved }: VehicleFormProps) {
             {open && (
                 <VehicleFormModal
                     onClose={() => setOpen(false)}
-                    onSave={() => {
+                    onSave={(data) => {
                         setOpen(false);
-                        onSaved?.();
+                        onCreate?.(data);
                     }}
                 />
             )}

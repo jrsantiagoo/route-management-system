@@ -6,10 +6,29 @@ export async function createTrip(
     routeId: string,
     driverId: string,
     scheduledDate?: string,
+    notes?: string,
+    vehicleId?: string,
 ) {
     const response = await apiCall("/api/trips", {
         method: "POST",
-        body: JSON.stringify({ routeId, driverId, scheduledDate }),
+        body: JSON.stringify({
+            routeId,
+            driverId,
+            scheduledDate,
+            notes,
+            vehicleId,
+        }),
+    });
+    return response.json();
+}
+
+export async function updateTrip(
+    id_: string,
+    updatedTrip: Record<string, unknown>,
+) {
+    const response = await apiCall(`/api/trips/update/${id_}`, {
+        method: "PATCH",
+        body: JSON.stringify(updatedTrip),
     });
     return response.json();
 }
@@ -17,6 +36,20 @@ export async function createTrip(
 export async function deleteTrip(tripId: string) {
     const response = await apiCall(`/api/trips/${tripId}`, {
         method: "DELETE",
+    });
+    return response.json();
+}
+
+export async function archiveTrip(id_: string) {
+    const response = await apiCall(`/api/trips/archive/${id_}`, {
+        method: "PATCH",
+    });
+    return response.json();
+}
+
+export async function unarchiveTrip(id_: string) {
+    const response = await apiCall(`/api/trips/unarchive/${id_}`, {
+        method: "PATCH",
     });
     return response.json();
 }

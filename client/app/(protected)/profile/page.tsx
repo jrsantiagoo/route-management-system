@@ -48,7 +48,11 @@ export default function ProfilePage() {
             <ProfileCard username={username} email={email} />
 
             <ChangePasswordCard
-                onSuccess={() => setToast("Password changed successfully.")}
+                onSuccess={() =>
+                    setToast(
+                        "Password changed successfully! Kindly log in again with your new password.",
+                    )
+                }
             />
 
             {toast && (

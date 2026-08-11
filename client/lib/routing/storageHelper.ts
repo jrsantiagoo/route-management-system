@@ -59,7 +59,7 @@ export function deleteRoute(id: string): void {
 export function setRouteArchived(id: string, archived: boolean): void {
     if (typeof window === "undefined") return;
     const all = loadSavedRoutes().map((r) =>
-        r.id === id
+        r.id_ === id
             ? {
                   ...r,
                   archived,

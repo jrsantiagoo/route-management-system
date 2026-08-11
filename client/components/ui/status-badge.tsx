@@ -14,7 +14,9 @@ const STATUS_COLORS: Record<string, { bg: string; fg: string; bd: string }> = {
     RESERVED: { bg: "#faf5ff", fg: "#7e22ce", bd: "#e9d5ff" },
     COMPLETED: { bg: "#f0fdf4", fg: "#15803d", bd: "#bbf7d0" },
     CANCELLED: { bg: "#fef2f2", fg: "#b91c1c", bd: "#fecaca" },
+    FAILED: { bg: "#fef2f2", fg: "#b91c1c", bd: "#fecaca" },
     PENDING: { bg: "#fffbeb", fg: "#d97706", bd: "#fde68a" },
+    PROCESSING: { bg: "#f0f9ff", fg: "#0c4a6e", bd: "#bae6fd" },
     "FULLY UTILIZED": { bg: "#ecfeff", fg: "#0f766e", bd: "#a5f3fc" },
 };
 

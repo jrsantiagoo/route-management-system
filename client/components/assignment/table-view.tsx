@@ -118,18 +118,14 @@ export default function TableView({
                 case "driver":
                     return t.agent_profile?.driver_id ?? "";
                 case "vehicle":
-                    return "";
-                case "purpose":
-                    return t.purpose ?? "";
-                case "fuelConsumed":
-                    return "";
+                    return t.vehicle?.plate_number ?? "";
                 case "scheduled_date":
                     return t.scheduled_date ?? "";
                 case "created_at":
                     // Ensures that column sorts by last modified if in Active &
                     // by archived date if in Archived
                     return view === "archived"
-                        ? (t.archivedAt ?? "")
+                        ? (t.deleted_at ?? "")
                         : (t.created_at ?? "");
                 case "status":
                     return t.status;
@@ -289,24 +285,6 @@ export default function TableView({
                                 Vehicle
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="purpose"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                Purpose
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="fuelConsumed"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <Fuel
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Fuel Consumed
-                            </SortableHeader>
-                            <SortableHeader
                                 sortKey="scheduled_date"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -356,30 +334,21 @@ export default function TableView({
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     <div className="font-semibold">
-                                        {"Driver Name"}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
                                         {t.agent_profile?.driver_id || ""}
                                     </div>
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {"—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {t.purpose || "—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {"—"}
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                    {t.vehicle?.plate_number || "—"}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {formatDateTime(t.scheduled_date)}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {view === "archived"
-                                        ? t.archivedAt
-                                            ? formatDateTime(t.archivedAt)
+                                        ? t.deleted_at
+                                            ? formatDateTime(t.deleted_at)
                                             : "—"
-                                        : formatDateTime(t.created_at)}
+                                        : formatDateTime(t.updated_at)}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     <StatusBadge status={t.status} />

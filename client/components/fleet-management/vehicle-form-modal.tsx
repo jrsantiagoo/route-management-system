@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/types/vehicle";
 
 interface VehicleFormModalProps {
     initialData?: Vehicle | null;

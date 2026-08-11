@@ -1,9 +1,15 @@
 import prisma from "../lib/prisma.js";
 
-export async function getVehicles() {
+export async function getVehicles(includeArchived = false) {
+    const where = { deleted_at: null };
+    if (!includeArchived) {
+        // default behavior: only non-archived vehicles
+        where.archived_at = null;
+    }
+
     return prisma.vehicle.findMany({
-        where: { deleted_at: null, archived_at: null },
-        include: { agent_profile: true },
+        where,
+        include: { agent_profile: true, vehicle_make: true, vehicle_model: true },
         orderBy: { created_at: "desc" },
     });
 }
@@ -11,7 +17,7 @@ export async function getVehicles() {
 export async function getVehicleById(vehicleId) {
     const vehicle = await prisma.vehicle.findUnique({
         where: { id_: vehicleId },
-        include: { agent_profile: true, fuel_log: true, trip: true },
+        include: { agent_profile: true, fuel_log: true, trip: true, vehicle_make: true, vehicle_model: true },
     });
     if (!vehicle) throw new Error("Vehicle not found");
     return vehicle;
@@ -32,9 +38,6 @@ export async function createVehicle(vehicle) {
                 ? Number(vehicle.last_odometer)
                 : null,
             expected_kml: Number(vehicle.expected_kml),
-            target_efficiency: vehicle.target_efficiency
-                ? Number(vehicle.target_efficiency)
-                : null,
             conduction_sticker: vehicle.conduction_sticker ?? null,
             reg_certification: vehicle.reg_certification ?? null,
             or_number: vehicle.or_number ?? null,

@@ -84,7 +84,7 @@ export default function TripDetailsModal({
                                 <h2 className="mt-1">Assigned Driver</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {"Driver Name"}
+                                {initialData?.agent_profile?.driver_id ?? "—"}
                             </div>
                         </div>
 
@@ -93,7 +93,9 @@ export default function TripDetailsModal({
                                 <Car size={23} />
                                 <h2 className="mt-1">Vehicle</h2>
                             </div>
-                            <div className="ml-8 text-foreground">{"—"}</div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.vehicle?.plate_number || "—"}
+                            </div>
                         </div>
 
                         {/* Second Row */}
@@ -111,16 +113,6 @@ export default function TripDetailsModal({
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <ClipboardList size={21} />
-                                <h2 className="mt-1">Purpose</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.purpose ?? "—"}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <CalendarClock size={21} />
                                 <h2 className="mt-1">Scheduled Date</h2>
                             </div>
@@ -131,31 +123,6 @@ export default function TripDetailsModal({
                                       ).slice(0, -8)
                                     : ""}
                             </div>
-                        </div>
-
-                        {/* Third Row */}
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Fuel size={21} />
-                                <h2 className="mt-1">Est. Fuel Consumed</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">{"—"}</div>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Gauge size={21} />
-                                <h2 className="mt-1">Est. Travel Distance</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">{"—"}</div>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <User size={21} />
-                                <h2 className="mt-1">Assigned By</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">{"—"}</div>
                         </div>
                     </div>
                 </div>
@@ -168,7 +135,7 @@ export default function TripDetailsModal({
                     </h2>
 
                     <div className="grid grid-cols-2 gap-6 w-full font-semibold ">
-                        {"—"}
+                        {initialData?.notes || "—"}
                     </div>
                 </div>
 
@@ -195,18 +162,22 @@ export default function TripDetailsModal({
                                 <Clock size={21} />
                                 <h2 className="mt-1">Last Modified</h2>
                             </div>
-                            <div className="text-foreground">{"—"}</div>
+                            <div className="text-foreground">
+                                {initialData?.updated_at
+                                    ? formatDateTime(initialData.updated_at)
+                                    : " "}
+                            </div>
                         </div>
 
-                        {initialData?.archivedAt && (
+                        {initialData?.deleted_at && (
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2 text-base text-muted-foreground">
                                     <CalendarClock size={21} />
                                     <h2 className="mt-1">Archived Date</h2>
                                 </div>
                                 <div className="text-foreground">
-                                    {initialData?.archivedAt
-                                        ? formatDateTime(initialData.archivedAt)
+                                    {initialData?.deleted_at
+                                        ? formatDateTime(initialData.deleted_at)
                                         : ""}
                                 </div>
                             </div>

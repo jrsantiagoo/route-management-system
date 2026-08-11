@@ -16,7 +16,7 @@ import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
-import type { Vehicle } from "@/lib/fleet-management/mockData";
+import type { Vehicle } from "@/lib/types/vehicle";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
@@ -29,7 +29,6 @@ const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 interface VehicleProps {
     vehicles: Vehicle[];
-    archivedIds?: string[];
     onView?: (vehicle: Vehicle) => void;
     onEdit?: (vehicle: Vehicle) => void;
     onArchive?: (vehicle: Vehicle) => void;
@@ -38,7 +37,6 @@ interface VehicleProps {
 
 export default function FleetTable({
     vehicles,
-    archivedIds,
     onEdit,
     onView,
     onArchive,
@@ -77,8 +75,7 @@ export default function FleetTable({
     const statusOptions = [...new Set(trips.map((t) => t.status))]; */
 
     // Used to determine whether a vehicle belongs to the Active or Archived view
-    const isArchived = (v: Vehicle) =>
-        archivedIds?.includes(v.vehicleId_) ?? false;
+    const isArchived = (v: Vehicle) => Boolean(v.archived || v.archivedAt);
 
     // Filter trips by the selected view, then by route name or driver ID
     const filtered = vehicles
