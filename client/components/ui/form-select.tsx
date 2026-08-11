@@ -37,7 +37,7 @@ export default function FormSelect({
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 w-full rounded-lg border border-border 
+                className="flex items-center gap-2 w-full rounded-lg border border-btn-border 
                     px-3 py-2 text-sm text-foreground bg-background
                     focus:outline-none focus:ring-2 focus:ring-primary-foreground
                     hover:bg-secondary dark:hover:text-primary transition group"

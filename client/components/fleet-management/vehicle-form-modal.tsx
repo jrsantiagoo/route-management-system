@@ -7,6 +7,7 @@ import {
     Car,
     Fuel,
     Gauge,
+    Weight,
     X,
 } from "lucide-react";
 import { useState } from "react";
@@ -47,6 +48,9 @@ export default function VehicleFormModal({
     const [selectedYear, setSelectedYear] = useState(
         initialData?.year ? String(initialData.year) : "",
     );
+    const [weightCapacity, setweightCapacity] = useState(
+        initialData?.weightCapacity ? String(initialData.weightCapacity) : "",
+    );
     const [status, setStatus] = useState(initialData?.status ?? "");
     const [saving, setSaving] = useState(false);
 
@@ -57,15 +61,18 @@ export default function VehicleFormModal({
         vehicleMaker &&
         targetEfficiency &&
         initOdometer &&
+        weightCapacity &&
         vehicleModel &&
         selectedYear &&
         Number(targetEfficiency) > 0 &&
-        Number(initOdometer) > 0;
+        Number(initOdometer) > 0 &&
+        Number(weightCapacity) > 0;
 
     // Used to help check if target efficiency & odometer values are valid
     const isTargetEffInvalid =
         targetEfficiency && Number(targetEfficiency) <= 0;
     const isInitOdometerInvalid = initOdometer && Number(initOdometer) <= 0;
+    const isWeightCapInvalid = weightCapacity && Number(weightCapacity) <= 0;
 
     // Ensures inputs aren't saved when form closes
     function handleClose() {
@@ -157,7 +164,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setPlateNumber(e.target.value)
                                     }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-btn-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -168,23 +175,13 @@ export default function VehicleFormModal({
                                 Vehicle Brand{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <div className="relative">
-                                <Building2
-                                    size={19}
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                                />
-                                <input
-                                    id="vehicle-brand"
-                                    type="text"
-                                    placeholder="e.g. Toyota"
-                                    value={vehicleMaker}
-                                    onChange={(e) =>
-                                        setVehicleMaker(e.target.value)
-                                    }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
-                                        focus:outline-none focus:ring-2 focus:ring-primary-foreground"
-                                />
-                            </div>
+                            <FormSelect
+                                value={vehicleMaker}
+                                onChange={setVehicleMaker}
+                                options={["Toyota", "Samsung", "Hyundai"]}
+                                placeholder="Select vehicle brand"
+                                icon={<Building2 size={19} />}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -206,7 +203,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setTargetEfficiency(e.target.value)
                                     }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-btn-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -222,23 +219,13 @@ export default function VehicleFormModal({
                                 Vehicle Type{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <div className="relative">
-                                <Car
-                                    size={21}
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                                />
-                                <input
-                                    id="vehicle-type"
-                                    type="text"
-                                    placeholder="e.g. Van, Motorcycle, Car"
-                                    value={vehicleType}
-                                    onChange={(e) =>
-                                        setVehicleType(e.target.value)
-                                    }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
-                                        focus:outline-none focus:ring-2 focus:ring-primary-foreground"
-                                />
-                            </div>
+                            <FormSelect
+                                value={vehicleType}
+                                onChange={setVehicleType}
+                                options={["VAN", "CAR", "MOTORCYCLE"]}
+                                placeholder="Select vehicle type"
+                                icon={<Car size={21} />}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -246,23 +233,13 @@ export default function VehicleFormModal({
                                 Vehicle Model{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <div className="relative">
-                                <Car
-                                    size={21}
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                                />
-                                <input
-                                    id="vehicle-model"
-                                    type="text"
-                                    placeholder="e.g. Fortuner"
-                                    value={vehicleModel}
-                                    onChange={(e) =>
-                                        setVehicleModel(e.target.value)
-                                    }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
-                                        focus:outline-none focus:ring-2 focus:ring-primary-foreground"
-                                />
-                            </div>
+                            <FormSelect
+                                value={vehicleModel}
+                                onChange={setVehicleModel}
+                                options={["Runner", "RC"]}
+                                placeholder="Select vehicle model"
+                                icon={<Car size={21} />}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -284,7 +261,7 @@ export default function VehicleFormModal({
                                     onChange={(e) =>
                                         setInitOdometer(e.target.value)
                                     }
-                                    className="bg-background border border-card-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                    className="bg-background border border-btn-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
                                         focus:outline-none focus:ring-2 focus:ring-primary-foreground"
                                 />
                             </div>
@@ -313,6 +290,36 @@ export default function VehicleFormModal({
                                 placeholder="Select a year"
                                 icon={<Calendar size={19} />}
                             />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="text-md font-semibold text-foreground">
+                                Weight Capacity (kg){" "}
+                                <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                                <Weight
+                                    size={19}
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                />
+                                <input
+                                    id="weight-capacity"
+                                    type="number"
+                                    min="0"
+                                    placeholder="Enter weight"
+                                    value={weightCapacity}
+                                    onChange={(e) =>
+                                        setweightCapacity(e.target.value)
+                                    }
+                                    className="bg-background border border-btn-border rounded-lg pl-9 pr-2 py-2 text-sm text-foreground w-full 
+                                        focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+                                />
+                            </div>
+                            {isWeightCapInvalid && (
+                                <p className="text-xs text-red-500 mt-0.5">
+                                    Initial odometer must be greater than 0
+                                </p>
+                            )}
                         </div>
 
                         {isEdit && (

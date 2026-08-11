@@ -139,7 +139,7 @@ export default function AssignmentFormModal({
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="bg-background border border-card-border rounded-md px-3 py-1.5 text-sm text-foreground 
+                            className="bg-background border border-btn-border rounded-md px-3 py-1.5 text-sm text-foreground 
                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                         />
                     </div>
@@ -244,7 +244,7 @@ export default function AssignmentFormModal({
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             rows={3}
-                            className="bg-background border border-card-border rounded-md px-3 py-1.5 text-sm text-foreground 
+                            className="bg-background border border-btn-border rounded-md px-3 py-1.5 text-sm text-foreground 
                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark resize-none"
                         ></textarea>
                     </div>
