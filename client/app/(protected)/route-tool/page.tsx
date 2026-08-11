@@ -207,15 +207,26 @@ export default function RouteCreationPage() {
                         display: "flex",
                         alignItems: "center",
                         gap: "8px",
-                        padding: "10px 18px",
+                        padding: "6px 18px",
                         background: dark ? DARK.btnBg : "#fff",
-                        color: dark ? DARK.btnText : "#374151",
-                        border: `1px solid ${border}`,
+                        color: DARK.btnText,
+                        border: `1px solid ${dark ? DARK.btnBorder : "#d9dfe5"}`,
                         borderRadius: "8px",
                         fontSize: "14px",
                         fontWeight: 600,
+                        transition: "background 0.15s",
                         cursor: "pointer",
                     }}
+                    onMouseEnter={(e) => (
+                        (e.currentTarget.style.background = "#c1dff8"),
+                        (e.currentTarget.style.color = `${dark ? "var(--primary)" : "var(--foreground)"}`)
+                    )}
+                    onMouseLeave={(e) => (
+                        (e.currentTarget.style.background = dark
+                            ? DARK.btnBg
+                            : "#fff"),
+                        (e.currentTarget.style.color = "var(--foreground)")
+                    )}
                 >
                     <Plus size={16} strokeWidth={2} />
                     Create New Route

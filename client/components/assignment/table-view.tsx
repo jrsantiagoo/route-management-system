@@ -337,7 +337,7 @@ export default function TableView({
                                         {t.agent_profile?.driver_id || ""}
                                     </div>
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {t.vehicle?.plate_number || "—"}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">

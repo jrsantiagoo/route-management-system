@@ -212,7 +212,7 @@ export default function Assignment() {
                 />
 
                 {/* Enables Calendar/Table/Driver views toggle */}
-                <div className="flex items-center rounded-lg border border-border bg-card p-px">
+                <div className="flex items-center rounded-lg border border-card-border bg-card p-px">
                     <button
                         onClick={() => setViewMode("calendar")}
                         className={`flex items-center gap-2 px-3.5 py-1 text-sm font-semibold rounded-md transition 

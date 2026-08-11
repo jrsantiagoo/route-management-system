@@ -14,7 +14,7 @@ export const DARK = {
 
     // Buttons — navy bg + bright blue text
     btnBg: "#0c2a45",
-    btnText: "#2da8ff",
+    btnText: "var(--foreground)",
     btnBorder: "#1e466e",
     btnHover: "#103a5f",
     btnActiveBg: "#11456f", // active/toggled button — slightly brighter

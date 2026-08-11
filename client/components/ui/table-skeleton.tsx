@@ -8,7 +8,7 @@ export default function TableSkeleton({ rows = 5 }: { rows?: number }) {
         <div
             role="status"
             aria-label="Loading table"
-            className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border"
+            className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border"
         >
             {/* view toggle & search placeholders */}
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

@@ -137,7 +137,7 @@ export default function FleetTable({
     const showingTo = Math.min(startIdx + rowsPerPage, sortedVehicles.length);
 
     return (
-        <div className="rounded-xl bg-card p-6 border border-card-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-base font-semibold">
