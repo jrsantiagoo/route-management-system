@@ -12,6 +12,10 @@
     --muted-foreground: #6b7280;
     --border: #d9dfe5;
     --card: #ffffff;
+    --card-border: #e5e7eb;
+    --btn: #ffffff;
+    --btn-border: #d9dfe5;
+    --theader: "bg-gray-50";
 }
 
 .dark {
@@ -22,7 +26,11 @@
     --secondary: #c1dff8;
     --muted-foreground: #9ca3af;
     --border: #292f3b;
-    --card: #111a27;
+    --card: #0d1b2e;
+    --card-border: #1e3a5f;
+    --btn: #0c2a45;
+    --btn-border: #1e466e;
+    --theader: #0f2237;
 }
 
 @theme {
@@ -35,6 +43,11 @@
     --color-muted-foreground: var(--muted-foreground);
     --color-border: var(--border);
     --color-card: var(--card);
+    --color-card-border: var(--card-border);
+    --color-btn: var(--btn);
+    --color-btn-border: var(--btn-border);
+    --color-theader: var(--theader);
+
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
     /* Slow pulsing outline used by loading skeletons while a page loads */

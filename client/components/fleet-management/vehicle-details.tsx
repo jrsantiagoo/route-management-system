@@ -32,7 +32,7 @@ export default function VehicleDetailsModal({
         >
             {/* View Modal */}
             <div
-                className="relative mt-2 p-8 w-240 bg-background border border-border rounded-lg shadow shadow-muted-foreground"
+                className="relative mt-2 p-8 w-240 bg-background border border-card-border rounded-lg shadow shadow-card-border"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button */}
@@ -59,7 +59,7 @@ export default function VehicleDetailsModal({
                 </div>
 
                 {/* Basic Vehicle Details */}
-                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
                         Basic Information
                     </h2>
@@ -163,7 +163,7 @@ export default function VehicleDetailsModal({
                 </div>
 
                 {/* Record Details */}
-                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
                         Record Information
                     </h2>

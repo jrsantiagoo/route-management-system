@@ -108,7 +108,7 @@ export default function VehicleFormModal({
         >
             {/* Form Modal */}
             <div
-                className="relative mt-2 p-8 w-240 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
+                className="relative mt-2 p-8 w-240 bg-card border border-card-border rounded-lg shadow shadow-card-border"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button */}
@@ -336,7 +336,7 @@ export default function VehicleFormModal({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="px-5 py-1.5 text-md rounded-md border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
                         >
                             Cancel
                         </button>
@@ -346,7 +346,7 @@ export default function VehicleFormModal({
                             className={`px-5 py-1.5 text-md rounded-md transition duration-350 
                                 ${
                                     allFieldsFilled
-                                        ? "bg-primary text-primary-foreground hover:bg-secondary"
+                                        ? "bg-primary border border-btn-border text-primary-foreground hover:bg-secondary"
                                         : "bg-muted-foreground text-background cursor-not-allowed"
                                 }
                                 ${saving ? "cursor-not-allowed" : ""}
