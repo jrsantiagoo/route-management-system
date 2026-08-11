@@ -13,6 +13,7 @@ import { useState, useCallback } from "react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import StatusBadge from "../ui/status-badge";
 
 interface OrderTableProps {
     orders: Order[];
@@ -106,7 +107,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
     } = useSort(filtered, getOrderVal);
 
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Header + search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex -mt-4 items-center gap-2 text-base font-semibold">
@@ -130,7 +131,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                         placeholder="Search orders…"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground 
+                        className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground 
                         outline-none transition focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                     />
                 </div>
@@ -303,7 +304,9 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                                 <td className="px-3 py-2 ">
                                     {o.package_weight || "—"}
                                 </td>
-                                <td className="px-3 py-2 ">{o.status}</td>
+                                <td className="px-3 py-2 ">
+                                    <StatusBadge status={o.status} />
+                                </td>
                             </tr>
                         ))}
                         {filtered.length === 0 && (

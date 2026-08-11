@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { Trip } from "@/lib/routing/types";
 import StatusBadge from "../ui/status-badge";
-import { init } from "next/dist/compiled/webpack/webpack";
 import { formatDateTime } from "@/lib/routing/formatters";
 
 interface TripDetailsProps {
@@ -35,7 +34,7 @@ export default function TripDetailsModal({
         >
             {/* View Modal */}
             <div
-                className="relative mt-2 p-8 w-240 bg-background border border-border rounded-lg shadow shadow-muted-foreground"
+                className="relative mt-2 p-8 w-240 bg-background border border-card-border rounded-lg shadow shadow-muted-foreground"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button */}
@@ -62,7 +61,7 @@ export default function TripDetailsModal({
                 </div>
 
                 {/* Basic Assignment Details */}
-                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
                         Trip Information
                     </h2>
@@ -130,7 +129,7 @@ export default function TripDetailsModal({
 
                 {/* Notes */}
 
-                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
                         Additional Notes
                     </h2>
@@ -141,7 +140,7 @@ export default function TripDetailsModal({
                 </div>
 
                 {/* Record Details */}
-                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-border shadow-md">
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
                     <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
                         Record Information
                     </h2>

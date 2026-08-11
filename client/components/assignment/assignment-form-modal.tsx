@@ -94,7 +94,7 @@ export default function AssignmentFormModal({
         >
             {/* Form Modal */}
             <div
-                className="relative mt-2 p-8 w-160 bg-card border border-border rounded-lg shadow shadow-muted-foreground"
+                className="relative mt-2 p-8 w-160 bg-card border border-card-border rounded-lg shadow shadow-card-border"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button */}
@@ -139,7 +139,7 @@ export default function AssignmentFormModal({
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="bg-background border border-gray-300 rounded-md px-3 py-1.5 text-sm text-foreground 
+                            className="bg-background border border-card-border rounded-md px-3 py-1.5 text-sm text-foreground 
                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                         />
                     </div>
@@ -244,7 +244,7 @@ export default function AssignmentFormModal({
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             rows={3}
-                            className="bg-background border border-gray-300 rounded-md px-3 py-1.5 text-sm text-foreground 
+                            className="bg-background border border-card-border rounded-md px-3 py-1.5 text-sm text-foreground 
                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark resize-none"
                         ></textarea>
                     </div>
@@ -254,7 +254,7 @@ export default function AssignmentFormModal({
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="px-5 py-1.5 text-md rounded-md border border-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
                         >
                             Cancel
                         </button>
@@ -264,7 +264,7 @@ export default function AssignmentFormModal({
                             className={`px-5.5 py-1.5 text-md rounded-md transition duration-350 
                                 ${
                                     allFieldsFilled
-                                        ? "bg-primary text-primary-foreground hover:bg-secondary"
+                                        ? "bg-primary border border-btn-border text-primary-foreground hover:bg-secondary"
                                         : "bg-muted-foreground text-background cursor-not-allowed"
                                 }
                                 ${saving ? "cursor-not-allowed" : ""}

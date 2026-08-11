@@ -59,10 +59,20 @@ const STATUS_COLORS_DARK: Record<
         fg: "#fca5a5",
         bd: "rgba(239,68,68,0.35)",
     },
+    FAILED: {
+        bg: "rgba(239,68,68,0.15)",
+        fg: "#fca5a5",
+        bd: "rgba(239,68,68,0.35)",
+    },
     PENDING: {
         bg: "rgba(234,179,8,0.15)",
         fg: "#fde047",
         bd: "rgba(234,179,8,0.35)",
+    },
+    PROCESSING: {
+        bg: "rgba(59,130,246,0.15)",
+        fg: "#93c5fd",
+        bd: "rgba(59,130,246,0.35)",
     },
     "FULLY UTILIZED": {
         bg: "rgba(20,184,166,0.15)",

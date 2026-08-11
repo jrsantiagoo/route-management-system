@@ -48,7 +48,7 @@ export default function ChangePasswordCard({
     };
 
     return (
-        <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-border shadow-xl shadow-primary">
+        <div className="flex flex-col gap-2 justify-between rounded-xl bg-card border border-card-border shadow-xl shadow-primary">
             <div className="flex items-center gap-2 pt-7 pl-7 text-lg font-semibold">
                 <Lock size={21} className="text-primary-foreground" />
                 <h3 className="mt-1 text-foreground">Change Password</h3>
@@ -199,7 +199,7 @@ export default function ChangePasswordCard({
                 <div className="flex justify-end -mt-1 mb-1">
                     <button
                         type="submit"
-                        className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition"
+                        className="px-4 py-2 text-sm font-semibold text-white bg-btn-danger hover:bg-btn-danger-hover rounded-lg transition"
                     >
                         Update Password
                     </button>

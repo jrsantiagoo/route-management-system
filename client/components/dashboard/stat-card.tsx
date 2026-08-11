@@ -13,7 +13,7 @@ export default function StatCard({
     subtitle,
 }: StatCardProps) {
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             <p className="text-[17px] font-semibold text-muted-foreground">
                 {title}
             </p>
@@ -21,7 +21,7 @@ export default function StatCard({
                 <p className="mt-2 text-3xl font-bold text-foreground">
                     {value}
                     {unit && (
-                        <span className="ml-1 text-lg font-normal text-gray-400">
+                        <span className="ml-1 text-lg font-normal text-muted-foreground">
                             {unit}
                         </span>
                     )}

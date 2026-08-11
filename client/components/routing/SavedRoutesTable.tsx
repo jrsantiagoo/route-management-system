@@ -220,24 +220,20 @@ export default function SavedRoutesTable({
                                     setExpandedId(null);
                                 }}
                                 style={{
-                                    padding: "7px 14px",
-                                    fontSize: "12px",
+                                    padding: "6px 14px",
+                                    fontSize: "14px",
                                     fontWeight: 600,
                                     textTransform: "capitalize",
                                     border: "none",
                                     cursor: "pointer",
                                     background:
                                         view === v
-                                            ? dark
-                                                ? DARK.btnActiveBg
-                                                : "#1e293b"
+                                            ? "var(--primary)"
                                             : "transparent",
                                     color:
                                         view === v
-                                            ? dark
-                                                ? DARK.btnText
-                                                : "#fff"
-                                            : muted,
+                                            ? "var(--primary-foreground)"
+                                            : "var(--muted-foreground)",
                                 }}
                             >
                                 {v}
@@ -251,9 +247,9 @@ export default function SavedRoutesTable({
                             display: "flex",
                             alignItems: "center",
                             gap: "8px",
-                            padding: "8px 12px",
+                            padding: "6px 12px",
                             border: `1px solid ${border}`,
-                            borderRadius: "9999px",
+                            borderRadius: "8px",
                             background: dark ? DARK.elevatedBg : "#fff",
                             minWidth: "240px",
                         }}

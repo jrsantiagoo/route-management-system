@@ -137,7 +137,7 @@ export default function FleetTable({
     const showingTo = Math.min(startIdx + rowsPerPage, sortedVehicles.length);
 
     return (
-        <div className="rounded-xl bg-card p-6 border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-base font-semibold">
@@ -148,7 +148,7 @@ export default function FleetTable({
                 {/* Active / Archived toggle + Filtered Search */}
                 <div className="flex items-center gap-2">
                     {/* Active / Archived toggle */}
-                    <div className="flex items-center rounded-lg border border-border bg-card">
+                    <div className="flex items-center rounded-lg border border-card-border bg-card">
                         {(["active", "archived"] as const).map((v) => (
                             <button
                                 key={v}
@@ -182,7 +182,7 @@ export default function FleetTable({
                                 setSearch(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                            className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
                                 focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                         />
                     </div>
@@ -218,7 +218,7 @@ export default function FleetTable({
             </div> */}
 
             {/* Route Assignment Table View */}
-            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-card-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
                     <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
@@ -305,7 +305,7 @@ export default function FleetTable({
                             >
                                 Status
                             </SortableHeader>
-                            <th className="px-4 py-3 text-xs font-bold text-foreground border-b border-border">
+                            <th className="px-4 py-3 text-xs font-bold text-foreground border-b border-card-border">
                                 Actions
                             </th>
                         </tr>
@@ -314,9 +314,9 @@ export default function FleetTable({
                         {pageRows.map((v) => (
                             <tr
                                 key={v.vehicleId_}
-                                className="border-b border-border text-foreground hover:bg-muted-foreground/15 transition"
+                                className="border-b border-card-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-card-border">
                                     <div className="font-semibold">
                                         {v.plateNumber}
                                     </div>
@@ -324,28 +324,28 @@ export default function FleetTable({
                                         {v.vehicleId_}
                                     </div>
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-card-border">
                                     {v.vehicleType}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {v.lastDriver == "" ? (
-                                        <div className="italic text-muted-foreground border-b border-border">
+                                        <div className="italic text-muted-foreground border-b border-card-border">
                                             No assigned driver
                                         </div>
                                     ) : (
                                         v.lastDriver
                                     )}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {v.weightCapacity} kg
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle font-semibold border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-semibold border-b border-card-border">
                                     {v.target} km/L
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {v.avg_performance ?? "—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {view === "archived"
                                         ? v.archivedAt
                                             ? formatDateTime(v.archivedAt)
@@ -354,15 +354,15 @@ export default function FleetTable({
                                           ? formatDateTime(v.lastModified)
                                           : "—"}
                                 </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     <StatusBadge status={v.status} />
                                 </td>
-                                <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-border">
+                                <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-card-border">
                                     <button
                                         onClick={(e) =>
                                             openMenu(v.vehicleId_, e)
                                         }
-                                        className="p-1 rounded-md text-muted-foreground bg-card border border-border 
+                                        className="p-1 rounded-md text-muted-foreground bg-btn border border-btn-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
                                         title="More actions"
@@ -451,7 +451,7 @@ export default function FleetTable({
                             setRowsPerPage(Number(e.target.value));
                             setPage(1);
                         }}
-                        className="px-2 py-1 border border-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                        className="px-2 py-1 border border-btn-border rounded-md bg-card text-foreground text-xs cursor-pointer"
                     >
                         {ROWS_PER_PAGE_OPTIONS.map((n) => (
                             <option key={n} value={n}>
@@ -470,7 +470,7 @@ export default function FleetTable({
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage <= 1}
                         aria-label="Previous page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-btn text-muted-foreground
                             transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
@@ -484,7 +484,7 @@ export default function FleetTable({
                         }
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-btn text-muted-foreground
                             transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronRight size={15} strokeWidth={2} />

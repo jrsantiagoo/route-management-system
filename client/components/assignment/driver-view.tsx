@@ -61,7 +61,7 @@ export default function DriverView({ items }: DriverViewProps) {
     const showingTo = Math.min(startIdx + rowsPerPage, sortedItems.length);
 
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Table Header + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex -mt-4 items-center gap-2 text-lg font-bold">
@@ -82,13 +82,13 @@ export default function DriverView({ items }: DriverViewProps) {
                         placeholder="Search drivers..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                        className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
                             focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                     />
                 </div>
             </div>
 
-            <div className="overflow-auto max-h-128 rounded-lg border border-border scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-card-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
                     <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
@@ -150,23 +150,23 @@ export default function DriverView({ items }: DriverViewProps) {
                         {pageRows.map((d) => (
                             <tr
                                 key={d.id_}
-                                className="border-t border-border text-foreground hover:bg-muted-foreground/15 transition"
+                                className="border-t border-card-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-3 py-2 text-[13px] align-middle w-60 truncate border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle w-60 truncate border-b border-card-border">
                                     <div className="font-semibold">
                                         {d.driverId}
                                     </div>
                                 </td>
-                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-card-border">
                                     {d.activeHours.toFixed(1)} hrs
                                 </td>
-                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-card-border">
                                     {d.fuelConsumed.toFixed(1)} L
                                 </td>
-                                <td className="px-3 py-2 text-[13px] align-middle border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle border-b border-card-border">
                                     {d.distanceTraveled.toFixed(1)} km
                                 </td>
-                                <td className="px-3 py-2 text-[13px] align-middle w-40 truncate border-b border-border">
+                                <td className="px-3 py-2 text-[13px] align-middle w-40 truncate border-b border-card-border">
                                     <StatusBadge status={d.status} />
                                 </td>
                             </tr>
@@ -195,7 +195,7 @@ export default function DriverView({ items }: DriverViewProps) {
                             setRowsPerPage(Number(e.target.value));
                             setPage(1);
                         }}
-                        className="px-2 py-1 border border-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                        className="px-2 py-1 border border-btn-border rounded-md bg-card text-foreground text-xs cursor-pointer"
                     >
                         {ROWS_PER_PAGE_OPTIONS.map((n) => (
                             <option key={n} value={n}>
@@ -215,7 +215,7 @@ export default function DriverView({ items }: DriverViewProps) {
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage <= 1}
                         aria-label="Previous page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
                             transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
@@ -229,7 +229,7 @@ export default function DriverView({ items }: DriverViewProps) {
                         }
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
-                        className="flex items-center justify-center w-7 h-7 rounded-full border border-border bg-card text-muted-foreground
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
                             transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronRight size={15} strokeWidth={2} />

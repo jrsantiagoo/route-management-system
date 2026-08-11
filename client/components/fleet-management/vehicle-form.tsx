@@ -17,7 +17,7 @@ export default function VehicleForm({ onCreate }: VehicleFormProps) {
             {/* Enables Vehicle Creation */}
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center -mt-2 gap-2 px-4.5 py-1.5 text-sm font-semibold rounded-lg border border-border bg-card 
+                className="flex items-center -mt-2 gap-2 px-4.5 py-1.5 text-sm font-semibold rounded-lg border border-btn-border bg-btn 
                     text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
             >
                 <Plus size={16} />
