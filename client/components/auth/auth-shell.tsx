@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTheme } from "@/lib/theme-context";
 
 interface AuthShellProps {
     children: React.ReactNode;
@@ -9,25 +9,7 @@ interface AuthShellProps {
 // Shared shell for standalone (non-protected) auth pages. Mirrors the styling
 // of the login page: brand panel, card container, and dark mode toggle.
 export default function AuthShell({ children }: AuthShellProps) {
-    const [darkMode, setDarkMode] = useState(false);
-
-    // On mount: use the saved choice for this session, otherwise follow the OS preference.
-    useEffect(() => {
-        const saved = sessionStorage.getItem("theme");
-        const prefersDark =
-            saved === "dark" ||
-            (saved === null &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches);
-        setDarkMode(prefersDark);
-        document.documentElement.classList.toggle("dark", prefersDark);
-    }, []);
-
-    const toggleDarkMode = () => {
-        const next = !darkMode;
-        setDarkMode(next);
-        document.documentElement.classList.toggle("dark", next);
-        sessionStorage.setItem("theme", next ? "dark" : "light");
-    };
+    const { theme, toggleTheme } = useTheme();
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 transition-colors dark:bg-slate-950">
@@ -76,11 +58,11 @@ export default function AuthShell({ children }: AuthShellProps) {
                     {/* Dark mode toggle */}
                     <button
                         type="button"
-                        onClick={toggleDarkMode}
+                        onClick={toggleTheme}
                         aria-label="Toggle dark mode"
                         className="absolute right-6 top-6 flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800"
                     >
-                        {darkMode ? (
+                        {theme === "dark" ? (
                             <svg
                                 className="h-5 w-5"
                                 viewBox="0 0 24 24"
