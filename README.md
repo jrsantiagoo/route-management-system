@@ -135,3 +135,13 @@ project-root/
 ```
 
 ---
+
+## Deployment
+
+This project uses a split deployment architecture:
+
+| Service            | Platform |
+| ------------------ | -------- |
+| Frontend (Next.js) | Vercel   |
+| Backend (Express)  | Render   |
+| Database           | Supabase |
