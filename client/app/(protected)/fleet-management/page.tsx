@@ -5,6 +5,7 @@ import FleetTable from "@/components/fleet-management/fleet-table";
 import VehicleForm from "@/components/fleet-management/vehicle-form";
 import VehicleFormModal from "@/components/fleet-management/vehicle-form-modal";
 import VehicleDetailsModal from "@/components/fleet-management/vehicle-details";
+import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
 import type { Vehicle } from "@/lib/types/vehicle";
 import * as vehicleApi from "@/lib/api/vehicles";
@@ -139,13 +140,17 @@ export default function FleetManagement() {
             </div>
 
             <VehicleForm onCreate={handleCreateVehicle} />
-            <FleetTable
-                vehicles={vehicles}
-                onEdit={setEditTarget}
-                onView={setViewTarget}
-                onArchive={handleArchive}
-                onUnarchive={handleUnarchive}
-            />
+            {isLoading ? (
+                <TableSkeleton rows={8} />
+            ) : (
+                <FleetTable
+                    vehicles={vehicles}
+                    onEdit={setEditTarget}
+                    onView={setViewTarget}
+                    onArchive={handleArchive}
+                    onUnarchive={handleUnarchive}
+                />
+            )}
 
             {editTarget && (
                 <VehicleFormModal

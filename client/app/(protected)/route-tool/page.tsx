@@ -29,6 +29,7 @@ import { DARK } from "@/components/routing/routeTheme";
 import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
+import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
 import * as routeApi from "@/lib/api/routes";
 
@@ -43,12 +44,14 @@ export default function RouteCreationPage() {
     // ─────────────────────────────────────────────────────────────────────────
 
     const [savedRoutes, setSavedRoutes] = useState<RoutePlan[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRoute, setEditingRoute] = useState<RoutePlan | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<RoutePlan | null>(null);
     const [toast, setToast] = useState<string | null>(null);
 
     const reload = useCallback(async () => {
+        setLoading(true);
         try {
             const res = await routeApi.getRoutes();
             if (res.success) {
@@ -60,6 +63,8 @@ export default function RouteCreationPage() {
         } catch (err) {
             console.error("Failed to load routes:", err);
             setToast("Could not reach the server.");
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -253,13 +258,17 @@ export default function RouteCreationPage() {
                 </button>
             </div>
 
-            <SavedRoutesTable
-                routes={savedRoutes}
-                onEdit={openEdit}
-                onArchive={handleArchive}
-                onUnarchive={handleUnarchive}
-                onDelete={(route) => setDeleteTarget(route)}
-            />
+            {loading ? (
+                <TableSkeleton rows={8} />
+            ) : (
+                <SavedRoutesTable
+                    routes={savedRoutes}
+                    onEdit={openEdit}
+                    onArchive={handleArchive}
+                    onUnarchive={handleUnarchive}
+                    onDelete={(route) => setDeleteTarget(route)}
+                />
+            )}
 
             {isModalOpen && (
                 <CreateRouteModal
