@@ -10,9 +10,10 @@ import {
     Weight,
     X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FormSelect from "../ui/form-select";
 import type { Vehicle } from "@/lib/types/vehicle";
+import * as vehicleApi from "@/lib/api/vehicles";
 
 interface VehicleFormModalProps {
     initialData?: Vehicle | null;
@@ -33,17 +34,31 @@ export default function VehicleFormModal({
     const [vehicleType, setVehicleType] = useState(
         initialData?.vehicleType ?? "",
     );
+    const [vehicleMakeId, setVehicleMakeId] = useState(
+        initialData?.vehicleMakeId ?? "",
+    );
     const [vehicleMaker, setVehicleMaker] = useState(
         initialData?.vehicleMaker ?? "",
     );
+    const [vehicleModelId, setVehicleModelId] = useState(
+        initialData?.vehicleModelId ?? "",
+    );
+    const [vehicleModel, setVehicleModel] = useState(
+        initialData?.vehicleModel ?? "",
+    );
+    const [makeOptions, setMakeOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
+    const [modelOptions, setModelOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
+    const [isLoadingMakes, setIsLoadingMakes] = useState(false);
+    const [isLoadingModels, setIsLoadingModels] = useState(false);
     const [targetEfficiency, setTargetEfficiency] = useState(
         initialData?.target ? String(initialData.target) : "",
     );
     const [initOdometer, setInitOdometer] = useState(
         initialData?.initOdometer ? String(initialData.initOdometer) : "",
-    );
-    const [vehicleModel, setVehicleModel] = useState(
-        initialData?.vehicleModel ?? "",
     );
     const [selectedYear, setSelectedYear] = useState(
         initialData?.year ? String(initialData.year) : "",
@@ -58,11 +73,11 @@ export default function VehicleFormModal({
     const allFieldsFilled =
         plateNumber &&
         vehicleType &&
-        vehicleMaker &&
+        vehicleMakeId &&
         targetEfficiency &&
         initOdometer &&
         weightCapacity &&
-        vehicleModel &&
+        vehicleModelId &&
         selectedYear &&
         Number(targetEfficiency) > 0 &&
         Number(initOdometer) > 0 &&
@@ -78,11 +93,14 @@ export default function VehicleFormModal({
     function handleClose() {
         setPlateNumber("");
         setVehicleType("");
+        setVehicleMakeId("");
         setVehicleMaker("");
+        setVehicleModelId("");
+        setVehicleModel("");
         setTargetEfficiency("");
         setInitOdometer("");
-        setVehicleModel("");
         setSelectedYear("");
+        setweightCapacity("");
         setStatus("");
         onClose();
     }
@@ -95,10 +113,13 @@ export default function VehicleFormModal({
                 plateNumber,
                 vehicleType,
                 target: Number(targetEfficiency),
+                vehicleMakeId,
+                vehicleModelId,
                 vehicleMaker,
                 vehicleModel,
                 initOdometer: Number(initOdometer),
                 year: Number(selectedYear),
+                weightCapacity: Number(weightCapacity),
                 ...(isEdit && { status }),
             });
         } finally {
@@ -106,6 +127,47 @@ export default function VehicleFormModal({
             setSaving(false);
         }
     }
+
+    useEffect(() => {
+        async function loadVehicleOptions() {
+            setIsLoadingMakes(true);
+            setIsLoadingModels(true);
+
+            try {
+                const makes = await vehicleApi.getVehicleMakes();
+                if (makes.success) {
+                    setMakeOptions(
+                        makes.data.map((make: any) => ({
+                            label: make.name,
+                            value: make.id_,
+                        })),
+                    );
+                }
+            } catch (error) {
+                // ignore for now; allow users to still edit if no options exist
+            } finally {
+                setIsLoadingMakes(false);
+            }
+
+            try {
+                const models = await vehicleApi.getVehicleModels();
+                if (models.success) {
+                    setModelOptions(
+                        models.data.map((model: any) => ({
+                            label: model.name,
+                            value: model.id_,
+                        })),
+                    );
+                }
+            } catch (error) {
+                // ignore for now
+            } finally {
+                setIsLoadingModels(false);
+            }
+        }
+
+        loadVehicleOptions();
+    }, []);
 
     return (
         // Background Overlay
@@ -176,10 +238,20 @@ export default function VehicleFormModal({
                                 <span className="text-red-500">*</span>
                             </label>
                             <FormSelect
-                                value={vehicleMaker}
-                                onChange={setVehicleMaker}
-                                options={["Toyota", "Samsung", "Hyundai"]}
-                                placeholder="Select vehicle brand"
+                                value={vehicleMakeId}
+                                onChange={(value) => {
+                                    setVehicleMakeId(value);
+                                    const selected = makeOptions.find(
+                                        (option) => option.value === value,
+                                    );
+                                    setVehicleMaker(selected?.label ?? "");
+                                }}
+                                options={makeOptions}
+                                placeholder={
+                                    isLoadingMakes
+                                        ? "Loading brands..."
+                                        : "Select vehicle brand"
+                                }
                                 icon={<Building2 size={19} />}
                             />
                         </div>
@@ -222,7 +294,7 @@ export default function VehicleFormModal({
                             <FormSelect
                                 value={vehicleType}
                                 onChange={setVehicleType}
-                                options={["VAN", "CAR", "MOTORCYCLE"]}
+                                options={["VAN", "CAR", "MOTORCYCLE", "TRUCK", "BUS", "OTHER"]}
                                 placeholder="Select vehicle type"
                                 icon={<Car size={21} />}
                             />
@@ -234,10 +306,20 @@ export default function VehicleFormModal({
                                 <span className="text-red-500">*</span>
                             </label>
                             <FormSelect
-                                value={vehicleModel}
-                                onChange={setVehicleModel}
-                                options={["Runner", "RC"]}
-                                placeholder="Select vehicle model"
+                                value={vehicleModelId}
+                                onChange={(value) => {
+                                    setVehicleModelId(value);
+                                    const selected = modelOptions.find(
+                                        (option) => option.value === value,
+                                    );
+                                    setVehicleModel(selected?.label ?? "");
+                                }}
+                                options={modelOptions}
+                                placeholder={
+                                    isLoadingModels
+                                        ? "Loading models..."
+                                        : "Select vehicle model"
+                                }
                                 icon={<Car size={21} />}
                             />
                         </div>

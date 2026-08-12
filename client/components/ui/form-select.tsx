@@ -3,10 +3,12 @@
 import { ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect, type ReactNode } from "react";
 
+type SelectOption = string | { label: string; value: string };
+
 interface FormSelectProps {
     value: string;
     onChange: (value: string) => void;
-    options: string[];
+    options: SelectOption[];
     placeholder: string;
     icon?: ReactNode;
 }
@@ -32,6 +34,17 @@ export default function FormSelect({
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
+    const selectedOption = options.find((opt) => {
+        const optionValue = typeof opt === "string" ? opt : opt.value;
+        return optionValue === value;
+    });
+
+    const selectedLabel = selectedOption
+        ? typeof selectedOption === "string"
+            ? selectedOption
+            : selectedOption.label
+        : value;
+
     return (
         <div ref={ref} className="relative">
             <button
@@ -54,7 +67,7 @@ export default function FormSelect({
                     className={`flex-1 text-left 
                         ${!value ? "text-muted-foreground group-hover:text-foreground dark:group-hover:text-primary" : ""}`}
                 >
-                    {value || placeholder}
+                    {selectedLabel || placeholder}
                 </span>
                 <ChevronDown
                     size={14}
@@ -70,26 +83,32 @@ export default function FormSelect({
                     rounded-lg border border-border bg-card shadow shadow-muted-foreground
                     scrollbar-thumb-muted-foreground"
                 >
-                    {options.map((opt) => (
-                        <button
-                            type="button"
-                            key={opt}
-                            onClick={() => {
-                                onChange(opt);
-                                setOpen(false);
-                            }}
-                            className={`w-full px-3 py-2 text-sm text-left transition 
-                                hover:bg-secondary dark:hover:text-primary
-                                first:rounded-t-lg last:rounded-b-lg
-                                ${
-                                    value === opt
-                                        ? "bg-primary dark:bg-primary-foreground/35 text-foreground"
-                                        : ""
-                                }`}
-                        >
-                            {opt}
-                        </button>
-                    ))}
+                    {options.map((opt) => {
+                        const optionValue =
+                            typeof opt === "string" ? opt : opt.value;
+                        const optionLabel =
+                            typeof opt === "string" ? opt : opt.label;
+                        return (
+                            <button
+                                type="button"
+                                key={optionValue}
+                                onClick={() => {
+                                    onChange(optionValue);
+                                    setOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-sm text-left transition 
+                                    hover:bg-secondary dark:hover:text-primary
+                                    first:rounded-t-lg last:rounded-b-lg
+                                    ${
+                                        value === optionValue
+                                            ? "bg-primary dark:bg-primary-foreground/35 text-foreground"
+                                            : ""
+                                    }`}
+                            >
+                                {optionLabel}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
         </div>
