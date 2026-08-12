@@ -23,6 +23,8 @@ type BackendVehicle = {
     vehicle_model?: {
         name?: string | null;
     } | null;
+    make_id_?: string | null;
+    model_id_?: string | null;
 };
 
 const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
@@ -107,6 +109,16 @@ export async function archiveVehicle(vehicleId: string) {
     const response = await apiCall(`/api/vehicles/${vehicleId}/archive`, {
         method: "PATCH",
     });
+    return response.json();
+}
+
+export async function getVehicleMakes() {
+    const response = await apiCall("/api/vehicles/makes");
+    return response.json();
+}
+
+export async function getVehicleModels() {
+    const response = await apiCall("/api/vehicles/models");
     return response.json();
 }
 
