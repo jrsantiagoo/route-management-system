@@ -37,7 +37,7 @@ export default function Sidebar({
             className={`fixed top-0 left-0 h-screen z-30
                 ${collapsed ? "w-20" : "w-64"} 
                 bg-background border-r border-border font-semibold 
-                ${noTransition ? "transition-none" : "transition-all duration-300"}`}
+                ${noTransition ? "transition-none" : "transition-[width] duration-300"}`}
         >
             {/* Route Management Tool Version Text */}
             <div

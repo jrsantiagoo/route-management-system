@@ -35,6 +35,13 @@
     --btn-danger-hover: #c10007;
 }
 
+/* Kills every transition, while theme switching, so it'll paint 
+   the whole page instantly */
+html.theme-switching,
+html.theme-switching * {
+    transition: none !important;
+}
+
 @theme {
     --color-background: var(--background);
     --color-foreground: var(--foreground);

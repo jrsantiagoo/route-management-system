@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiCall } from "@/lib/api/apiCall";
 import * as authApi from "@/lib/api/auth";
+import { useTheme } from "@/lib/theme-context";
 
 //login page with email and password fields, error handling, and loading state. On successful login, navigate to dashboard page
 export default function loginPage() {
@@ -14,25 +15,7 @@ export default function loginPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
-
-    // On mount: use the saved choice for this session, otherwise follow the OS preference.
-    useEffect(() => {
-        const saved = sessionStorage.getItem("theme");
-        const prefersDark =
-            saved === "dark" ||
-            (saved === null &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches);
-        setDarkMode(prefersDark);
-        document.documentElement.classList.toggle("dark", prefersDark);
-    }, []);
-
-    const toggleDarkMode = () => {
-        const next = !darkMode;
-        setDarkMode(next);
-        document.documentElement.classList.toggle("dark", next);
-        sessionStorage.setItem("theme", next ? "dark" : "light");
-    };
+    const { theme, toggleTheme } = useTheme();
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -147,11 +130,11 @@ export default function loginPage() {
                     {/* Dark mode toggle */}
                     <button
                         type="button"
-                        onClick={toggleDarkMode}
+                        onClick={toggleTheme}
                         aria-label="Toggle dark mode"
                         className="absolute right-6 top-6 flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800"
                     >
-                        {darkMode ? (
+                        {theme === "dark" ? (
                             <svg
                                 className="h-5 w-5"
                                 viewBox="0 0 24 24"

@@ -70,7 +70,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
         <header
             className={`fixed top-0 right-0 h-16
                 ${sidebarCollapsed ? "left-20" : "left-64"} 
-                flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-all duration-300`}
+                flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-[left] duration-300`}
         >
             <div className="text-foreground text-left">
                 <h1 className="text-lg font-bold">Route Management Tool</h1>
