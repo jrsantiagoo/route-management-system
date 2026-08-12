@@ -14,6 +14,18 @@ export async function getVehicles(includeArchived = false) {
     });
 }
 
+export async function getVehicleMakes() {
+    return prisma.vehicle_make.findMany({
+        orderBy: { name: "asc" },
+    });
+}
+
+export async function getVehicleModels() {
+    return prisma.vehicle_model.findMany({
+        orderBy: { name: "asc" },
+    });
+}
+
 export async function getVehicleById(vehicleId) {
     const vehicle = await prisma.vehicle.findUnique({
         where: { id_: vehicleId },

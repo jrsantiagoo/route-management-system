@@ -6,6 +6,8 @@ import * as vehicleController from "../controllers/vehicle-controller.js";
 const router = Router();
 
 router.get("/", authenticate, vehicleController.getVehicles);
+router.get("/makes", authenticate, vehicleController.getVehicleMakes);
+router.get("/models", authenticate, vehicleController.getVehicleModels);
 router.get("/:id", authenticate, vehicleController.getVehicleById);
 router.post("/", authenticate, vehicleController.createVehicle);
 router.put("/:id", authenticate, vehicleController.updateVehicle);

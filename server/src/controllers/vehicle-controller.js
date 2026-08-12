@@ -47,6 +47,14 @@ function validateVehicleInput(data, isUpdate = false) {
         if (isNaN(Number(data.weight_capacity))) return ["weight_capacity must be a valid number"];
         if (Number(data.weight_capacity) < 0) return ["weight_capacity must be >= 0"];
     }
+    if (data.make_id_ !== undefined && data.make_id_ !== null) {
+        if (typeof data.make_id_ !== "string" || !data.make_id_.trim())
+            return ["make_id_ must be a non-empty string"];
+    }
+    if (data.model_id_ !== undefined && data.model_id_ !== null) {
+        if (typeof data.model_id_ !== "string" || !data.model_id_.trim())
+            return ["model_id_ must be a non-empty string"];
+    }
     if (data.registration_expiry !== undefined && data.registration_expiry !== null) {
         if (isNaN(new Date(data.registration_expiry).getTime()))
             return ["registration_expiry must be a valid date"];
@@ -65,6 +73,24 @@ export async function getVehicles(req, res) {
         const includeArchived = String(req.query.archived) === "true";
         const vehicles = await vehicleService.getVehicles(includeArchived);
         res.json({ success: true, data: vehicles });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function getVehicleMakes(req, res) {
+    try {
+        const makes = await vehicleService.getVehicleMakes();
+        res.json({ success: true, data: makes });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function getVehicleModels(req, res) {
+    try {
+        const models = await vehicleService.getVehicleModels();
+        res.json({ success: true, data: models });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
