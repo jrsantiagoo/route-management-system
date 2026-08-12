@@ -11,6 +11,8 @@ export interface Vehicle {
     status: string;
     vehicleMaker: string;
     vehicleModel: string;
+    vehicleMakeId?: string;
+    vehicleModelId?: string;
     initOdometer: number;
     year: number;
     archived?: boolean;

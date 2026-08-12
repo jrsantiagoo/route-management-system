@@ -30,8 +30,11 @@ function buildVehiclePayload(data: Partial<Vehicle>) {
         vehicle_type: VALID_VEHICLE_TYPES.includes(normalizedType ?? "")
             ? normalizedType
             : "OTHER",
+        weight_capacity: data.weightCapacity ?? null,
         initial_odometer: data.initOdometer,
         expected_kml: data.target,
+        make_id_: data.vehicleMakeId ?? null,
+        model_id_: data.vehicleModelId ?? null,
         is_active: data.status?.toUpperCase() !== "INACTIVE",
     };
 }
