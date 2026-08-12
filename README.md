@@ -1,16 +1,50 @@
 # Route Management Tool
 
-Welcome to the **Route Management Tool**, a web application designed to help logistics managers efficiently organize, schedule, and monitor delivery operations. The platform streamlines route planning and delivery tracking, providing a centralized solution for managing transportation workflows.
+Welcome to the **Route Management Tool**, a web application that helps logistics managers efficiently plan, schedule, monitor, and assign delivery operations. The platform centralizes route planning, trip assignment, fleet management, fuel tracking, and order monitoring in one streamlined system.
+
+---
+
+## Features
+
+- **Route Planning** – Create, edit, reorder, and archive routes with drag-and-drop stop ordering, suggested routes, and saved routes.
+- **Trip Management** – Assign drivers and vehicles to trips, track status (Pending → Processing → Completed/Failed/Cancelled), update and archive trips.
+- **Fleet Management** – Manage vehicles with make/model/type dropdowns, plates, capacities, odometer readings, registration and insurance details.
+- **Fuel & Efficiency Tracking** – Record fuel logs and monitor km/L, cost per km, variance, and attention flags.
+- **Order Tracking** – Track orders tied to trips with package details and delivery status.
+- **Assignment Views** – Calendar, table, and driver views for managing trip assignments.
+- **Dashboard** – Statistics and charts (Recharts) over a selectable date range, with PDF export.
 
 ---
 
 ## Getting Started
 
-### Server Prerequisites
+### Prerequisites
 
 - Node.js
 - npm
-- PostgreSQL
+- PostgreSQL database (with `DATABASE_URL` / `DIRECT_URL`)
+- Supabase Project (for auth)
+
+### Environment Variables
+
+**Server:** `./server/.env`
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `DIRECT_URL` | Direct PostgreSQL URL (for migrations) |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (for auth) |
+| `CORE_API` | External core API endpoint |
+| `LOGISTICS_API` | Logistics API endpoint |
+| `CLIENT_EMAIL` / `CLIENT_PASSWORD` / `CLIENT_TENANT_CODE` | Sync credentials |
+| `ORIGIN_URI` | Allowed CORS origin |
+
+**Client:** `./client/.env.local`
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL |
+
+### Install and Run
 
 1. Install Dependencies
 
@@ -38,27 +72,40 @@ npm run client
 
 ---
 
-## Backend Tech Stack
+## Tech Stack
 
-| Category            | Technology      |
-| ------------------- | --------------- |
-| Language            | JavaScript      |
-| Runtime Environment | Node.js         |
-| Web Framework       | Express.js      |
-| Package Manager     | npm             |
-| Database            | PostgreSQL      |
-| ORM                 | Prisma          |
-| Code Formatter      | Prettier        |
-| Code Quality        | ESLint          |
-| Testing             | Vitest, Postman |
+### Frontend
 
----
+| Category            | Technology         |
+| ------------------- | ------------------ |
+| Framework           | Next.js 16         |
+| Language            | TypeScript         |
+| Routing             | Next.js App Router |
+| Styling             | Tailwind CSS 4     |
+| Data Fetching       | Fetch API          |
+| Client Global State | React `useState`   |
+| Code Formatter      | Prettier           |
+| Code Quality        | ESLint             |
+
+### Backend API
+
+| Category            | Technology            |
+| ------------------- | --------------------- |
+| Language            | JavaScript            |
+| Runtime Environment | Node.js               |
+| Web Framework       | Express.js            |
+| Package Manager     | npm                   |
+| Database            | PostgreSQL / Supabase |
+| ORM                 | Prisma 6              |
+| Authentication      | Supabase Auth         |
+| Code Formatter      | Prettier              |
+| Code Quality        | ESLint                |
 
 ## Mapping & Routing
 
 | Category         | Technology                         |
 | ---------------- | ---------------------------------- |
-| Map Rendering    | Leaflet.js                         |
+| Map Rendering    | Leaflet.js + react-leaflet         |
 | Map Tile Imagery | OpenStreetMap                      |
 | Routing Engine   | Open Source Routing Machine (OSRM) |
 
@@ -68,18 +115,23 @@ npm run client
 
 ```text
 project-root/
-├── client/          # Frontend application
-├── server/          # Backend API and business logic
-├── package.json
+├── client/                      # Next.js frontend
+│   ├── app/                     # App Router pages (dashboard, assignment, fleet, route-tool, auth)
+│   ├── components/              # UI and feature components
+│   └── lib/
+├── server/                      # Express backend
+│   ├── src/
+│   │   ├── controllers/         # Request handlers
+│   │   ├── routes/              # API route definitions
+│   │   ├── services/            # Business logic (incl. sync-service)
+│   │   ├── middleware/          # Auth middleware
+│   │   ├── lib/                 # Prisma & Supabase clients
+│   │   └── generated/           # Generated Prisma client
+│   ├── prisma/                  # Schema & migrations
+│   ├── scripts/                 # Seed scripts
+│   └── env.js
+├── package.json                 # Root scripts
 └── README.md
 ```
-
----
-
-## Development Tools
-
-- **ESLint** for code linting
-- **Prettier** for code formatting
-- **Postman** for API testing and validation
 
 ---
