@@ -13,7 +13,7 @@ import {
     X,
     Clock,
 } from "lucide-react";
-import { Trip } from "@/lib/routing/types";
+import { Trip } from "@/lib/types/schema";
 import StatusBadge from "../ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
 

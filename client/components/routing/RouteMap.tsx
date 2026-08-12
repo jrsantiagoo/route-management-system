@@ -1,7 +1,7 @@
 "use client";
 // ssr:false — Leaflet touches `window` on import and breaks SSR.
 import dynamic from "next/dynamic";
-import { Stop } from "@/lib/routing/types";
+import { Stop } from "@/lib/types/schema";
 import { useTheme } from "@/lib/theme-context";
 
 // Themed placeholder to avoid a light flash before the basemap mounts.
@@ -39,7 +39,11 @@ interface RouteMapProps {
     previewStop?: Stop | null;
 }
 
-export default function RouteMap({ stops, polyline, previewStop }: RouteMapProps) {
+export default function RouteMap({
+    stops,
+    polyline,
+    previewStop,
+}: RouteMapProps) {
     return (
         <div style={{ height: "100%", width: "100%" }}>
             <RouteMapInner

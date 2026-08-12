@@ -7,7 +7,7 @@ import {
     RouteSegment,
     RoutePlan,
     SuggestedRoute,
-} from "@/lib/routing/types";
+} from "@/lib/types/schema";
 import { DEFAULT_STOPS } from "@/lib/routing/mockData";
 import { fetchRoute } from "@/lib/routing/routingService";
 import { saveRoute, isRouteNameTaken } from "@/lib/routing/storageHelper";

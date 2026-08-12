@@ -11,7 +11,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Stop } from "@/lib/routing/types";
+import { Stop } from "@/lib/types/schema";
 import { useTheme } from "@/lib/theme-context";
 import { ZOOM_CONTROL_LEFT, PANEL_TOP } from "./layout";
 

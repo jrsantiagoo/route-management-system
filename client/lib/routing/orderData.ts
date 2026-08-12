@@ -1,4 +1,4 @@
-import { Stop, OrderPriority, RoutePlan } from "./types";
+import { Stop, OrderPriority, RoutePlan } from "../types/schema";
 
 export interface MockOrder {
     orderId: number;

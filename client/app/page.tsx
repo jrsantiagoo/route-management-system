@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { apiCall } from "@/lib/api/client";
+import { apiCall } from "@/lib/api/apiCall";
 import * as authApi from "@/lib/api/auth";
 
 //login page with email and password fields, error handling, and loading state. On successful login, navigate to dashboard page

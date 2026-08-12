@@ -32,7 +32,7 @@ import {
     ArchiveRestore,
     Trash2,
 } from "lucide-react";
-import { RoutePlan } from "@/lib/routing/types";
+import { RoutePlan } from "@/lib/types/schema";
 import { formatDateTime } from "@/lib/routing/formatters";
 import { getRouteAreaTags, formatOrderLabel } from "@/lib/routing/orderData";
 import { useTheme } from "@/lib/theme-context";

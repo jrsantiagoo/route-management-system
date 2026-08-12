@@ -1,4 +1,4 @@
-import { Stop, RouteSegment } from "./types";
+import { Stop, RouteSegment } from "../types/schema";
 
 const OSRM_BASE = "https://router.project-osrm.org/route/v1/driving";
 

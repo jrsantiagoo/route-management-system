@@ -4,7 +4,7 @@ import {
     WeeklyVehicleAvailability,
     HistoricalRoutePerformance,
     Stop,
-} from "./types";
+} from "../types/schema";
 import { MOCK_WEEKLY_AVAILABILITY, MOCK_HISTORICAL_ROUTES } from "./mockData";
 import { fetchRoute } from "./routingService";
 

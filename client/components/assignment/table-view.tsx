@@ -18,7 +18,7 @@ import {
     Van,
     RotateCcw,
 } from "lucide-react";
-import type { Trip } from "@/lib/routing/types";
+import type { Trip } from "@/lib/types/schema";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";

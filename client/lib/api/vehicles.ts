@@ -1,4 +1,4 @@
-import { apiCall } from "./client";
+import { apiCall } from "./apiCall";
 import type { Vehicle } from "@/lib/types/vehicle";
 
 type BackendVehicle = {
@@ -42,8 +42,8 @@ const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
         status: isArchived
             ? "ARCHIVED"
             : vehicle.is_active
-            ? "ACTIVE"
-            : "INACTIVE",
+              ? "ACTIVE"
+              : "INACTIVE",
         vehicleMaker: vehicle.vehicle_make?.name ?? "",
         vehicleModel: vehicle.vehicle_model?.name ?? "",
         initOdometer: vehicle.initial_odometer,
@@ -57,7 +57,9 @@ const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
 const mapVehicles = (vehicles: BackendVehicle[]) => vehicles.map(mapVehicle);
 
 export async function getVehicles(includeArchived = false) {
-    const endpoint = includeArchived ? "/api/vehicles?archived=true" : "/api/vehicles";
+    const endpoint = includeArchived
+        ? "/api/vehicles?archived=true"
+        : "/api/vehicles";
     const response = await apiCall(endpoint);
     const result = await response.json();
     return {

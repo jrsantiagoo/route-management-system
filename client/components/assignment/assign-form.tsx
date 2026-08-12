@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import AssignmentFormModal from "./assignment-form-modal";
-import { Driver, RoutePlan, Trip } from "@/lib/routing/types";
+import { Driver, RoutePlan, Trip } from "@/lib/types/schema";
 import { Vehicle } from "@/lib/types/vehicle";
 import { createTrip } from "@/lib/api/trips";
 

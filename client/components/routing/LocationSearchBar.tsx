@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Stop } from "@/lib/routing/types";
+import { Stop } from "@/lib/types/schema";
 import {
     groupOrdersByLocation,
     orderLocationToStop,

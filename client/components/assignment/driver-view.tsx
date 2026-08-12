@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
-import { DriverCapacity } from "@/lib/routing/types";
+import { DriverCapacity } from "@/lib/types/schema";
 import StatusBadge from "../ui/status-badge";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];

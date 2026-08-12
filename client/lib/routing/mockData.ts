@@ -2,7 +2,7 @@ import {
     Stop,
     WeeklyVehicleAvailability,
     HistoricalRoutePerformance,
-} from "./types";
+} from "../types/schema";
 
 export const MANILA_LOCATIONS: Stop[] = [
     {

@@ -5,7 +5,7 @@
 // this for API calls later means changing only this file.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { RoutePlan } from "./types";
+import { RoutePlan } from "../types/schema";
 
 const STORAGE_KEY = "acesoft_savedRoutes";
 

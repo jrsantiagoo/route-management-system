@@ -1,5 +1,5 @@
 // import { orders } from "@/lib/dashboard/mockData";
-import type { Order } from "@/lib/routing/types";
+import type { Order } from "@/lib/types/schema";
 import {
     CalendarClock,
     MapPinned,

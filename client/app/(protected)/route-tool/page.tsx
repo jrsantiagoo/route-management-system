@@ -18,7 +18,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Plus, RefreshCw } from "lucide-react";
-import { RoutePlan } from "@/lib/routing/types";
+import { RoutePlan } from "@/lib/types/schema";
 import {
     loadSavedRoutes,
     deleteRoute,

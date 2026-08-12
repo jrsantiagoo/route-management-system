@@ -23,7 +23,7 @@ import { getOrders, getOrdersRange } from "@/lib/api/orders";
 import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import { getEfficiency } from "@/lib/api/efficiency";
-import type { Trip, Order } from "@/lib/routing/types";
+import type { Trip, Order } from "@/lib/types/schema";
 
 import { computeTrend } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";

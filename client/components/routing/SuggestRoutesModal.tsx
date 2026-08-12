@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { SuggestedRoute, Stop } from "@/lib/routing/types";
+import { SuggestedRoute, Stop } from "@/lib/types/schema";
 import { MOCK_WEEKLY_AVAILABILITY } from "@/lib/routing/mockData";
 import {
     generateSuggestedRoutes,

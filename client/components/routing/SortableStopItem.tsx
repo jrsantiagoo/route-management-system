@@ -1,7 +1,7 @@
 "use client";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Stop } from "@/lib/routing/types";
+import { Stop } from "@/lib/types/schema";
 import { formatOrderLabel } from "@/lib/routing/orderData";
 import { useTheme } from "@/lib/theme-context";
 import { DARK } from "./routeTheme";

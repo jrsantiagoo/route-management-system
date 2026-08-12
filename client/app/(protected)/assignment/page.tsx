@@ -8,7 +8,7 @@ import type {
     Driver,
     RoutePlan,
     DriverCapacity,
-} from "@/lib/routing/types";
+} from "@/lib/types/schema";
 import type { Vehicle } from "@/lib/types/vehicle";
 import {
     getAllTrips,

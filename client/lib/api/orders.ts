@@ -1,4 +1,4 @@
-import { apiCall } from "./client";
+import { apiCall } from "./apiCall";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

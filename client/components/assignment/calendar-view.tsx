@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
-import type { Trip } from "@/lib/routing/types";
-import type { Driver } from "@/lib/routing/types";
+import type { Trip } from "@/lib/types/schema";
+import type { Driver } from "@/lib/types/schema";
 
 interface CalendarViewProps {
     trips: Trip[];

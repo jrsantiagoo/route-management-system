@@ -14,7 +14,7 @@ import {
     arrayMove,
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { Stop, RouteSegment } from "@/lib/routing/types";
+import { Stop, RouteSegment } from "@/lib/types/schema";
 import { formatDistance, formatDuration } from "@/lib/routing/formatters";
 import { useTheme } from "@/lib/theme-context";
 import SortableStopItem from "./SortableStopItem";

@@ -1,5 +1,5 @@
-import { RoutePlan, Stop } from "../routing/types";
-import { apiCall } from "./client";
+import { RoutePlan, Stop } from "../types/schema";
+import { apiCall } from "./apiCall";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

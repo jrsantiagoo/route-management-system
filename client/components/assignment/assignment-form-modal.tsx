@@ -3,7 +3,7 @@
 import { CalendarDays, Route, User, Van, X } from "lucide-react";
 import { useState } from "react";
 import FormSelect from "../ui/form-select";
-import { Driver, RoutePlan, Trip } from "@/lib/routing/types";
+import { Driver, RoutePlan, Trip } from "@/lib/types/schema";
 import { Vehicle } from "@/lib/types/vehicle";
 
 interface AssignmentFormModalProps {
