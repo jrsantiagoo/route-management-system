@@ -1,6 +1,6 @@
-# Route Management Tool
+# EnRoute
 
-Welcome to the **Route Management Tool**, a web application that helps logistics managers efficiently plan, schedule, monitor, and assign delivery operations. The platform centralizes route planning, trip assignment, fleet management, fuel tracking, and order monitoring in one streamlined system.
+Welcome to the **EnRoute**, a web application that helps logistics managers efficiently plan, schedule, monitor, and assign delivery operations. The platform centralizes route planning, trip assignment, fleet management, fuel tracking, and order monitoring in one streamlined system.
 
 ---
 
