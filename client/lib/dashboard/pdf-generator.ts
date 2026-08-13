@@ -132,34 +132,15 @@ export function generatePDF(
     const cardW = 55;
     const cardH = 22;
     const cardGap = 6;
-
-    const statsY = 46;
-    const cardW = (182 - 2 * cardGap) / 3;
-    const rowOffset = (210 - (3 * cardW + 2 * cardGap)) / 2;
+    const cardY = 40;
     const stats = [
         { title: "Total Successful Trips", value: String(totalTrips) },
         { title: "Efficiency", value: `${efficiency}%` },
         { title: "Delivered Orders", value: String(delivered) },
     ];
+
     stats.forEach((stat, i) => {
-        drawStatCard(
-            doc,
-            stat.title,
-            stat.value,
-            rowOffset + i * (cardW + cardGap),
-            statsY,
-            cardW,
-            cardH
-        );
-    });
-
-    // ── Charts ──────────────────────────────────────────────────────────
-
-    const chartsTop = statsY + cardH + 24;
-
-    doc.setDrawColor(...C.border);
-    doc.setLineWidth(0.5);
-    doc.line(14, chartsTop - 8, 196, chartsTop - 8);
+        const cx = 14 + i * (cardW + cardGap);
 
         // Card background
         doc.setFillColor(255, 255, 255);
@@ -191,7 +172,6 @@ export function generatePDF(
     const chartW = 85;
     const chartH = 45;
     const colGap = 8;
-    const chartY = chartsTop + 6;
 
     doc.setFontSize(12);
     doc.text("Daily Statistics", 14, chartY - 4);
