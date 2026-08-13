@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     ComposedChart,
     Bar,
@@ -17,6 +18,7 @@ import DateRangePicker, {
     type Preset,
 } from "@/components/dashboard/date-range-picker";
 import StatCard from "@/components/dashboard/stat-card";
+import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
 import { getOrders, getOrdersRange } from "@/lib/api/orders";
@@ -62,15 +64,30 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+    const [loading, setLoading] = useState(true);
+    const pendingLoads = useRef(0);
+    const trackLoad = useCallback(function <T>(promise: Promise<T>) {
+        pendingLoads.current += 1;
+        return promise.finally(() => {
+            pendingLoads.current -= 1;
+            if (pendingLoads.current === 0) setLoading(false);
+        });
+    }, []);
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
 
     useEffect(() => {
-        getOrdersRange(range.start, range.end).then((res) =>
-            setOrders(res.data),
+        trackLoad(
+            Promise.all([
+                getOrdersRange(range.start, range.end),
+                getTripsRange(range.start, range.end),
+            ]).then(([ordersRes, tripsRes]) => {
+                setOrders(ordersRes.success ? ordersRes.data : []);
+                setTrips(tripsRes.success ? tripsRes.data : []);
+            })
         );
-        getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
-    }, [range]);
+    }, [range, trackLoad]);
 
     // Derive stats from orders data
     const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
@@ -111,32 +128,68 @@ export default function Dashboard() {
                     fuel: d.fuelPerOrder,
                 }),
             );
-            setFuelData(computeTrend(mapped, "fuel"));
-        });
 
-        getEfficiency(range.start, range.end).then((res) => {
-            if (res.success) setEfficiency(res.data);
-        });
+            if (compRange) {
+                const [prevFuelRes, prevDistRes] = await Promise.all([
+                    getFuelPerOrder(compRange.start, compRange.end),
+                    getDistancePerOrder(compRange.start, compRange.end),
+                ]);
+
+                const prevFuelMapped = (prevFuelRes.data ?? []).map(
+                    (d: { date: string; fuelPerOrder: number }) => ({
+                        day: d.date,
+                        fuel: d.fuelPerOrder,
+                    })
+                );
+                const prevDistMapped = (prevDistRes.data ?? []).map(
+                    (d: { date: string; distancePerOrder: number }) => ({
+                        day: d.date,
+                        distance: d.distancePerOrder,
+                    })
+                );
+
+                setFuelData(
+                    mergePrevTrend(
+                        computeTrend(fuelMapped, "fuel"),
+                        computeTrend(prevFuelMapped, "fuel")
+                    )
+                );
+                setDistanceData(
+                    mergePrevTrend(
+                        computeTrend(distMapped, "distance"),
+                        computeTrend(prevDistMapped, "distance")
+                    )
+                );
+            } else {
+                setFuelData(computeTrend(fuelMapped, "fuel"));
+                setDistanceData(computeTrend(distMapped, "distance"));
+            }
+        }
+
+        const tasks: Promise<unknown>[] = [];
+        tasks.push(fetchCurrentAndComparison());
+
+        tasks.push(
+            getEfficiency(range.start, range.end).then((res) => {
+                if (res.success) setEfficiency(res.data);
+            })
+        );
 
         if (presetComparison[range.preset] !== undefined) {
             const compRange = getComparisonRange(range.start, range.end);
             if (compRange) {
-                getEfficiency(compRange.start, compRange.end).then((res) => {
-                    if (res.success) setPreviousEfficiency(res.data);
-                });
+                tasks.push(
+                    getEfficiency(compRange.start, compRange.end).then(
+                        (res) => {
+                            if (res.success) setPreviousEfficiency(res.data);
+                        }
+                    )
+                );
             }
         }
 
-        getDistancePerOrder(range.start, range.end).then((res) => {
-            const mapped = (res.data ?? []).map(
-                (d: { date: string; distancePerOrder: number }) => ({
-                    day: d.date,
-                    distance: d.distancePerOrder,
-                }),
-            );
-            setDistanceData(computeTrend(mapped, "distance"));
-        });
-    }, [range]);
+        trackLoad(Promise.all(tasks));
+    }, [range, trackLoad]);
 
     const efficiencyChange =
         previousEfficiency !== null && previousEfficiency !== 0
@@ -168,10 +221,18 @@ export default function Dashboard() {
             </>
         );
 
-    // Enables PDF Download of summary
+    const router = useRouter();
     const handleDownload = useCallback(() => {
-        generatePDF(totalTrips, efficiency, delivered);
-    }, [totalTrips, efficiency, delivered]);
+        generatePDF(
+            totalTrips,
+            efficiency,
+            delivered,
+            distanceData,
+            fuelData
+        );
+    }, [totalTrips, efficiency, delivered, distanceData, fuelData]);
+
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <div className="flex flex-col gap-6">
@@ -203,9 +264,14 @@ export default function Dashboard() {
             </div>
 
             {/* Key Statistics */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
                 <StatCard
-                    title="Total Successful Trips"
+                    title="Upcoming Trips"
+                    value={String(upcomingTrips)}
+                    subtitle={tripsSubtitle}
+                />
+                <StatCard
+                    title="Successful Trips"
                     value={String(totalTrips)}
                     subtitle={tripsSubtitle}
                 />
