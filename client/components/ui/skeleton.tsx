@@ -10,7 +10,7 @@ export default function Skeleton({
     return (
         <div
             aria-hidden="true"
-            className={`animate-skeleton rounded-lg border border-border bg-muted-foreground/10 ${className ?? ""}`}
+            className={`animate-skeleton rounded-lg bg-border ${className ?? ""}`}
             {...rest}
         />
     );
