@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     ComposedChart,
     Bar,
@@ -12,11 +13,12 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import DateRangePicker, {
     type Preset,
 } from "@/components/dashboard/date-range-picker";
 import StatCard from "@/components/dashboard/stat-card";
+import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
 import { getOrders, getOrdersRange } from "@/lib/api/orders";
@@ -30,6 +32,20 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
 // Dashboard Page Component
 export default function Dashboard() {
+    // const onTimeThreshold = 5;
+    // const onTime = orders.filter((o) => {
+    //     const [oy, om, od] = o.ordered_on.split("-").map(Number);
+    //     if (!o.delivered_by) return false;
+    //     const [dy, dm, dd] = o.delivered_by.split("-").map(Number);
+    //     const orderDate = new Date(oy, om - 1, od);
+    //     const deliverDate = new Date(dy, dm - 1, dd);
+    //     const diffDays =
+    //         (deliverDate.getTime() - orderDate.getTime()) /
+    //         (1000 * 60 * 60 * 24);
+    //     return diffDays <= onTimeThreshold;
+    // }).length;
+    // const efficiency = Math.round((onTime / totalTrips) * 100);
+
     // Lifted date range state
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
@@ -43,7 +59,9 @@ export default function Dashboard() {
         now.getMonth(),
         now.getDate() - diff,
     );
-    const firstOfWeek = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    const firstOfWeek = `${monday.getFullYear()}-${String(
+        monday.getMonth() + 1,
+    ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
 
     const [range, setRange] = useState<{
         start: string;
@@ -62,27 +80,48 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+    const [loading, setLoading] = useState(true);
+    const pendingLoads = useRef(0);
+    const trackLoad = useCallback(function <T>(promise: Promise<T>) {
+        pendingLoads.current += 1;
+        return promise.finally(() => {
+            pendingLoads.current -= 1;
+            if (pendingLoads.current === 0) setLoading(false);
+        });
+    }, []);
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
 
     useEffect(() => {
-        getOrdersRange(range.start, range.end).then((res) =>
-            setOrders(res.data),
+        trackLoad(
+            Promise.all([
+                getOrdersRange(range.start, range.end),
+                getTripsRange(range.start, range.end),
+            ]).then(([ordersRes, tripsRes]) => {
+                setOrders(ordersRes.success ? ordersRes.data : []);
+                setTrips(tripsRes.success ? tripsRes.data : []);
+            }),
         );
-        getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
-    }, [range]);
+    }, [range, trackLoad]);
 
     // Derive stats from orders data
     const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
     const delivered = orders.filter((o) => o.status === "COMPLETED").length;
+    const unassignedCount = trips.filter(
+        (t) => t.tag_type === "OPEN" || !t.driver_id_,
+    ).length;
+    const upcomingTrips = trips.filter(
+        (t) => t.scheduled_date && new Date(t.scheduled_date) > new Date(),
+    ).length;
 
     // Fuel per Order
     const [fuelData, setFuelData] = useState<
-        { day: string; fuel: number; trend: number }[]
+        { day: string; fuel: number; trend: number; prevTrend?: number }[]
     >([]);
     // Distance per Order
     const [distanceData, setDistanceData] = useState<
-        { day: string; distance: number; trend: number }[]
+        { day: string; distance: number; trend: number; prevTrend?: number }[]
     >([]);
     // Overall Efficiency
     const [efficiency, setEfficiency] = useState<number>(0);
@@ -103,40 +142,102 @@ export default function Dashboard() {
         };
     }
 
+    function mergePrevTrend<T extends { trend: number }>(
+        current: T[],
+        previous: T[],
+    ): (T & { prevTrend?: number })[] {
+        return current.map((point, i) => ({
+            ...point,
+            ...(previous[i] ? { prevTrend: previous[i].trend } : {}),
+        }));
+    }
+
     useEffect(() => {
-        getFuelPerOrder(range.start, range.end).then((res) => {
-            const mapped = (res.data ?? []).map(
+        async function fetchCurrentAndComparison() {
+            const isComparison = presetComparison[range.preset] !== undefined;
+            const compRange = isComparison
+                ? getComparisonRange(range.start, range.end)
+                : null;
+
+            const [fuelRes, distRes] = await Promise.all([
+                getFuelPerOrder(range.start, range.end),
+                getDistancePerOrder(range.start, range.end),
+            ]);
+
+            const fuelMapped = (fuelRes.data ?? []).map(
                 (d: { date: string; fuelPerOrder: number }) => ({
                     day: d.date,
                     fuel: d.fuelPerOrder,
                 }),
             );
-            setFuelData(computeTrend(mapped, "fuel"));
-        });
-
-        getEfficiency(range.start, range.end).then((res) => {
-            if (res.success) setEfficiency(res.data);
-        });
-
-        if (presetComparison[range.preset] !== undefined) {
-            const compRange = getComparisonRange(range.start, range.end);
-            if (compRange) {
-                getEfficiency(compRange.start, compRange.end).then((res) => {
-                    if (res.success) setPreviousEfficiency(res.data);
-                });
-            }
-        }
-
-        getDistancePerOrder(range.start, range.end).then((res) => {
-            const mapped = (res.data ?? []).map(
+            const distMapped = (distRes.data ?? []).map(
                 (d: { date: string; distancePerOrder: number }) => ({
                     day: d.date,
                     distance: d.distancePerOrder,
                 }),
             );
-            setDistanceData(computeTrend(mapped, "distance"));
-        });
-    }, [range]);
+
+            if (compRange) {
+                const [prevFuelRes, prevDistRes] = await Promise.all([
+                    getFuelPerOrder(compRange.start, compRange.end),
+                    getDistancePerOrder(compRange.start, compRange.end),
+                ]);
+
+                const prevFuelMapped = (prevFuelRes.data ?? []).map(
+                    (d: { date: string; fuelPerOrder: number }) => ({
+                        day: d.date,
+                        fuel: d.fuelPerOrder,
+                    }),
+                );
+                const prevDistMapped = (prevDistRes.data ?? []).map(
+                    (d: { date: string; distancePerOrder: number }) => ({
+                        day: d.date,
+                        distance: d.distancePerOrder,
+                    }),
+                );
+
+                setFuelData(
+                    mergePrevTrend(
+                        computeTrend(fuelMapped, "fuel"),
+                        computeTrend(prevFuelMapped, "fuel"),
+                    ),
+                );
+                setDistanceData(
+                    mergePrevTrend(
+                        computeTrend(distMapped, "distance"),
+                        computeTrend(prevDistMapped, "distance"),
+                    ),
+                );
+            } else {
+                setFuelData(computeTrend(fuelMapped, "fuel"));
+                setDistanceData(computeTrend(distMapped, "distance"));
+            }
+        }
+
+        const tasks: Promise<unknown>[] = [];
+        tasks.push(fetchCurrentAndComparison());
+
+        tasks.push(
+            getEfficiency(range.start, range.end).then((res) => {
+                if (res.success) setEfficiency(res.data);
+            }),
+        );
+
+        if (presetComparison[range.preset] !== undefined) {
+            const compRange = getComparisonRange(range.start, range.end);
+            if (compRange) {
+                tasks.push(
+                    getEfficiency(compRange.start, compRange.end).then(
+                        (res) => {
+                            if (res.success) setPreviousEfficiency(res.data);
+                        },
+                    ),
+                );
+            }
+        }
+
+        trackLoad(Promise.all(tasks));
+    }, [range, trackLoad]);
 
     const efficiencyChange =
         previousEfficiency !== null && previousEfficiency !== 0
@@ -155,6 +256,7 @@ export default function Dashboard() {
     // Derive subtitle for each stat card
     const tripsSubtitle = `out of ${trips.length} total trips`;
     const deliveredSubtitle = `out of ${orders.length} total orders`;
+    //const unassignedSubtitle = `out of ${trips.length} total trips`;
     const efficiencySubtitle: React.ReactNode =
         comparisonLabel === undefined ? undefined : (
             <>
@@ -164,17 +266,36 @@ export default function Dashboard() {
                     <TrendingDown size={24} className="text-red-500" />
                 )}
                 {isEfficiencyPositive ? "+" : ""}
-                {efficiencyChange} km/L compared to {comparisonLabel}
+                {efficiencyChange}% compared to {comparisonLabel}
             </>
         );
 
-    // Enables PDF Download of summary
+    const router = useRouter();
     const handleDownload = useCallback(() => {
-        generatePDF(totalTrips, efficiency, delivered);
-    }, [totalTrips, efficiency, delivered]);
+        generatePDF(totalTrips, efficiency, delivered, distanceData, fuelData);
+    }, [totalTrips, efficiency, delivered, distanceData, fuelData]);
+
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <div className="flex flex-col gap-6">
+            {/* Unassigned alert banner */}
+            {unassignedCount > 0 && (
+                <button
+                    onClick={() => router.push("/assignment")}
+                    className="flex items-center gap-3 rounded-lg bg-red-50 px-5 py-3 text-left text-sm font-semibold text-red-800 shadow-sm ring-1 ring-red-200 transition hover:bg-red-100 dark:bg-red-950 dark:text-red-200 dark:ring-red-800 dark:hover:bg-red-900"
+                >
+                    <AlertTriangle
+                        size={20}
+                        className="shrink-0 text-red-500"
+                    />
+                    <span>
+                        {unassignedCount} unassigned trip
+                        {unassignedCount === 1 ? "" : "s"} — click to assign
+                    </span>
+                </button>
+            )}
+
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">
                 <div className="flex flex-col justify-center">
@@ -194,7 +315,7 @@ export default function Dashboard() {
                     />
                     <button
                         onClick={handleDownload}
-                        className="rounded-lg bg-btn px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
+                        className="rounded-lg bg-primary px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
                         hover:bg-secondary hover:text-foreground dark:hover:text-primary"
                     >
                         Full Summary
@@ -203,20 +324,25 @@ export default function Dashboard() {
             </div>
 
             {/* Key Statistics */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
                 <StatCard
-                    title="Total Successful Trips"
+                    title="Upcoming Trips"
+                    value={String(upcomingTrips)}
+                    subtitle={tripsSubtitle}
+                />
+                <StatCard
+                    title="Successful Trips"
                     value={String(totalTrips)}
                     subtitle={tripsSubtitle}
                 />
                 <StatCard
                     title="Efficiency"
                     value={String(efficiency)}
-                    unit="km/L"
+                    unit="%"
                     subtitle={efficiencySubtitle}
                 />
                 <StatCard
-                    title="Delivered Orders"
+                    title="Completed Orders"
                     value={String(delivered)}
                     subtitle={deliveredSubtitle}
                 />
@@ -255,6 +381,19 @@ export default function Dashboard() {
                                 dot={false}
                                 name="Trend (3-day avg)"
                             />
+                            {distanceData[0]?.prevTrend !== undefined && (
+                                <Line
+                                    type="monotone"
+                                    dataKey="prevTrend"
+                                    stroke="#94a3b8"
+                                    strokeWidth={2}
+                                    strokeDasharray="6 3"
+                                    dot={false}
+                                    name={`Trend (${
+                                        comparisonLabel ?? "previous period"
+                                    })`}
+                                />
+                            )}
                         </ComposedChart>
                     </ResponsiveContainer>
                 </ChartCard>
@@ -290,6 +429,19 @@ export default function Dashboard() {
                                 dot={false}
                                 name="Trend (3-day avg)"
                             />
+                            {fuelData[0]?.prevTrend !== undefined && (
+                                <Line
+                                    type="monotone"
+                                    dataKey="prevTrend"
+                                    stroke="#94a3b8"
+                                    strokeWidth={2}
+                                    strokeDasharray="6 3"
+                                    dot={false}
+                                    name={`Trend (${
+                                        comparisonLabel ?? "previous period"
+                                    })`}
+                                />
+                            )}
                         </ComposedChart>
                     </ResponsiveContainer>
                 </ChartCard>
