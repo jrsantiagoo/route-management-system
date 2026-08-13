@@ -25,10 +25,7 @@ import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import { getEfficiency } from "@/lib/api/efficiency";
 import type { Trip, Order } from "@/lib/routing/types";
-import {
-    getVehiclesNeedingFuel,
-    getVehiclesNeedingMaintenance,
-} from "@/lib/api/fleet";
+import { getVehiclesNeedingMaintenance } from "@/lib/api/fleet";
 
 import { computeTrend } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
@@ -85,7 +82,6 @@ export default function Dashboard() {
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
-    const [vehiclesNeedingFuel, setVehiclesNeedingFuel] = useState<number>(0);
     const [vehiclesNeedingMaintenance, setVehiclesNeedingMaintenance] =
         useState<number>(0);
 
@@ -224,9 +220,6 @@ export default function Dashboard() {
     }, [range]);
 
     useEffect(() => {
-        getVehiclesNeedingFuel().then((res) => {
-            if (res.success) setVehiclesNeedingFuel(res.data);
-        });
         getVehiclesNeedingMaintenance().then((res) => {
             if (res.success) setVehiclesNeedingMaintenance(res.data);
         });
@@ -267,27 +260,13 @@ export default function Dashboard() {
     // Enables PDF Download of summary
     const handleDownload = useCallback(() => {
         generatePDF(
-            upcomingTrips,
-            unassignedCount,
-            vehiclesNeedingFuel,
-            vehiclesNeedingMaintenance,
             totalTrips,
             efficiency,
             delivered,
             distanceData,
             fuelData
         );
-    }, [
-        upcomingTrips,
-        unassignedCount,
-        vehiclesNeedingFuel,
-        vehiclesNeedingMaintenance,
-        totalTrips,
-        efficiency,
-        delivered,
-        distanceData,
-        fuelData,
-    ]);
+    }, [totalTrips, efficiency, delivered, distanceData, fuelData]);
 
     return (
         <div className="flex flex-col gap-6">
@@ -336,15 +315,11 @@ export default function Dashboard() {
             </div>
 
             {/* Key Statistics */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
                 <StatCard
                     title="Upcoming Trips"
                     value={String(upcomingTrips)}
                     subtitle={tripsSubtitle}
-                />
-                <StatCard
-                    title="Vehicles Needing Fuel"
-                    value={String(vehiclesNeedingFuel)}
                 />
                 <StatCard
                     title="Vehicles Needing Maintenance"

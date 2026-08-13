@@ -155,10 +155,6 @@ function drawBarChart(
 }
 
 export function generatePDF(
-    upcomingTrips: number,
-    unassigned: number,
-    vehiclesNeedingFuel: number,
-    vehiclesNeedingMaintenance: number,
     totalTrips: number,
     efficiency: number,
     delivered: number,
@@ -209,56 +205,33 @@ export function generatePDF(
     const cardH = 20;
     const cardGap = 6;
 
-    const row1Y = 46;
-    const cardW1 = (182 - 3 * cardGap) / 4;
-    const statsRow1 = [
-        { title: "Total Upcoming Trips", value: String(upcomingTrips) },
-        { title: "Unassigned", value: String(unassigned) },
-        { title: "Vehicles Needing Fuel", value: String(vehiclesNeedingFuel) },
-        {
-            title: "Vehicles Needing Maintenance",
-            value: String(vehiclesNeedingMaintenance),
-        },
-    ];
-    statsRow1.forEach((stat, i) => {
-        drawStatCard(
-            doc,
-            stat.title,
-            stat.value,
-            14 + i * (cardW1 + cardGap),
-            row1Y,
-            cardW1,
-            cardH
-        );
-    });
-
-    const row2Y = row1Y + cardH + 8;
-    const cardW2 = (182 - 2 * cardGap) / 3;
-    const row2Offset = (210 - (3 * cardW2 + 2 * cardGap)) / 2;
-    const statsRow2 = [
+    const statsY = 46;
+    const cardW = (182 - 2 * cardGap) / 3;
+    const rowOffset = (210 - (3 * cardW + 2 * cardGap)) / 2;
+    const stats = [
         { title: "Total Successful Trips", value: String(totalTrips) },
         { title: "Efficiency", value: `${efficiency}%` },
         { title: "Delivered Orders", value: String(delivered) },
     ];
-    statsRow2.forEach((stat, i) => {
+    stats.forEach((stat, i) => {
         drawStatCard(
             doc,
             stat.title,
             stat.value,
-            row2Offset + i * (cardW2 + cardGap),
-            row2Y,
-            cardW2,
+            rowOffset + i * (cardW + cardGap),
+            statsY,
+            cardW,
             cardH
         );
     });
 
     // ── Charts ──────────────────────────────────────────────────────────
 
-    const chartsTop = row2Y + cardH + 14;
+    const chartsTop = statsY + cardH + 24;
 
     doc.setDrawColor(...C.border);
     doc.setLineWidth(0.5);
-    doc.line(14, chartsTop - 4, 196, chartsTop - 4);
+    doc.line(14, chartsTop - 8, 196, chartsTop - 8);
 
     doc.setFontSize(12);
     doc.setTextColor(...C.foreground);
@@ -268,7 +241,7 @@ export function generatePDF(
     const chartW = 85;
     const chartH = 45;
     const colGap = 8;
-    const chartY = chartsTop + 4;
+    const chartY = chartsTop + 6;
 
     drawBarChart(
         doc,
