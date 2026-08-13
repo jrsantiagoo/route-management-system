@@ -72,9 +72,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 ${sidebarCollapsed ? "left-20" : "left-64"} 
                 flex items-center justify-between px-6 bg-background border-b border-border z-20 transition-[left] duration-300`}
         >
-            <div className="text-foreground text-left">
-                <h1 className="text-lg font-bold">Route Management Tool</h1>
-            </div>
+            <div className="text-foreground text-left"></div>
 
             <div className="flex items-center gap-3">
                 {/* Allows user to toggle themes */}
@@ -120,7 +118,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                         router.push("/profile");
                                         setOpen(false);
                                     }}
-                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground 
+                                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
                                         hover:bg-secondary dark:hover:text-primary rounded-lg"
                                 >
                                     <User size={16} />

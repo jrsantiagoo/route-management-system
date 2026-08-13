@@ -50,7 +50,7 @@ export default function Sidebar({
                 {!collapsed && (
                     <div className="-ml-4">
                         <p className="text-sm font-bold text-foreground">
-                            Route Tool
+                            EnRoute
                         </p>
                         <p className="text-[10px] text-muted-foreground">
                             Version 1.0

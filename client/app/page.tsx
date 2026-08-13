@@ -103,7 +103,7 @@ export default function loginPage() {
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
                         </div>
-                        <span className="font-semibold">Route Management</span>
+                        <span className="font-semibold">EnRoute</span>
                     </div>
 
                     <div>
@@ -120,7 +120,7 @@ export default function loginPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs tracking-[0.2em] text-slate-500">
-                        <span>ROUTE MANAGEMENT TOOL</span>
+                        <span>ENROUTE</span>
                         <span>V1</span>
                     </div>
                 </div>
@@ -163,7 +163,7 @@ export default function loginPage() {
                     </button>
 
                     <h1 className="text-3xl font-bold text-foreground">
-                        Welcome back
+                        Welcome
                     </h1>
                     <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                         Please enter your credentials to access your dashboard.
