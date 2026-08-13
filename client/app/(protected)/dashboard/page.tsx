@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     ComposedChart,
@@ -18,6 +18,7 @@ import DateRangePicker, {
     type Preset,
 } from "@/components/dashboard/date-range-picker";
 import StatCard from "@/components/dashboard/stat-card";
+import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
 import { getOrders, getOrdersRange } from "@/lib/api/orders";
@@ -25,7 +26,6 @@ import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
 import { getEfficiency } from "@/lib/api/efficiency";
 import type { Trip, Order } from "@/lib/routing/types";
-import { getVehiclesNeedingMaintenance } from "@/lib/api/fleet";
 
 import { computeTrend } from "@/lib/dashboard/trend-compute";
 import { generatePDF } from "@/lib/dashboard/pdf-generator";
@@ -80,19 +80,30 @@ export default function Dashboard() {
         custom: undefined,
     };
 
+    const [loading, setLoading] = useState(true);
+    const pendingLoads = useRef(0);
+    const trackLoad = useCallback(function <T>(promise: Promise<T>) {
+        pendingLoads.current += 1;
+        return promise.finally(() => {
+            pendingLoads.current -= 1;
+            if (pendingLoads.current === 0) setLoading(false);
+        });
+    }, []);
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [trips, setTrips] = useState<Trip[]>([]);
-    const [vehiclesNeedingMaintenance, setVehiclesNeedingMaintenance] =
-        useState<number>(0);
 
     useEffect(() => {
-        getOrdersRange(range.start, range.end).then((res) =>
-            setOrders(res.success ? res.data : [])
+        trackLoad(
+            Promise.all([
+                getOrdersRange(range.start, range.end),
+                getTripsRange(range.start, range.end),
+            ]).then(([ordersRes, tripsRes]) => {
+                setOrders(ordersRes.success ? ordersRes.data : []);
+                setTrips(tripsRes.success ? tripsRes.data : []);
+            })
         );
-        getTripsRange(range.start, range.end).then((res) =>
-            setTrips(res.success ? res.data : [])
-        );
-    }, [range]);
+    }, [range, trackLoad]);
 
     // Derive stats from orders data
     const totalTrips = trips.filter((t) => t.status === "COMPLETED").length;
@@ -203,27 +214,30 @@ export default function Dashboard() {
             }
         }
 
-        fetchCurrentAndComparison();
+        const tasks: Promise<unknown>[] = [];
+        tasks.push(fetchCurrentAndComparison());
 
-        getEfficiency(range.start, range.end).then((res) => {
-            if (res.success) setEfficiency(res.data);
-        });
+        tasks.push(
+            getEfficiency(range.start, range.end).then((res) => {
+                if (res.success) setEfficiency(res.data);
+            })
+        );
 
         if (presetComparison[range.preset] !== undefined) {
             const compRange = getComparisonRange(range.start, range.end);
             if (compRange) {
-                getEfficiency(compRange.start, compRange.end).then((res) => {
-                    if (res.success) setPreviousEfficiency(res.data);
-                });
+                tasks.push(
+                    getEfficiency(compRange.start, compRange.end).then(
+                        (res) => {
+                            if (res.success) setPreviousEfficiency(res.data);
+                        }
+                    )
+                );
             }
         }
-    }, [range]);
 
-    useEffect(() => {
-        getVehiclesNeedingMaintenance().then((res) => {
-            if (res.success) setVehiclesNeedingMaintenance(res.data);
-        });
-    }, []);
+        trackLoad(Promise.all(tasks));
+    }, [range, trackLoad]);
 
     const efficiencyChange =
         previousEfficiency !== null && previousEfficiency !== 0
@@ -256,8 +270,6 @@ export default function Dashboard() {
         );
 
     const router = useRouter();
-
-    // Enables PDF Download of summary
     const handleDownload = useCallback(() => {
         generatePDF(
             totalTrips,
@@ -267,6 +279,8 @@ export default function Dashboard() {
             fuelData
         );
     }, [totalTrips, efficiency, delivered, distanceData, fuelData]);
+
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <div className="flex flex-col gap-6">
@@ -320,10 +334,6 @@ export default function Dashboard() {
                     title="Upcoming Trips"
                     value={String(upcomingTrips)}
                     subtitle={tripsSubtitle}
-                />
-                <StatCard
-                    title="Vehicles Needing Maintenance"
-                    value={String(vehiclesNeedingMaintenance)}
                 />
                 <StatCard
                     title="Successful Trips"
