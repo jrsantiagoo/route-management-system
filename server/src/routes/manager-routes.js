@@ -4,7 +4,7 @@ import * as managerController from "../controllers/manager-controller.js";
 
 const router = Router();
 
-router.get("/", managerController.getAllManagers);
+router.get("/", authenticate, managerController.getAllManagers);
 router.get("/me", authenticate, managerController.getMe);
 
 export default router;

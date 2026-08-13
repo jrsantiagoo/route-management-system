@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 // Hook that preserves state value in localStorage so it survives page reloads
+// Used to maintain collapsed sidebar
 export function usePersistedState<T>(key: string, defaultValue: T) {
     const [state, setState] = useState<T>(defaultValue);
     const [ready, setReady] = useState(false);

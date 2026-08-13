@@ -12,9 +12,9 @@ const prisma = new PrismaClient();
 
 // --- INSERT PROFILE VALUES HERE ---
 const MANAGER = {
-    email: "admin@gmail.com",
-    password: "admin",
-    firstname: "Admin",
+    email: " ",
+    password: " ",
+    firstname: " ",
     lastname: " ",
     middleInitial: " ",
 };

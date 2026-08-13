@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Search, User } from "lucide-react";
+import {
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Search,
+    User,
+    X,
+} from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import type { Trip } from "@/lib/routing/types";
@@ -28,6 +35,21 @@ function formatDate(d: Date) {
 }
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+];
+const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 export default function CalendarView({
     trips,
@@ -38,6 +60,8 @@ export default function CalendarView({
         return getWeekRange(new Date()).monday;
     });
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const weekRange = getWeekRange(currentWeekStart);
     const weekDates = DAYS.map((_, i) => {
@@ -70,7 +94,7 @@ export default function CalendarView({
         if (!grid[driverKey][dayName]) grid[driverKey][dayName] = [];
         grid[driverKey][dayName].push({
             tripId: trip.id_,
-            routeName: trip.route.name || "",
+            routeName: trip.route?.name || "",
         });
     }
 
@@ -105,34 +129,41 @@ export default function CalendarView({
 
     const todayStr = formatDate(new Date());
 
-    const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ];
-    const startMonth = monthNames[weekRange.monday.getMonth()];
-    const endMonth = monthNames[weekRange.sunday.getMonth()];
+    const startMonth = MONTH_NAMES[weekRange.monday.getMonth()];
+    const endMonth = MONTH_NAMES[weekRange.sunday.getMonth()];
     const weekLabel =
         startMonth === endMonth
             ? `${startMonth} ${weekRange.monday.getDate()} - ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`
             : `${startMonth} ${weekRange.monday.getDate()} - ${endMonth} ${weekRange.sunday.getDate()}, ${weekRange.monday.getFullYear()}`;
 
+    // Paginate the sorted, filtered trips into the current page's slice
+    const totalPages = Math.max(
+        1,
+        Math.ceil(sortedDrivers.length / rowsPerPage),
+    );
+    const currentPage = Math.min(page, totalPages);
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const pageRows = sortedDrivers.slice(startIdx, startIdx + rowsPerPage);
+    const showingFrom = sortedDrivers.length === 0 ? 0 : startIdx + 1;
+    const showingTo = Math.min(startIdx + rowsPerPage, sortedDrivers.length);
+
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
             {/* Calendar View Header */}
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-semibold text-foreground">
-                    {weekLabel}
-                </h3>
+                <div>
+                    <div className="flex -mt-2 items-center gap-2 text-lg font-bold">
+                        <Calendar
+                            size={21}
+                            className="text-primary-foreground"
+                        />
+                        <h2 className="mt-1 text-foreground">Weekly View</h2>
+                    </div>
+                    <p className="-mb-2 text-[13px] text-muted-foreground">
+                        {weekLabel}
+                    </p>
+                </div>
+
                 <div className="flex items-center gap-1">
                     {/* Enables calendar to view previous week */}
                     <button
@@ -146,7 +177,7 @@ export default function CalendarView({
                         onClick={() =>
                             setCurrentWeekStart(getWeekRange(new Date()).monday)
                         }
-                        className="px-3 py-1 text-xs font-semibold rounded-md border border-border 
+                        className="px-3 py-1 text-xs font-semibold rounded-md border border-btn-border 
                             dark:border-foreground hover:bg-secondary dark:hover:text-primary transition"
                     >
                         Today
@@ -170,22 +201,22 @@ export default function CalendarView({
                             placeholder="Search drivers..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-64 rounded-lg border border-gray-300 pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                            className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
                                 focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="overflow-auto max-h-128 rounded-lg border border-border dark:border-muted-foreground/50 scrollbar-thumb-muted-foreground">
+            <div className="overflow-auto max-h-128 rounded-lg border border-card-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-sm border-separate border-spacing-0">
-                    <thead className="sticky top-0 z-20 bg-card">
+                    <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-slate-900 ">
                         <tr>
                             <SortableHeader
                                 sortKey="driver_id"
                                 sortState={sortState}
                                 onToggle={toggleSort}
-                                className="sticky left-0 z-30 min-w-30 bg-card border-r border-b border-border rounded-tl-lg"
+                                className="sticky left-0 z-30 min-w-30 text-sm! border-r border-b border-card-border rounded-tl-lg"
                             >
                                 <User
                                     size={14}
@@ -200,7 +231,7 @@ export default function CalendarView({
                                 return (
                                     <th
                                         key={i}
-                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-border min-w-25 
+                                        className={`px-2 py-2 text-center font-semibold border-r border-b border-card-border min-w-25 
                                             ${i === 6 ? "rounded-tr-lg" : ""} ${
                                                 isToday
                                                     ? "bg-primary/10 text-primary-foreground"
@@ -227,13 +258,10 @@ export default function CalendarView({
                                 </td>
                             </tr>
                         )}
-                        {sortedDrivers.map((driver) => (
+                        {pageRows.map((driver) => (
                             <tr key={driver.id_}>
-                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-border">
-                                    <div className="font-medium">
-                                        {driver.name}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
+                                <td className="sticky left-0 bg-card z-10 px-2 py-2 font-semibold text-foreground border-r border-b border-card-border">
+                                    <div className="font-semibold">
                                         {driver.driver_id}
                                     </div>
                                 </td>
@@ -243,7 +271,7 @@ export default function CalendarView({
                                     return (
                                         <td
                                             key={day}
-                                            className={`px-1 py-1 border-r border-b border-border align-top ${
+                                            className={`px-1 py-1 border-r border-b border-card-border align-top ${
                                                 assignments.length === 0
                                                     ? "text-muted-foreground"
                                                     : ""
@@ -273,7 +301,7 @@ export default function CalendarView({
                                                                     dark:hover:bg-muted-foreground transition shrink-0 leading-none"
                                                                 title="Remove assignment"
                                                             >
-                                                                x
+                                                                <X size={12} />
                                                             </button>
                                                         </div>
                                                     ))}
@@ -286,6 +314,58 @@ export default function CalendarView({
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <span>Rows per page</span>
+                    <select
+                        value={rowsPerPage}
+                        onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setPage(1);
+                        }}
+                        className="px-2 py-1 border border-btn-border rounded-md bg-card text-foreground text-xs cursor-pointer"
+                    >
+                        {ROWS_PER_PAGE_OPTIONS.map((n) => (
+                            <option key={n} value={n}>
+                                {n}
+                            </option>
+                        ))}
+                    </select>
+                    <span>
+                        | Showing {showingFrom}-{showingTo} of{" "}
+                        {sortedDrivers.length}
+                    </span>
+                </div>
+
+                {/* Change pages */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage <= 1}
+                        aria-label="Previous page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
+                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronLeft size={15} strokeWidth={2} />
+                    </button>
+                    <span className="text-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() =>
+                            setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={currentPage >= totalPages}
+                        aria-label="Next page"
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
+                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        <ChevronRight size={15} strokeWidth={2} />
+                    </button>
+                </div>
             </div>
         </div>
     );

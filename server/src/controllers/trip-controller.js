@@ -5,7 +5,7 @@ import * as tripService from "../services/trip-service.js";
 // --- CREATE TRIP ---
 export async function createTrip(req, res) {
     try {
-        const { routeId, driverId, scheduledDate } = req.body;
+        const { routeId, driverId, scheduledDate, notes, vehicleId } = req.body;
         if (!routeId || !driverId) {
             return res
                 .status(400)
@@ -16,6 +16,8 @@ export async function createTrip(req, res) {
             routeId,
             driverId,
             scheduledDate,
+            notes,
+            vehicleId,
         );
         res.json({ success: true, data: result });
     } catch (error) {
@@ -52,6 +54,20 @@ export async function changeTripStatus(req, res) {
 
         const trip = await tripService.updateTripStatus(id, status);
         res.json({ success: true, data: trip });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+// --- TRIP UPDATE ---
+export async function updateTrip(req, res) {
+    try {
+        const { id } = req.params;
+        const updatedFields = req.body;
+
+        const result = await tripService.updateTrip(id, updatedFields);
+
+        res.json({ success: true, data: result });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -96,6 +112,28 @@ export async function deleteTrip(req, res) {
         const { id } = req.params;
         const result = await tripService.deleteTrip(id);
         res.json({ success: true, data: result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function archiveTrip(req, res) {
+    try {
+        const id_ = req.params.id;
+        const archivedTrip = await tripService.archiveTrip(id_);
+
+        res.json({ success: true, data: archivedTrip });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export async function unarchiveTrip(req, res) {
+    try {
+        const id_ = req.params.id;
+        const unarchivedTrip = await tripService.unarchiveTrip(id_);
+
+        res.json({ success: true, data: unarchivedTrip });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

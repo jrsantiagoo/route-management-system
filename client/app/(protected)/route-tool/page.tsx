@@ -1,202 +1,292 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+/**
+ * Route Creation page — owns the saved-routes list and decides which modal is
+ * open. All persistence goes through lib/routing/storageHelper.
+ *
+ * Section map:
+ *   1. IMPORTS
+ *   2. PAGE STATE + LOCALSTORAGE LOADING
+ *   3. ROUTE ACTION HANDLERS
+ *   4. DARK MODE STYLES
+ *   5. PAGE LAYOUT
+ */
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. IMPORTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { useState, useEffect, useCallback } from "react";
+import { Plus, RefreshCw } from "lucide-react";
+import { RoutePlan } from "@/lib/routing/types";
 import {
-    Stop,
-    RouteSegment,
-    RoutePlan,
-    SuggestedRoute,
-} from "@/lib/routing/types";
-import { DEFAULT_STOPS } from "@/lib/routing/mockData";
-import { fetchRoute } from "@/lib/routing/routingService";
-import {
-    saveRoute,
     loadSavedRoutes,
-    isRouteNameTaken,
+    deleteRoute,
+    setRouteArchived,
 } from "@/lib/routing/storageHelper";
-import { createRoute } from "@/lib/api/routes";
-import { recommendVehicle } from "@/lib/routing/vehicleLogic";
-import RouteMap from "@/components/routing/RouteMap";
-import RouteToolbar from "@/components/routing/RouteToolbar";
-import RouteOrderingPanel from "@/components/routing/RouteOrderingPanel";
-import SuggestRoutesModal from "@/components/routing/SuggestRoutesModal";
-import SaveRouteModal from "@/components/routing/SaveRouteModal";
-import Toast from "@/components/routing/Toast";
+import { useTheme } from "@/lib/theme-context";
+import { DARK } from "@/components/routing/routeTheme";
+import CreateRouteModal from "@/components/routing/CreateRouteModal";
+import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
+import ConfirmDialog from "@/components/routing/ConfirmDialog";
+import TableSkeleton from "@/components/ui/table-skeleton";
+import Toast from "@/components/ui/toast";
+import * as routeApi from "@/lib/api/routes";
 
-function generateRouteId(): string {
-    return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
+export default function RouteCreationPage() {
+    const { theme } = useTheme();
+    const dark = theme === "dark";
 
-export default function RoutingTool() {
-    // Route state
-    const [stops, setStops] = useState<Stop[]>(DEFAULT_STOPS);
-    const [segments, setSegments] = useState<RouteSegment[]>([]);
-    const [polyline, setPolyline] = useState<[number, number][]>([]);
-    const [totalDistanceKm, setTotalDistanceKm] = useState(0);
-    const [totalDurationMinutes, setTotalDurationMinutes] = useState(0);
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. PAGE STATE + LOCALSTORAGE LOADING
+    // Every mutation below calls a storage helper then reload(), so the table
+    // can never drift out of sync with what is actually stored.
+    // ─────────────────────────────────────────────────────────────────────────
 
-    // UI state
-    const [previewStop, setPreviewStop] = useState<Stop | null>(null);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-    const [isSaveOpen, setIsSaveOpen] = useState(false);
-    const [isLoadingRoute, setIsLoadingRoute] = useState(false);
-    const [routeError, setRouteError] = useState<string | null>(null);
+    const [savedRoutes, setSavedRoutes] = useState<RoutePlan[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingRoute, setEditingRoute] = useState<RoutePlan | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<RoutePlan | null>(null);
     const [toast, setToast] = useState<string | null>(null);
 
-    const routeIdRef = useRef(generateRouteId());
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const loadRoute = useCallback(async (currentStops: Stop[]) => {
-        if (currentStops.length < 2) {
-            setPolyline([]);
-            setSegments([]);
-            setTotalDistanceKm(0);
-            setTotalDurationMinutes(0);
-            setRouteError(null);
-            return;
-        }
-        setIsLoadingRoute(true);
-        setRouteError(null);
+    const reload = useCallback(async () => {
+        setLoading(true);
         try {
-            const result = await fetchRoute(currentStops);
-            setSegments(result.segments);
-            setPolyline(result.polyline);
-            setTotalDistanceKm(result.totalDistanceKm);
-            setTotalDurationMinutes(result.totalDurationMinutes);
+            const res = await routeApi.getRoutes();
+            if (res.success) {
+                setSavedRoutes(res.data);
+            } else {
+                console.error("Failed to load routes:", res);
+                setToast("Could not load routes from server.");
+            }
         } catch (err) {
-            console.error("[RoutingTool] fetchRoute error:", err);
-            setRouteError("Could not reach the routing service.");
-            setPolyline([]);
-            setSegments([]);
+            console.error("Failed to load routes:", err);
+            setToast("Could not reach the server.");
         } finally {
-            setIsLoadingRoute(false);
+            setLoading(false);
         }
     }, []);
 
+    // Read localStorage after mount so the server and first client render match.
     useEffect(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => loadRoute(stops), 650);
-        return () => {
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-        };
-    }, [stops, loadRoute]);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        reload();
+    }, [reload]);
 
-    function handleReorder(newStops: Stop[]) {
-        setStops(newStops);
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. ROUTE ACTION HANDLERS
+    // Create / edit / archive / restore / delete. Archived routes are
+    // read-only — the table hides Edit and Delete for them, and openEdit /
+    // confirmDelete below refuse them as a second line of defense.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function openCreate() {
+        setEditingRoute(null);
+        setIsModalOpen(true);
     }
 
-    function handleRemoveStop(id: string) {
-        setStops((prev) => prev.filter((s) => s.id !== id));
+    function openEdit(route: RoutePlan) {
+        if (route.archived) return; // restore it first
+        setEditingRoute(route);
+        setIsModalOpen(true);
     }
 
-    function handleAddStop(stop: Stop) {
-        setStops((prev) => {
-            if (prev.length < 2) return [...prev, stop];
-            return [...prev.slice(0, -1), stop, prev[prev.length - 1]];
-        });
+    function closeModal() {
+        setIsModalOpen(false);
+        setEditingRoute(null);
     }
 
-    function handleApplySuggested(route: SuggestedRoute) {
-        setStops(route.stops);
-        setIsEditMode(false);
+    function handleSaved(message: string) {
+        const wasEditing = !!editingRoute;
+        reload();
+        closeModal();
+        setToast(message || (wasEditing ? "Route updated." : "Route saved."));
     }
 
-    async function handleConfirmSave(name: string) {
-        // Never save an empty route, even if the handler is triggered another way.
-        if (stops.length === 0) return;
-
-        // Guard against a name added in another tab between opening and saving.
-        if (isRouteNameTaken(name, routeIdRef.current)) return;
-
-        const vehicleType = recommendVehicle(stops.length);
-        const plan: RoutePlan = {
-            id_: routeIdRef.current,
-            name,
-            stops,
-            segments,
-            totalDistanceKm,
-            totalDurationMinutes,
-            vehicleType,
-            assignedWeek: "",
-            createdAt: new Date().toISOString(),
-        };
-        saveRoute(plan);
-        // Fresh id so the next save creates a new record instead of overwriting.
-        routeIdRef.current = generateRouteId();
-        setIsSaveOpen(false);
-
+    async function handleArchive(route: RoutePlan) {
         try {
-            const res = await createRoute(plan);
+            const res = await routeApi.archiveRoute(route);
             if (res.success) {
-                setToast("Route saved successfully.");
+                reload();
+                setToast("Route archived.");
             } else {
-                setToast(res.message || "Failed to save route.");
+                console.error("Failed to archive route:", res);
+                alert("Failed to archive route.");
             }
-        } catch {
-            setToast("Failed to save route to server. Saved locally.");
+        } catch (err) {
+            console.error("Failed to archive route:", err);
+            alert("Could not reach the server.");
         }
     }
 
+    async function handleUnarchive(route: RoutePlan) {
+        try {
+            const res = await routeApi.unarchiveRoute(route);
+            if (res.success) {
+                reload();
+                setToast("Route unarchived.");
+            } else {
+                console.error("Failed to unarchive route:", res);
+                alert("Failed to unarchive route.");
+            }
+        } catch (err) {
+            console.error("Failed to unarchive route:", err);
+            alert("Could not reach the server.");
+        }
+    }
+
+    async function confirmDelete() {
+        if (!deleteTarget || deleteTarget.archived) return;
+        try {
+            const res = await routeApi.deleteRoute(deleteTarget);
+            if (res.success) {
+                reload();
+                setToast("Route deleted.");
+            } else {
+                console.log("Failed to delete route:", res);
+                alert(res.message || "Failed to delete route.");
+            }
+        } catch (err) {
+            console.error("Failed to delete route:", err);
+            alert("Could not reach the server.");
+        }
+        setDeleteTarget(null);
+    }
+
+    // Names of other routes — lets an edited route keep its own name.
+    const existingNames = savedRoutes
+        .filter((r) => r.id_ !== editingRoute?.id_)
+        .map((r) => r.name);
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. DARK MODE STYLES — palette lives in components/routing/routeTheme.ts
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const text = dark ? DARK.text : "#111827";
+    const muted = dark ? DARK.textMuted : "#6b7280";
+    const border = dark ? DARK.panelBorder : "#d1d5db";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. PAGE LAYOUT
+    // ─────────────────────────────────────────────────────────────────────────
+
     return (
-        <div
-            style={{
-                position: "relative",
-                zIndex: 0,
-                margin: "-1.75rem -2rem -2rem -2rem",
-                height: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                background: "var(--background)",
-            }}
-        >
-            <RouteToolbar
-                isEditMode={isEditMode}
-                onToggleEdit={() => {
-                    setIsEditMode((v) => !v);
-                    setPreviewStop(null);
-                }}
-                onSuggestRoutes={() => setIsSuggestOpen(true)}
-                onSave={() => setIsSaveOpen(true)}
-                canSave={stops.length > 0}
-            />
-
-            <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-                <RouteMap
-                    stops={stops}
-                    polyline={polyline}
-                    previewStop={previewStop}
-                />
-
-                <RouteOrderingPanel
-                    stops={stops}
-                    segments={segments}
-                    totalDistanceKm={totalDistanceKm}
-                    totalDurationMinutes={totalDurationMinutes}
-                    isEditMode={isEditMode}
-                    isLoading={isLoadingRoute}
-                    routeError={routeError}
-                    onReorder={handleReorder}
-                    onRemoveStop={handleRemoveStop}
-                    onAddStop={handleAddStop}
-                    onPreview={setPreviewStop}
-                />
+        <div style={{ width: "100%" }}>
+            {/* Page header */}
+            <div style={{ marginBottom: "20px" }}>
+                <h1
+                    style={{
+                        margin: 0,
+                        fontSize: "26px",
+                        fontWeight: 700,
+                        color: text,
+                    }}
+                >
+                    Route Creation
+                </h1>
+                <p
+                    style={{
+                        margin: "6px 0 0",
+                        fontSize: "14px",
+                        color: muted,
+                    }}
+                >
+                    Create and manage delivery routes across your fleet.
+                </p>
             </div>
 
-            {isSuggestOpen && (
-                <SuggestRoutesModal
-                    onClose={() => setIsSuggestOpen(false)}
-                    onApply={handleApplySuggested}
-                    currentStops={stops}
+            {/* Actions row */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    gap: "12px",
+                }}
+            >
+                <button
+                    onClick={openCreate}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "6px 18px",
+                        background: dark ? DARK.btnBg : "#fff",
+                        color: DARK.btnText,
+                        border: `1px solid ${dark ? DARK.btnBorder : "#d9dfe5"}`,
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        transition: "background 0.15s",
+                        cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => (
+                        (e.currentTarget.style.background = "#c1dff8"),
+                        (e.currentTarget.style.color = `${dark ? "var(--primary)" : "var(--foreground)"}`)
+                    )}
+                    onMouseLeave={(e) => (
+                        (e.currentTarget.style.background = dark
+                            ? DARK.btnBg
+                            : "#fff"),
+                        (e.currentTarget.style.color = "var(--foreground)")
+                    )}
+                >
+                    <Plus size={16} strokeWidth={2} />
+                    Create New Route
+                </button>
+
+                <button
+                    onClick={reload}
+                    title="Refresh"
+                    aria-label="Refresh saved routes"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        border: `1px solid ${border}`,
+                        background: dark ? DARK.btnBg : "#fff",
+                        color: muted,
+                        cursor: "pointer",
+                    }}
+                >
+                    <RefreshCw size={17} strokeWidth={2} />
+                </button>
+            </div>
+
+            {loading ? (
+                <TableSkeleton rows={8} />
+            ) : (
+                <SavedRoutesTable
+                    routes={savedRoutes}
+                    onEdit={openEdit}
+                    onArchive={handleArchive}
+                    onUnarchive={handleUnarchive}
+                    onDelete={(route) => setDeleteTarget(route)}
                 />
             )}
 
-            {isSaveOpen && (
-                <SaveRouteModal
-                    onClose={() => setIsSaveOpen(false)}
-                    onSave={handleConfirmSave}
-                    existingNames={loadSavedRoutes().map((r) => r.name)}
+            {isModalOpen && (
+                <CreateRouteModal
+                    editingRoute={editingRoute}
+                    existingNames={existingNames}
+                    onClose={closeModal}
+                    onSaved={handleSaved}
+                />
+            )}
+
+            {deleteTarget && (
+                <ConfirmDialog
+                    title="Delete route?"
+                    message={`“${deleteTarget.name}” will be permanently removed. This cannot be undone.`}
+                    confirmLabel="Delete"
+                    danger
+                    onConfirm={confirmDelete}
+                    onCancel={() => setDeleteTarget(null)}
                 />
             )}
 

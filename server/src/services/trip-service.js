@@ -8,7 +8,13 @@ const VALID_STATUSES = [
     "CANCELLED",
 ];
 
-export async function createTrip(routeId, driverId, scheduledDate) {
+export async function createTrip(
+    routeId,
+    driverId,
+    scheduledDate,
+    notes,
+    vehicleId,
+) {
     const route = await prisma.route.findUnique({ where: { id_: routeId } });
     if (!route) {
         throw new Error("Route not found");
@@ -23,15 +29,18 @@ export async function createTrip(routeId, driverId, scheduledDate) {
 
     return prisma.trip.create({
         data: {
-            route_id_: routeId,
+            route_id_: routeId || null,
             driver_id_: driverId,
             status: "PENDING",
             tag_type: "ASSIGNED",
             scheduled_date: scheduledDate ? new Date(scheduledDate) : undefined,
+            notes: notes || null,
+            vehicle_id_: vehicleId || null,
         },
         include: {
             agent_profile: true,
             route: true,
+            vehicle: true,
         },
     });
 }
@@ -41,6 +50,7 @@ export async function getAllTrips() {
         include: {
             agent_profile: true,
             route: true,
+            vehicle: true,
         },
         orderBy: {
             scheduled_date: "asc",
@@ -99,6 +109,24 @@ export async function deleteTrip(tripId) {
     return prisma.trip.delete({ where: { id_: tripId } });
 }
 
+export async function archiveTrip(id_) {
+    return prisma.trip.update({
+        where: { id_: id_ },
+        data: {
+            deleted_at: new Date(),
+        },
+    });
+}
+
+export async function unarchiveTrip(id_) {
+    return prisma.trip.update({
+        where: { id_: id_ },
+        data: {
+            deleted_at: null,
+        },
+    });
+}
+
 export async function assignDriverToTrip(tripId, driverId) {
     const trip = await prisma.trip.findUnique({ where: { id_: tripId } });
     if (!trip) {
@@ -149,6 +177,29 @@ export async function updateTripStatus(tripId, status) {
         include: {
             agent_profile: true,
             route: true,
+        },
+    });
+}
+
+export async function updateTrip(tripId, updatedFields) {
+    const trip = await prisma.trip.findUnique({
+        where: { id_: tripId },
+    });
+
+    if (!trip) throw new Error("Trip record not found");
+
+    const data = { ...updatedFields };
+    if (updatedFields.scheduled_date) {
+        data.scheduled_date = new Date(updatedFields.scheduled_date);
+    }
+
+    return prisma.trip.update({
+        where: { id_: tripId },
+        data,
+        include: {
+            agent_profile: true,
+            route: true,
+            vehicle: true,
         },
     });
 }

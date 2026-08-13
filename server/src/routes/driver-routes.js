@@ -1,8 +1,13 @@
 import { Router } from "express";
-import { getDrivers } from "../controllers/driver-controller.js";
+import { authenticate } from "../middleware/auth.js";
+import {
+    getDrivers,
+    getDriverCapacity,
+} from "../controllers/driver-controller.js";
 
 const router = Router();
 
-router.get("/", getDrivers);
+router.get("/", authenticate, getDrivers);
+router.get("/capacity", authenticate, getDriverCapacity);
 
 export default router;

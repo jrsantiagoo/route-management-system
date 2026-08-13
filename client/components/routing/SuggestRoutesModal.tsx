@@ -217,7 +217,9 @@ export default function SuggestRoutesModal({
                             fontSize: "12px",
                         }}
                     >
-                        <span style={{ color: dark ? DARK.textMuted : "#6b7280" }}>
+                        <span
+                            style={{ color: dark ? DARK.textMuted : "#6b7280" }}
+                        >
                             Fleet this week:
                         </span>
                         <span style={{ color: dark ? DARK.text : "#374151" }}>
@@ -294,7 +296,11 @@ export default function SuggestRoutesModal({
                             }}
                         >
                             Select a delivery week and click{" "}
-                            <strong style={{ color: dark ? DARK.textMuted : "#6b7280" }}>
+                            <strong
+                                style={{
+                                    color: dark ? DARK.textMuted : "#6b7280",
+                                }}
+                            >
                                 Generate
                             </strong>{" "}
                             to see suggested routes.
@@ -329,7 +335,9 @@ export default function SuggestRoutesModal({
                                                 style={{
                                                     fontSize: "14px",
                                                     fontWeight: 700,
-                                                    color: dark ? DARK.text : "#111827",
+                                                    color: dark
+                                                        ? DARK.text
+                                                        : "#111827",
                                                 }}
                                             >
                                                 {route.name}
@@ -338,7 +346,9 @@ export default function SuggestRoutesModal({
                                                 <div
                                                     style={{
                                                         fontSize: "12px",
-                                                        color: dark ? DARK.textMuted : "#6b7280",
+                                                        color: dark
+                                                            ? DARK.textMuted
+                                                            : "#6b7280",
                                                         marginTop: "2px",
                                                     }}
                                                 >
@@ -432,7 +442,9 @@ export default function SuggestRoutesModal({
                                             display: "flex",
                                             gap: "12px",
                                             fontSize: "12px",
-                                            color: dark ? DARK.textMuted : "#6b7280",
+                                            color: dark
+                                                ? DARK.textMuted
+                                                : "#6b7280",
                                             marginBottom: "8px",
                                         }}
                                     >
@@ -543,7 +555,7 @@ export default function SuggestRoutesModal({
                                     >
                                         {route.stops.map((stop, i) => (
                                             <div
-                                                key={stop.id}
+                                                key={stop.id_}
                                                 style={{
                                                     display: "flex",
                                                     alignItems: "center",

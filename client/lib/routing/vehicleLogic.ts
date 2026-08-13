@@ -53,7 +53,7 @@ function nearestNeighborOrder(stops: Stop[]): Stop[] {
 // Order-independent signature of a stop set, used to match historical records.
 function stopSetKey(stops: Stop[]): string {
     return stops
-        .map((s) => s.id)
+        .map((s) => s.id_)
         .sort()
         .join("|");
 }
@@ -138,7 +138,7 @@ export async function generateSuggestedRoutes(
 
         const reordered = nearestNeighborOrder(currentStops);
         const isDifferentOrder = reordered.some(
-            (s, i) => s.id !== currentStops[i].id,
+            (s, i) => s.id_ !== currentStops[i].id_,
         );
         if (isDifferentOrder) {
             variants.push({
