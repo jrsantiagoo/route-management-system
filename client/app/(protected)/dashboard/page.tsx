@@ -91,9 +91,11 @@ export default function Dashboard() {
 
     useEffect(() => {
         getOrdersRange(range.start, range.end).then((res) =>
-            setOrders(res.data)
+            setOrders(res.success ? res.data : [])
         );
-        getTripsRange(range.start, range.end).then((res) => setTrips(res.data));
+        getTripsRange(range.start, range.end).then((res) =>
+            setTrips(res.success ? res.data : [])
+        );
     }, [range]);
 
     // Derive stats from orders data
