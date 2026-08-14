@@ -266,7 +266,7 @@ export default function Dashboard() {
                     <TrendingDown size={24} className="text-red-500" />
                 )}
                 {isEfficiencyPositive ? "+" : ""}
-                {efficiencyChange}% compared to {comparisonLabel}
+                {efficiencyChange} km/L compared to {comparisonLabel}
             </>
         );
 
@@ -338,7 +338,7 @@ export default function Dashboard() {
                 <StatCard
                     title="Efficiency"
                     value={String(efficiency)}
-                    unit="%"
+                    unit="km/L"
                     subtitle={efficiencySubtitle}
                 />
                 <StatCard

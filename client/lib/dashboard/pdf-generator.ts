@@ -210,7 +210,7 @@ export function generatePDF(
     const rowOffset = (210 - (3 * cardW + 2 * cardGap)) / 2;
     const stats = [
         { title: "Total Successful Trips", value: String(totalTrips) },
-        { title: "Efficiency", value: `${efficiency}%` },
+        { title: "Efficiency", value: `${efficiency} km/L` },
         { title: "Delivered Orders", value: String(delivered) },
     ];
     stats.forEach((stat, i) => {
