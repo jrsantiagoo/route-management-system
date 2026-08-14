@@ -11,6 +11,7 @@ interface FormSelectProps {
     options: SelectOption[];
     placeholder: string;
     icon?: ReactNode;
+    displayLabel?: string;
 }
 
 export default function FormSelect({
@@ -19,6 +20,7 @@ export default function FormSelect({
     options,
     placeholder,
     icon,
+    displayLabel,
 }: FormSelectProps) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -39,11 +41,13 @@ export default function FormSelect({
         return optionValue === value;
     });
 
-    const selectedLabel = selectedOption
-        ? typeof selectedOption === "string"
-            ? selectedOption
-            : selectedOption.label
-        : value;
+    const selectedLabel =
+        displayLabel ||
+        (selectedOption
+            ? typeof selectedOption === "string"
+                ? selectedOption
+                : selectedOption.label
+            : value);
 
     return (
         <div ref={ref} className="relative">
