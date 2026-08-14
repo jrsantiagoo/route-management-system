@@ -1,15 +1,16 @@
 "use client";
 import { useState } from "react";
 import { SuggestedRoute, Stop } from "@/lib/types/schema";
-import { MOCK_WEEKLY_AVAILABILITY } from "@/lib/routing/mockData";
+// import { MOCK_WEEKLY_AVAILABILITY } from "@/lib/routing/mockData";
 import {
     generateSuggestedRoutes,
-    getAvailabilityForWeek,
+    //getAvailabilityForWeek,
 } from "@/lib/routing/vehicleLogic";
 import {
     formatDistance,
     formatDuration,
     formatWeek,
+    getUpcomingWeekKeys,
 } from "@/lib/routing/formatters";
 import { useTheme } from "@/lib/theme-context";
 import { DARK } from "./routeTheme";
@@ -27,14 +28,11 @@ export default function SuggestRoutesModal({
 }: SuggestRoutesModalProps) {
     const { theme } = useTheme();
     const dark = theme === "dark";
-    const [selectedWeek, setSelectedWeek] = useState(
-        MOCK_WEEKLY_AVAILABILITY[0].week,
-    );
+    const [weekOptions] = useState(() => getUpcomingWeekKeys(5));
+    const [selectedWeek, setSelectedWeek] = useState<string>(weekOptions[0]);
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState<SuggestedRoute[]>([]);
     const [hasGenerated, setHasGenerated] = useState(false);
-
-    const availability = getAvailabilityForWeek(selectedWeek);
 
     async function handleGenerate() {
         setIsLoading(true);
@@ -173,9 +171,9 @@ export default function SuggestRoutesModal({
                                     background: dark ? DARK.elevatedBg : "#fff",
                                 }}
                             >
-                                {MOCK_WEEKLY_AVAILABILITY.map((w) => (
-                                    <option key={w.week} value={w.week}>
-                                        {formatWeek(w.week)}
+                                {weekOptions.map((week) => (
+                                    <option key={week} value={week}>
+                                        {formatWeek(week)}
                                     </option>
                                 ))}
                             </select>
@@ -206,31 +204,6 @@ export default function SuggestRoutesModal({
                         >
                             {isLoading ? "Generating…" : "Generate"}
                         </button>
-                    </div>
-
-                    {/* Vehicle availability summary */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "16px",
-                            marginTop: "10px",
-                            fontSize: "12px",
-                        }}
-                    >
-                        <span
-                            style={{ color: dark ? DARK.textMuted : "#6b7280" }}
-                        >
-                            Fleet this week:
-                        </span>
-                        <span style={{ color: dark ? DARK.text : "#374151" }}>
-                            <strong>{availability.cars}</strong> car
-                            {availability.cars !== 1 ? "s" : ""}
-                        </span>
-                        <span style={{ color: dark ? DARK.text : "#374151" }}>
-                            <strong>{availability.motorcycles}</strong>{" "}
-                            motorcycle
-                            {availability.motorcycles !== 1 ? "s" : ""}
-                        </span>
                     </div>
                 </div>
 

@@ -45,3 +45,28 @@ export function formatWeek(isoMonday: string): string {
     };
     return `${start.toLocaleDateString("en-PH", short)} – ${end.toLocaleDateString("en-PH", full)}`;
 }
+
+function toISODate(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+        d.getDate(),
+    ).padStart(2, "0")}`;
+}
+
+// ISO Mondays (YYYY-MM-DD): current week + the next `count - 1` weeks
+export function getUpcomingWeekKeys(count: number = 5): string[] {
+    const today = new Date();
+    const monday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() - ((today.getDay() + 6) % 7),
+    );
+    return Array.from({ length: count }, (_, i) =>
+        toISODate(
+            new Date(
+                monday.getFullYear(),
+                monday.getMonth(),
+                monday.getDate() + i * 7,
+            ),
+        ),
+    );
+}
