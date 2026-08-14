@@ -31,8 +31,10 @@ export default function AssignmentFormModal({
     const [selectedDriver, setSelectedDriver] = useState(
         initialData?.agent_profile?.driver_id ?? "",
     );
-    const [selectedVehicle, setSelectedVehicle] = useState("");
-    const [notes, setNotes] = useState("");
+    const [selectedVehicle, setSelectedVehicle] = useState(
+        initialData?.vehicle?.plate_number ?? "",
+    );
+    const [notes, setNotes] = useState(initialData?.notes ?? "");
     const [date, setDate] = useState(
         initialData?.scheduled_date
             ? initialData.scheduled_date.split("T")[0]

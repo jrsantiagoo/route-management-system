@@ -177,7 +177,7 @@ export default function Assignment() {
                 if (response.success) {
                     setTrips((prev) =>
                         prev.map((t) =>
-                            t.id_ === editTarget!.id_ ? { ...t, ..._data } : t,
+                            t.id_ === editTarget!.id_ ? response.data : t,
                         ),
                     );
                     setEditTarget(null);
@@ -186,7 +186,10 @@ export default function Assignment() {
                     console.error("Failed to update trip:", response);
                     alert("Failed to update trip. Please try again.");
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.error("Failed to update trip:", error);
+                alert("Failed to update trip. Please try again.");
+            }
         },
         [editTarget],
     );
