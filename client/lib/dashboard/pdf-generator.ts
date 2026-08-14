@@ -56,7 +56,7 @@ function drawBarChart(
     w: number,
     h: number,
 ) {
-    const values = items.map((d) => Number(d[yKey]));
+    const values = items.map((d) => Number(d[yKey]) || 0);
     const maxVal = Math.max(...values, 1);
 
     const padL = 14;
@@ -108,7 +108,7 @@ function drawBarChart(
     // Draw bars
     doc.setFillColor(...barColor);
     items.forEach((d, i) => {
-        const barH = (Number(d[yKey]) / maxVal) * plotH;
+        const barH = ((Number(d[yKey]) || 0) / maxVal) * plotH;
         const bx = plotL + i * totalBarArea + barGap / 2;
         const by = plotB - barH;
         const radius = Math.min(1.5, barWidth / 3);
@@ -122,10 +122,14 @@ function drawBarChart(
         color: [number, number, number],
         dash?: number[],
     ) {
-        const pts = items.map((d, i) => {
-            const px = plotL + (i + 0.5) * (plotW / items.length);
-            const py = plotB - (Number(d[key]) / maxVal) * plotH;
-            return { x: px, y: py };
+        const pts: { x: number; y: number }[] = [];
+        items.forEach((d, i) => {
+            const val = Number(d[key]);
+            if (isNaN(val)) return; // no data this day – leave a gap
+            pts.push({
+                x: plotL + (i + 0.5) * (plotW / items.length),
+                y: plotB - (val / maxVal) * plotH,
+            });
         });
 
         doc.setDrawColor(...color);
