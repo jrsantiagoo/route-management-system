@@ -32,26 +32,9 @@ import { generatePDF } from "@/lib/dashboard/pdf-generator";
 
 // Dashboard Page Component
 export default function Dashboard() {
-    // const onTimeThreshold = 5;
-    // const onTime = orders.filter((o) => {
-    //     const [oy, om, od] = o.ordered_on.split("-").map(Number);
-    //     if (!o.delivered_by) return false;
-    //     const [dy, dm, dd] = o.delivered_by.split("-").map(Number);
-    //     const orderDate = new Date(oy, om - 1, od);
-    //     const deliverDate = new Date(dy, dm - 1, dd);
-    //     const diffDays =
-    //         (deliverDate.getTime() - orderDate.getTime()) /
-    //         (1000 * 60 * 60 * 24);
-    //     return diffDays <= onTimeThreshold;
-    // }).length;
-    // const efficiency = Math.round((onTime / totalTrips) * 100);
-
     // Lifted date range state
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    // const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    //     .toISOString()
-    //     .slice(0, 10);
     const dayOfWeek = now.getDay();
     const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     const monday = new Date(
@@ -266,7 +249,7 @@ export default function Dashboard() {
                     <TrendingDown size={24} className="text-red-500" />
                 )}
                 {isEfficiencyPositive ? "+" : ""}
-                {efficiencyChange} km/L compared to {comparisonLabel}
+                {efficiencyChange}% compared to {comparisonLabel}
             </>
         );
 
