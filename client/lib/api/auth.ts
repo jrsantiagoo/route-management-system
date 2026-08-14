@@ -78,7 +78,7 @@ export async function resetPassword(
     confirmPassword: string,
 ): Promise<AuthApiResponse> {
     const response = await fetch(`${API_URL}/api/auth/reset-password`, {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword, confirmPassword }),
     });
