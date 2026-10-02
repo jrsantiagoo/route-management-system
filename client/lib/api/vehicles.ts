@@ -14,6 +14,7 @@ type BackendVehicle = {
     is_active: boolean;
     archived_at?: string | null;
     updated_at?: string | null;
+    driver_id_?: string | null;
     agent_profile?: {
         driver_id?: string | null;
     } | null;
@@ -29,7 +30,8 @@ type BackendVehicle = {
 
 const mapVehicle = (vehicle: BackendVehicle): Vehicle => {
     const isArchived = Boolean(vehicle.archived_at);
-    const driverId = vehicle.agent_profile?.driver_id ?? "";
+    const driverId =
+        vehicle.agent_profile?.driver_id ?? vehicle.driver_id_ ?? "";
 
     return {
         id_: vehicle.id_,

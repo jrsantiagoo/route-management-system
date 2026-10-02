@@ -16,7 +16,7 @@ const MANAGER = {
     password: " ",
     firstname: " ",
     lastname: " ",
-    middleInitial: " ",
+    middleInitial: "",
 };
 // ---------------------------
 

@@ -117,10 +117,12 @@ export const logout = async (req, res) => {
 
 // --- FORGOT PASSWORD ---
 export const forgotPassword = async (req, res) => {
+    const ORIGIN_URI = process.env.ORIGIN_URI || "http://localhost:3000";
+
     const { email } = req.body;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "http://localhost:3000/reset-password",
+        redirectTo: `${ORIGIN_URI}/reset-password`,
     });
 
     if (error) {

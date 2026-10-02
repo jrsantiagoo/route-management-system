@@ -252,6 +252,7 @@ export default function VehicleFormModal({
                                         ? "Loading brands..."
                                         : "Select vehicle brand"
                                 }
+                                displayLabel={vehicleMaker || undefined}
                                 icon={<Building2 size={19} />}
                             />
                         </div>
@@ -320,6 +321,7 @@ export default function VehicleFormModal({
                                         ? "Loading models..."
                                         : "Select vehicle model"
                                 }
+                                displayLabel={vehicleModel || undefined}
                                 icon={<Car size={21} />}
                             />
                         </div>
