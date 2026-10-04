@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { stubOsrm } from './osrm-stub';
 
 const STORAGE_KEY = 'acesoft_savedRoutes';
 
@@ -162,6 +163,7 @@ test.describe('Saved Routes', () => {
   test.beforeEach(async ({ page }) => {
     store.routes = [];
     await installRouteApiMock(page);
+    await stubOsrm(page);
     await page.goto('/route-tool');
     await waitForPage(page);
     await page.evaluate((key) => localStorage.removeItem(key), STORAGE_KEY);

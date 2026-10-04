@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { stubOsrm } from './osrm-stub';
 
 const METRIC_PATTERN = /\d+(?:\.\d+)?\s*(?:km|m)\s*·/;
 
@@ -103,6 +104,7 @@ test.describe('Manual Route Editing', () => {
   test.beforeEach(async ({ page }) => {
     store.routes = [];
     await installRouteApiMock(page);
+    await stubOsrm(page);
     await page.goto('/route-tool');
     await waitForPage(page);
     await page.evaluate(() => localStorage.removeItem('acesoft_savedRoutes'));

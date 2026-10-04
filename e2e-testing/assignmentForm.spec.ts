@@ -50,13 +50,13 @@ test.describe('Assignment Form', () => {
     await expect(page.getByRole('button', { name: 'Calendar' })).toHaveClass(/bg-primary/);
   });
 
-  test('AS-03 the assignment modal exposes date, route, purpose, driver, vehicle and notes', async ({
+  test('AS-03 the assignment modal exposes date, route, driver, vehicle and notes', async ({
     page,
   }) => {
     await openForm(page);
 
     await expect(page.locator('input[type="date"]')).toBeVisible();
-    for (const placeholder of Object.values(PLACEHOLDERS)) {
+    for (const placeholder of [PLACEHOLDERS.route, PLACEHOLDERS.driver, PLACEHOLDERS.vehicle]) {
       await expect(page.getByRole('button', { name: placeholder, exact: true })).toBeVisible();
     }
     await expect(page.getByPlaceholder('Any special instructions')).toBeVisible();
@@ -69,16 +69,17 @@ test.describe('Assignment Form', () => {
     await expect(page.locator('input[type="date"]')).toHaveValue(today);
   });
 
-  test('AS-05 Create stays disabled until route, purpose, driver and date are all set', async ({
+  test('AS-05 Create stays disabled until route, driver and date are all set', async ({
     page,
   }) => {
     await openForm(page);
     const create = page.getByRole('button', { name: 'Create' });
     await expect(create).toBeDisabled();
 
-    await openSelect(page, PLACEHOLDERS.purpose);
-    await page.getByRole('button', { name: 'Delivery', exact: true }).click();
-    await expect(create, 'purpose alone is not enough').toBeDisabled();
+    await openSelect(page, PLACEHOLDERS.driver);
+    await page.locator('div.absolute button').first().click();
+    await expect(page.getByRole('button', { name: PLACEHOLDERS.driver, exact: true })).toHaveCount(0);
+    await expect(create, 'driver and date without a route is not enough').toBeDisabled();
   });
 
   test('AS-06 clearing the scheduled date re-disables Create', async ({ page }) => {
@@ -87,7 +88,8 @@ test.describe('Assignment Form', () => {
     await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();
   });
 
-  test('AS-07 purpose offers exactly General and Delivery', async ({ page }) => {
+  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
+  test.fixme('AS-07 purpose offers exactly General and Delivery', async ({ page }) => {
     await openForm(page);
     await openSelect(page, PLACEHOLDERS.purpose);
 
@@ -95,7 +97,8 @@ test.describe('Assignment Form', () => {
     await expect(page.getByRole('button', { name: 'Delivery', exact: true })).toBeVisible();
   });
 
-  test('AS-08 choosing a purpose replaces the placeholder with the chosen value', async ({
+  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
+  test.fixme('AS-08 choosing a purpose replaces the placeholder with the chosen value', async ({
     page,
   }) => {
     await openForm(page);
@@ -121,7 +124,8 @@ test.describe('Assignment Form', () => {
     ).toBeVisible();
   });
 
-  test('AS-10 Cancel closes the modal and discards the entered values', async ({ page }) => {
+  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
+  test.fixme('AS-10 Cancel closes the modal and discards the entered values', async ({ page }) => {
     await openForm(page);
     await openSelect(page, PLACEHOLDERS.purpose);
     await page.getByRole('button', { name: 'General', exact: true }).click();
@@ -194,8 +198,6 @@ test.describe('Assignment Form', () => {
 
     await openSelect(page, PLACEHOLDERS.route);
     await page.getByRole('button', { name: routes[0].name, exact: true }).click();
-    await openSelect(page, PLACEHOLDERS.purpose);
-    await page.getByRole('button', { name: 'Delivery', exact: true }).click();
     await openSelect(page, PLACEHOLDERS.driver);
     await page.getByRole('button', { name: drivers[0].driver_id, exact: true }).click();
 

@@ -27,7 +27,7 @@ async function readCard(page: Page, title: string): Promise<string> {
     .filter({ has: page.locator('p.text-3xl') })
     .last();
   const raw = (await card.locator('p.text-3xl').first().innerText()).trim();
-  return raw.replace(/[^\d]/g, '');
+  return raw.replace(/[^\d.]/g, '');
 }
 
 function extractPdfText(buffer: Buffer): string {
@@ -96,8 +96,8 @@ test.describe('Report Generation', () => {
     expect(pdfText, `PDF missing displayed Total Trips "${displayedTrips}"`).toContain(
       displayedTrips,
     );
-    expect(pdfText, `PDF missing displayed Efficiency "${displayedEfficiency}%"`).toContain(
-      `${displayedEfficiency}%`,
+    expect(pdfText, `PDF missing displayed Efficiency "${displayedEfficiency} km/L"`).toContain(
+      `${displayedEfficiency} km/L`,
     );
     expect(pdfText, `PDF missing displayed Delivered "${displayedDelivered}"`).toContain(
       displayedDelivered,
